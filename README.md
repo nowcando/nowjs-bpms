@@ -8,9 +8,10 @@ Nowjs-BPMS is a lightweight library for handle Line Of Business challenges.
 
  # Features
 
- - BPMN 2.0 support partially .
+ - BPMN 2.0 Engine based on  [bpmn-engine](https://github.com/paed01/bpmn-engine) project .
+ - DMN 1.1 Engine based on [dmn-eval-js](https://github.com/HBTGmbH/dmn-eval-js)
 
-### Developed with love by [NowCanDo](http://www.nowcando.com)  .
+### Developed in [NowCanDo](http://www.nowcando.com)  .
 
 ### Notes for contributors
 
