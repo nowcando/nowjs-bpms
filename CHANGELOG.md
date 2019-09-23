@@ -4,6 +4,16 @@
 
 *  add some methods to Dmn cache . ([21022741](https://github.com/nowcando/nowjs-bpms/commit/21022741f96d27156c2c9bb50f09cb46c18400ba))
 
+##### Bug Fixes
+
+*  fix test for registerDefinitions method in DmnEngine ([a8b7fc78](https://github.com/nowcando/nowjs-bpms/commit/a8b7fc78891b95b7a54f616ad911faa40921a807))
+
+#### 0.1.4 (2019-09-23)
+
+##### New Features
+
+*  add some methods to Dmn cache . ([21022741](https://github.com/nowcando/nowjs-bpms/commit/21022741f96d27156c2c9bb50f09cb46c18400ba))
+
 #### 0.1.3 (2019-09-23)
 
 ##### Chores
