@@ -10,6 +10,7 @@
     "clean": "npm run clean:dist",
     "clean:dist": "rm -rf ./dist/*",
     "clean:build": "rm -rf ./lib/*",
+    "clean:release": "rm -rf ./lib/*",
     "prepack": "npm run build:release",
     "postpack": "npm run clean:build",
     "prepublishOnly": "npm run lint && npm run test && npm run build:release",
