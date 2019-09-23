@@ -19,3 +19,5 @@ tsconfig.test.json
 jest.json
 package-lock.json
 coverage/
+CHANGELOG.md
+CONTRIBUTING.md
