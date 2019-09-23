@@ -1,3 +1,9 @@
+#### 0.1.2 (2019-09-23)
+
+##### Other Changes
+
+* release ([b30adad9](https://github.com/nowcando/nowjs-bpms/commit/b30adad914cd54ea711021caf0fc2bb9ae42fec0))
+
 #### 0.1.1 (2019-09-23)
 
 ##### Chores
