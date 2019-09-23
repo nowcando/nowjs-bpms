@@ -1,3 +1,9 @@
+#### 0.1.3 (2019-09-23)
+
+##### Chores
+
+*  update .npmignore to ignore CHANGELOG.md ([062af713](https://github.com/nowcando/nowjs-bpms/commit/062af713797a69ae92fa523748e850fc866857c9))
+
 #### 0.1.2 (2019-09-23)
 
 ##### Other Changes
