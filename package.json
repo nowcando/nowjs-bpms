@@ -2,6 +2,7 @@
   "name": "nowjs-bpms",
   "description": "NowCanDo Javascript Core [nowjs-bpms] is a  library written by TypeScript code maintains under MIT licence",
   "version": "0.1.0",
+  "private": false,
   "scripts": {
     "debug": "npm run-script build:debug ",
     "build:debug": "npm run-script clean:dist && tsc --p ./config/tsconfig.debug.json",
@@ -69,7 +70,7 @@
     "@types/bpmn-moddle": "^5.1.2",
     "@types/jest": "^24.0.18",
     "@types/node": ">=12.7.5",
-    "changelog": "^1.4.2",
+    "generate-changelog": "^1.8.0",
     "jest": "^24.9.0",
     "jest-environment-node-debug": ">=2.0.0",
     "ts-jest": "^24.1.0",
