@@ -1,9 +1,7 @@
 // tslint:disable-next-line:no-var-requires
 const { decisionTable } = require("@hbtgmbh/dmn-eval-js");
 import { uuidv1 } from "nowjs-core/lib/utils/UuidUtils";
-import { Stream } from "stream";
 
-export type DmnSource = string | Stream;
 export interface DmnEngineOptions {
   name: string;
 }
@@ -27,15 +25,55 @@ export class DmnEngine {
   public get Name(): string {
     return this.name;
   }
-
+  /**
+   * register Dmn Definitions
+   *
+   * @param {string} name definiion name
+   * @param {DmnDecision[]} decisions decisions
+   * @returns {Promise<boolean>} return true
+   * @memberof DmnEngine
+   */
   public async registerDefinitions(
     name: string,
-    source: DmnSource,
+    decisions: DmnDecision[],
   ): Promise<boolean> {
-    if (!this.definitionCache[name]) {
-      this.definitionCache[name] = source;
-    }
-    return Promise.resolve(true);
+      this.definitionCache[name] = decisions;
+      return Promise.resolve(true);
+  }
+
+  /**
+   * Get decision from special definition name
+   *
+   * @param {string} name definition name
+   * @returns {Promise<DmnDecision[]>}
+   * @memberof DmnEngine
+   */
+  public async getDecisions(
+    name: string,
+  ): Promise<DmnDecision[]> {
+    const decisions =  this.definitionCache[name];
+    return Promise.resolve(decisions);
+  }
+
+  /**
+   * Get all cached Dmn definitions
+   *
+   * @returns {Promise<string[]>}
+   * @memberof DmnEngine
+   */
+  public async getDefinitionNames(): Promise<string[]> {
+    return  Promise.resolve(Object.keys(this.definitionCache));
+  }
+
+  /**
+   * Clear all cached Dmn Definitions
+   *
+   * @returns {Promise<void>}
+   * @memberof DmnEngine
+   */
+  public async clearAllDefinitions(): Promise<void> {
+    this.definitionCache = {};
+    return Promise.resolve();
   }
 
   /**
@@ -95,7 +133,7 @@ export class DmnEngine {
 export interface DmnEvaluationContext {}
 
 export interface DmnDecisionTable {
-  hitPolicy: "FIRST" | "UNIQUE" | "COLLECT" | "RULE ORDER";
+  hitPolicy: "FIRST" | "UNIQUE" | "COLLECT" | "RULE ORDER" | "ANY";
   rules: DmnDecisionTableRule[];
   input: string[];
   output: string[];
