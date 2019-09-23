@@ -1,3 +1,9 @@
+#### 0.1.4 (2019-09-23)
+
+##### New Features
+
+*  add some methods to Dmn cache . ([21022741](https://github.com/nowcando/nowjs-bpms/commit/21022741f96d27156c2c9bb50f09cb46c18400ba))
+
 #### 0.1.3 (2019-09-23)
 
 ##### Chores
