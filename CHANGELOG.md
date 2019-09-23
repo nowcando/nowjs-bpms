@@ -1,3 +1,9 @@
+### 0.2.0 (2019-09-23)
+
+##### Other Changes
+
+*  add cache control methods to bpmn engine . ([c0c19a95](https://github.com/nowcando/nowjs-bpms/commit/c0c19a95a21bdeb478f7f7724afcc407341166d4))
+
 #### 0.1.5 (2019-09-23)
 
 #### 0.1.4 (2019-09-23)
