@@ -1,0 +1,96 @@
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:ncd="http://www.nowcando.com/spec/bpmn/2019080101/model" xmlns:debugger="http://e2e.ch/bpmneditor/debugger">
+  <bpmn:extensionElements>
+    <debugger:position href="http://localhost:7261/grapheditor/debugger/position" />
+  </bpmn:extensionElements>
+  <bpmn:process id="PROCESS_1">
+    <bpmn:startEvent name="MyStart" label="MyStart" id="2">
+      <mxCell style="shape=mxgraph.bpmn.none_start_event;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+        <mxGeometry x="91" y="91" width="40" height="40" as="geometry" />
+      </mxCell>
+    </bpmn:startEvent>
+    <bpmn:task name="MyTask" label="MyTask" id="3">
+      <bpmn:extensionElements></bpmn:extensionElements>
+      <ncd:data>
+        <ncd:data-models>
+          <ncd:data-model name="role"  >
+            <ncd:model-field name="id" type="number" data-role="id"/>
+            <ncd:model-field name="name" type="string"/>
+          </ncd:data-model>
+          <ncd:data-model name="person">
+            <ncd:model-field name="id" type="number" data-role="id" data-seqence="seq_person_id" />
+            <ncd:model-field name="createdAt" type="date" data-role="meta"/>
+            <ncd:model-field name="createdBy" type="date" data-role="meta"/>
+            <ncd:model-field name="firstname" type="string" data-role="data">
+              <ncd:validation type="required" message="" />
+              <ncd:validation type="regx" pattern="^[a-zA-Z\s]$" message="" />
+            </ncd:model-field>
+            <ncd:model-field name="roles" min="1" max="5" type="list" member-type="role" data-type="role.name" />
+          </ncd:data-model>
+          <ncd:data-model name="lesson">
+            <ncd:model-field name="id" type="number" data-role="id"/>
+            <ncd:model-field name="name" type="string">
+              <ncd:validation type="required" message="" />
+              <ncd:validation type="regx" pattern="^[a-zA-Z\s]$" message="" />
+            </ncd:model-field>
+          </ncd:data-model>
+        </ncd:data-models>
+        <ncd:data-sources base-url="http://localhost:9090/api/v1" >
+            
+                <ncd:data-source-rest name="persons" url="/person" />
+                <ncd:data-source-rest name="roles" url="/role" />
+                <ncd:data-source-db name="lessons" url="lesson" mode="memory" />
+                <ncd:data-source-file name="ranks" url="ranks" mode="persisted" />
+                <ncd:data-source-object name="points">
+                  <ncd-data-object>1</ncd-data-object>
+                  <ncd-data-object>2</ncd-data-object>
+                  <ncd-data-object>3</ncd-data-object>
+                </ncd:data-source-object>
+        </ncd:data-sources>
+      </ncd:data>
+      <ncd:screen>
+        <ncd:view>
+          <ncd:form name="" title="" description="" validation="enabled" mode="ajax" data-model="person">
+            <ncd:validationSummary />
+            <ncd:fieldsets title="Personal Info">
+              <ncd:formfield type="text" name="firstname" data-property-name="firstname" />
+              <ncd:formfield type="text" name="lastname"  data-property-name="lastname" value="" mask="[a-zA-Z]*"   />
+              <ncd:formfield type="multiSelect"   name="term" data-property-name="lessons" />
+            </ncd:fieldsets>
+             <ncd:fieldsets title="Roles">
+              <ncd:form-repeat  min-repeat="1" max-repeat="5">
+                  <ncd:formfield type="singleSelect"   name="term" data-property-name="lessons" />
+              </ncd:form-repeat>
+              
+            </ncd:fieldsets>
+            <ncd:actions></ncd:actions>
+          </ncd:form>
+        </ncd:view>
+      </ncd:screen>
+      
+      <mxCell style="shape=mxgraph.bpmn.task;" vertex="1" parent="1">
+        <mxGeometry x="240" y="81" width="140" height="60" as="geometry" />
+      </mxCell>
+    </bpmn:task>
+    <bpmn:sequenceFlow name="" sourceRef="2" targetRef="3" id="4">
+      <mxCell style="endArrow=block;endFill=1;endSize=6;edgeStyle=orthogonalEdgeStyle" edge="1" parent="1" source="2" target="3">
+        <mxGeometry x="1" y="1" as="geometry">
+          <mxPoint as="sourcePoint" />
+          <mxPoint x="30" y="30" as="targetPoint" />
+        </mxGeometry>
+      </mxCell>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent name="MyEnd" label="MyEnd" id="5">
+      <mxCell style="shape=mxgraph.bpmn.none_end_event;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+        <mxGeometry x="470" y="91" width="40" height="40" as="geometry" />
+      </mxCell>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow name="" sourceRef="3" targetRef="5" id="6">
+      <mxCell style="endArrow=block;endFill=1;endSize=6;edgeStyle=orthogonalEdgeStyle" edge="1" parent="1" source="3" target="5">
+        <mxGeometry x="1" y="1" as="geometry">
+          <mxPoint as="sourcePoint" />
+          <mxPoint x="30" y="30" as="targetPoint" />
+        </mxGeometry>
+      </mxCell>
+    </bpmn:sequenceFlow>
+  </bpmn:process>
+</bpmn:definitions>

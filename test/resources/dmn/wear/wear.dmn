@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/1.0" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="definitions_00sonpg" name="wears_brules" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="3.1.0">
+  <decision id="decision_1ovqjfc" name="wear_dt">
+    <extensionElements>
+      <biodi:bounds x="463" y="205" width="180" height="80" />
+      <biodi:edge source="InputData_0heuhh0">
+        <biodi:waypoints x="635" y="341" />
+        <biodi:waypoints x="609" y="285" />
+      </biodi:edge>
+      <biodi:edge source="InputData_10e8adp">
+        <biodi:waypoints x="456" y="337" />
+        <biodi:waypoints x="498" y="285" />
+      </biodi:edge>
+      <biodi:edge source="BusinessKnowledgeModel_0ru2n62">
+        <biodi:waypoints x="770" y="255" />
+        <biodi:waypoints x="643" y="256" />
+      </biodi:edge>
+    </extensionElements>
+    <informationRequirement>
+      <requiredInput href="#InputData_0heuhh0" />
+    </informationRequirement>
+    <informationRequirement>
+      <requiredInput href="#InputData_10e8adp" />
+    </informationRequirement>
+    <knowledgeRequirement>
+      <requiredKnowledge href="#BusinessKnowledgeModel_0ru2n62" />
+    </knowledgeRequirement>
+    <decisionTable id="decisionTable_1sh35d4">
+      <input id="input1" label="age" camunda:inputVariable="age">
+        <inputExpression id="inputExpression1" typeRef="integer" expressionLanguage="JavaScript">
+          <text>73</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_0p7d5wp" label="gender" camunda:inputVariable="gender">
+        <inputExpression id="LiteralExpression_1a84ugd" typeRef="string">
+          <text>ewqe</text>
+        </inputExpression>
+      </input>
+      <output id="output1" label="color" name="color" typeRef="string" />
+      <output id="OutputClause_18h9s8z" label="material" name="material" typeRef="string" />
+      <rule id="DecisionRule_1o7db8e">
+        <description>Blue Silk</description>
+        <inputEntry id="UnaryTests_1sqzo9c">
+          <text>20</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_01e2m1x">
+          <text>M</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_13jb218">
+          <text>blue</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_020i39y">
+          <text>silk</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0dhuu5f">
+        <description>Blue Jean</description>
+        <inputEntry id="UnaryTests_1emn2xc">
+          <text>5</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0g159h0">
+          <text>F</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_15epdhx">
+          <text>blue</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_12iajun">
+          <text>jean</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0ahj4di">
+        <description>Brown Silk</description>
+        <inputEntry id="UnaryTests_0j4unjh">
+          <text>10</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0n94nlc">
+          <text>M</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1i5o9in">
+          <text>brown</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1j9cjlj">
+          <text>silk</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0moequv">
+        <description>Red Skirt</description>
+        <inputEntry id="UnaryTests_1elc7z7">
+          <text>15</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0vvdwuy">
+          <text>F</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1lxtu6p">
+          <text>red</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1x2xlwv">
+          <text>skirt</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0bx1z5p">
+        <description>Yellow Skirt</description>
+        <inputEntry id="UnaryTests_0cakq9r">
+          <text>30</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1q7trgs">
+          <text>F</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0t1wy42">
+          <text>yellow</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0q9xdp4">
+          <text>jean</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <inputData id="InputData_10e8adp" name="age">
+    <extensionElements>
+      <biodi:bounds x="370" y="337" width="125" height="45" />
+    </extensionElements>
+  </inputData>
+  <inputData id="InputData_0heuhh0" name="gender">
+    <extensionElements>
+      <biodi:bounds x="593" y="341" width="125" height="45" />
+    </extensionElements>
+  </inputData>
+  <businessKnowledgeModel id="BusinessKnowledgeModel_0ru2n62" name="Country_kb">
+    <extensionElements>
+      <biodi:bounds x="770" y="236" width="135" height="46" />
+    </extensionElements>
+  </businessKnowledgeModel>
+  <decision id="Decision_1494gdx" name="wear_expression">
+    <extensionElements>
+      <biodi:bounds x="725" y="84" width="180" height="80" />
+      <biodi:edge source="decision_1ovqjfc">
+        <biodi:waypoints x="643" y="242" />
+        <biodi:waypoints x="725" y="130" />
+      </biodi:edge>
+    </extensionElements>
+    <variable id="InformationItem_0ppsj5n" name="color" typeRef="string" />
+    <informationRequirement>
+      <requiredDecision href="#decision_1ovqjfc" />
+    </informationRequirement>
+    <literalExpression id="LiteralExpression_0c7sgeb" expressionLanguage="javascript">
+      <text>function(color){return color;}</text>
+    </literalExpression>
+  </decision>
+  <decision id="Decision_129ibg5" name="cloth_dt">
+    <extensionElements>
+      <biodi:bounds x="224" y="81" width="180" height="80" />
+      <biodi:edge source="decision_1ovqjfc">
+        <biodi:waypoints x="463" y="236" />
+        <biodi:waypoints x="404" y="134" />
+      </biodi:edge>
+      <biodi:edge source="InputData_00m42vi">
+        <biodi:waypoints x="234" y="235" />
+        <biodi:waypoints x="281" y="161" />
+      </biodi:edge>
+    </extensionElements>
+    <informationRequirement>
+      <requiredDecision href="#decision_1ovqjfc" />
+    </informationRequirement>
+    <informationRequirement>
+      <requiredInput href="#InputData_00m42vi" />
+    </informationRequirement>
+    <decisionTable id="DecisionTable_1mtfq0q">
+      <input id="InputClause_1pc1zzk" label="color" camunda:inputVariable="color">
+        <inputExpression id="LiteralExpression_04ngrrq" typeRef="string" expressionLanguage="JavaScript" />
+      </input>
+      <input id="InputClause_1hpqtc5" label="material" camunda:inputVariable="material">
+        <inputExpression id="LiteralExpression_0in9bo6" typeRef="string" expressionLanguage="JavaScript">
+          <text>656</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_0fej36x" label="size" camunda:inputVariable="size">
+        <inputExpression id="LiteralExpression_0874bml" typeRef="integer">
+          <text>55</text>
+        </inputExpression>
+      </input>
+      <output id="OutputClause_0j3yjqe" label="clothName" name="clothName" typeRef="string" />
+      <rule id="DecisionRule_0g4paxj">
+        <inputEntry id="UnaryTests_1jr9plg">
+          <text>yellow</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_08ksdbq">
+          <text>jean</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1plud8z">
+          <text>xl</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0203kdx">
+          <text>Jeany</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_12r97cc">
+        <inputEntry id="UnaryTests_0d2qt6a">
+          <text>red</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_02pvgsq">
+          <text>jean</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0kg5xz4">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_048x1k9">
+          <text>Pinny</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0zwrrak">
+        <inputEntry id="UnaryTests_16ct8zn">
+          <text>blue</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_102fpwd">
+          <text>jean</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_11yjnz1">
+          <text>sl</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0c3pj1g">
+          <text>Sinny</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1h51y5m">
+        <inputEntry id="UnaryTests_0iqnxy0">
+          <text>red</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0llrdor">
+          <text>skirt</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_04zmkx5">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1bdszfn">
+          <text>Dinny</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_11b72f7">
+        <inputEntry id="UnaryTests_0k1iaq3">
+          <text>brown</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0z26gtz">
+          <text>silk</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0onwj2r">
+          <text>xxl</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_11957yq">
+          <text>Minny</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <inputData id="InputData_00m42vi" name="size">
+    <extensionElements>
+      <biodi:bounds x="154" y="235" width="125" height="45" />
+    </extensionElements>
+  </inputData>
+</definitions>

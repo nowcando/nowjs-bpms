@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+        "removeComments": false,
+        "sourceMap": false,
+        "rootDir": "../.",
+        "outDir": "../dist",
+        "inlineSourceMap": true
+  },
+  "exclude": [
+    "../dist",
+    "../lib",
+    "../node_modules",
+
+
+  ]
+}

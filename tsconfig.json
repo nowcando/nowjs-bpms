@@ -1,0 +1,31 @@
+{
+  "buildOnSave": false,
+  "compilerOptions": {
+    "strict": true,
+    "alwaysStrict": true,
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    // "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noUnusedLocals": false,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "target": "es2018",
+    "moduleResolution": "node",
+    "lib": [
+      "esnext"
+    ]
+  },
+  "exclude": [
+    "./dist",
+    "./lib",
+    "./node_modules",
+    "./src/bpms-old",
+    "./src/bpms2",
+    "./test/bpms-old"
+  ],
+  "include": ["**/*.ts"]
+}

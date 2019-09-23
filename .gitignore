@@ -1,0 +1,11 @@
+.idea/
+node_modules/
+dist/
+*.d.ts
+*.log
+*.tgz
+typings/
+coverage/
+lib/
+nowjs-core.iml
+package-lock.json

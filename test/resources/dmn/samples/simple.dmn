@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd"
+             xmlns:biodi="http://bpmn.io/schema/dmn/biodi/1.0" id="definitions_00ibt41" name="definitions" namespace="http://camunda.org/schema/1.0/dmn" exporter="dmn-js (https://demo.bpmn.io/dmn)" exporterVersion="7.0.0">
+  <decision id="mydecision" name="mydecision">
+    <extensionElements>
+      <biodi:bounds x="489" y="163" width="180" height="80" />
+    </extensionElements>
+    <decisionTable id="decisionTable_1vimd08">
+      <input id="input1" label="name">
+        <inputExpression id="inputExpression1" typeRef="string">
+          <text>name</text>
+        </inputExpression>
+      </input>
+      <output id="output1" label="point" name="point" typeRef="integer" />
+      <rule id="DecisionRule_1iaaxa9">
+        <inputEntry id="UnaryTests_0kp9vgy">
+          <text>saeed</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_16z3ssx">
+          <text>10</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_122kvl4">
+        <inputEntry id="UnaryTests_1ys2agu">
+          <text>majid</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_182o9o8">
+          <text>15</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_10o24cd">
+        <inputEntry id="UnaryTests_04hvhn7">
+          <text>hamid</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_08h2cih">
+          <text>12</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0kn1nkc">
+        <inputEntry id="UnaryTests_0ab9hj2">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_04ygmmp">
+          <text>0</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

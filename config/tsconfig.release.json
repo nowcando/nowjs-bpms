@@ -1,0 +1,22 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+        "removeComments": true,
+        "sourceMap": false,
+        "rootDir": "../src",
+        "outDir": "../lib",
+        "declaration": true,
+        "pretty": true
+  },
+  "include": [
+    "../src/**/*"
+  ],
+  "exclude": [
+    "../dist",
+    "../lib",
+    "../test",
+    "../node_modules"
+    
+
+  ]
+}

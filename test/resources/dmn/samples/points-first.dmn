@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/1.0" id="definitions_00ibt41" name="definitions" namespace="http://camunda.org/schema/1.0/dmn" exporter="dmn-js (https://demo.bpmn.io/dmn)" exporterVersion="7.0.0">
+  <decision id="mypoints" name="points">
+    <extensionElements>
+      <biodi:bounds x="156" y="81" width="180" height="80" />
+    </extensionElements>
+    <decisionTable id="decisionTable_1vimd08" hitPolicy="FIRST">
+      <input id="input1" label="firstname">
+        <inputExpression id="inputExpression1" typeRef="string">
+          <text>input.firstname</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_1tz8j30" label="lesson">
+        <inputExpression id="LiteralExpression_1hlm0z1" typeRef="string">
+          <text>input.lesson</text>
+        </inputExpression>
+      </input>
+      <output id="output1" label="point" name="output.point" typeRef="string" />
+      <rule id="DecisionRule_1iaaxa9">
+        <inputEntry id="UnaryTests_0kp9vgy">
+          <text>"saeed"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1bt0c8j">
+          <text>"math"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_16z3ssx">
+          <text>10</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_122kvl4">
+        <inputEntry id="UnaryTests_1ys2agu">
+          <text>"majid"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0vpjeqq">
+          <text>"math"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_182o9o8" >
+          <text>15</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_10o24cd">
+        <inputEntry id="UnaryTests_04hvhn7">
+          <text>"hamid"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_12puj3v">
+          <text>"math"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_08h2cih" expressionLanguage="javascript">
+          <text>12</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0kn1nkc">
+        <inputEntry id="UnaryTests_0ab9hj2">
+          <text>"saeed"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1e529je">
+          <text>"computer"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_04ygmmp" >
+          <text>18</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1kcuwdc">
+        <inputEntry id="UnaryTests_046l8k4">
+          <text>"majid"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1tt572s">
+          <text>"computer"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0sprj13" >
+          <text>16</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1slcojm">
+        <inputEntry id="UnaryTests_0ajr5xc">
+          <text>"hamid"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0fnphy4">
+          <text>"computer"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_07qbbj3" >
+          <text>20</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1e4es9p">
+        <inputEntry id="UnaryTests_010uboc">
+          <text>"saeed"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0f5suk4">
+          <text>"physic"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_153e4ew" >
+          <text>16</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0r23pko">
+        <inputEntry id="UnaryTests_1au75kz">
+          <text>"majid"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0hx2s1l">
+          <text>"physic"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1wspq6w" >
+          <text>18</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0s7ui42">
+        <inputEntry id="UnaryTests_1la5s00">
+          <text>"hamid"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1f10o25">
+          <text>"physic"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1808wym" >
+          <text>10</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

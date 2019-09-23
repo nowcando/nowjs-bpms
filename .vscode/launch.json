@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Libarary TS-JEST Test & Debugging",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
+            "cwd": "${workspaceRoot}",
+            "args": [
+                "--i",
+                "--config",
+                "jest.json"
+            ],
+            "showAsyncStacks": true
+        }
+    ],
+    "compounds": []
+}
