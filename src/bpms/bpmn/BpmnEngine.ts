@@ -1,8 +1,7 @@
 import { uuidv1 } from "nowjs-core/lib/utils";
-import { Stream } from "stream";
 import { BpmnProcess, BpmnProcessOptions } from "./BpmnProcess";
 
-export type BpmnSource = string | Stream;
+export type BpmnSource = string;
 
 export interface BpmnEngineOptions {
   name: string;
@@ -46,11 +45,31 @@ export class BpmnEngine {
       try {
         const proc = new BpmnProcess(self, options);
         this.processCache[proc.Name] = proc;
+        proc.once("end", () => {
+          delete this.processCache[proc.Name];
+        });
         resolve(proc);
       } catch (error) {
         reject(error);
       }
     });
     return p;
+  }
+
+  public async list(): Promise<BpmnProcess[]> {
+    return Promise.resolve(Object.entries(this.processCache).map((xx) => xx[1]));
+  }
+
+  public async getByName(name: string): Promise<BpmnProcess> {
+    return Promise.resolve(this.processCache[name]);
+  }
+
+  public async getById(id: string): Promise<BpmnProcess | null> {
+    const x = Object.entries(this.processCache).find((xx) => xx[1].Id === id);
+    if (x) {
+      return Promise.resolve(x[1]);
+    } else {
+      return Promise.resolve(null);
+    }
   }
 }

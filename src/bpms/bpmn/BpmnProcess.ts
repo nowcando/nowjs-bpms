@@ -21,6 +21,27 @@ export interface BpmnProcessOptions {
 
   extensions?: any;
 }
+
+
+export interface BpmnProcessExecutionEnvironment {
+  output: any ;
+  variables: any;
+
+  services: any;
+}
+export interface BpmnProcessExecutionState {
+      name: string;
+      state: "idle"|"running"|"stopped"|"error";
+      stopped: boolean;
+      engineVersion: string;
+      environment: BpmnProcessExecutionEnvironment;
+      definitions: bm.BaseElement[];
+}
+export interface BpmnProcessExeuctionApi {
+
+  environment: BpmnProcessExecutionEnvironment;
+  getState(): BpmnProcessExecutionState;
+}
 // tslint:disable: no-empty-interface
 export interface BpmnProcessExecuteOptions extends BpmnProcessOptions {}
 
