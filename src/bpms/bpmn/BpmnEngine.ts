@@ -1,5 +1,5 @@
 import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmnProcess, BpmnProcessOptions } from "./BpmnProcess";
+import { BpmnProcessInstance, BpmnProcessOptions } from "./BpmnProcessInstance";
 
 export type BpmnSource = string;
 
@@ -8,7 +8,7 @@ export interface BpmnEngineOptions {
 }
 export class BpmnEngine {
   private definitionCache: { [name: string]: any } = {};
-  private processCache: { [name: string]: BpmnProcess } = {};
+  private processCache: { [name: string]: BpmnProcessInstance } = {};
   private id: string = uuidv1();
   private name: string;
   private options: BpmnEngineOptions;
@@ -39,11 +39,11 @@ export class BpmnEngine {
   }
   public async createProcess(
     options?: BpmnProcessOptions,
-  ): Promise<BpmnProcess> {
+  ): Promise<BpmnProcessInstance> {
     const self = this;
-    const p = new Promise<BpmnProcess>((resolve, reject) => {
+    const p = new Promise<BpmnProcessInstance>((resolve, reject) => {
       try {
-        const proc = new BpmnProcess(self, options);
+        const proc = new BpmnProcessInstance(self, options);
         this.processCache[proc.Name] = proc;
         proc.once("end", () => {
           delete this.processCache[proc.Name];
@@ -56,15 +56,15 @@ export class BpmnEngine {
     return p;
   }
 
-  public async list(): Promise<BpmnProcess[]> {
+  public async list(): Promise<BpmnProcessInstance[]> {
     return Promise.resolve(Object.entries(this.processCache).map((xx) => xx[1]));
   }
 
-  public async getByName(name: string): Promise<BpmnProcess> {
+  public async getByName(name: string): Promise<BpmnProcessInstance> {
     return Promise.resolve(this.processCache[name]);
   }
 
-  public async getById(id: string): Promise<BpmnProcess | null> {
+  public async getById(id: string): Promise<BpmnProcessInstance | null> {
     const x = Object.entries(this.processCache).find((xx) => xx[1].Id === id);
     if (x) {
       return Promise.resolve(x[1]);
