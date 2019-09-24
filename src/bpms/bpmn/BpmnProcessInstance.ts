@@ -20,6 +20,7 @@ export interface BpmnExecution {
 
   resume(resumeOptions?: any): void;
 
+  environment: BpmnProcessExecutionEnvironment;
 
 }
 
