@@ -1,3 +1,14 @@
+#### 0.2.1 (2019-09-24)
+
+##### Chores
+
+*  rename BpmnProcess ([05d2322c](https://github.com/nowcando/nowjs-bpms/commit/05d2322c71de12a6681ffebef391bb1042d4d140))
+
+##### Bug Fixes
+
+*  execution environment ([49e820d8](https://github.com/nowcando/nowjs-bpms/commit/49e820d8e31a16683b77ccc6c9e110ff7d7f49e9))
+*  stop method in BpmnProcessInstance ([569938ba](https://github.com/nowcando/nowjs-bpms/commit/569938bac5e42b94c1ec5b7167d47af9b8d6ba75))
+
 ### 0.2.0 (2019-09-23)
 
 ##### Other Changes
