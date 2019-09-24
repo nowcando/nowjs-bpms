@@ -11,6 +11,18 @@ export interface BpmnLogger {
   warn(...args: any[]): void;
 }
 
+export interface BpmnExecution {
+  state: "idle" | "running";
+
+  stopped: boolean;
+  execute(executeOptions?: any): BpmnProcessExeuctionApi;
+  getState<R>(): R;
+
+  resume(resumeOptions?: any): void;
+
+
+}
+
 // tslint:disable: max-line-length
 export interface BpmnProcessOptions {
   name?: string;
@@ -32,7 +44,7 @@ export interface BpmnProcessOptions {
   extensions?: any;
 }
 
-export interface BpmnProcessExecute {
+export interface BpmnProcess {
   new (processDefinition: any, context: BpmnProcessExecutionContext);
   id: string;
   type: string;
@@ -48,7 +60,7 @@ export interface BpmnProcessExecute {
   isRunning: boolean;
 
   logger: BpmnLogger;
-  parent: BpmnProcessExecute;
+  parent: BpmnProcess;
   status: any;
 
   stopped: boolean;
@@ -347,7 +359,7 @@ export class BpmnProcessInstance extends EventEmitter {
     return this.pengine.state;
   }
 
-  public get Environment(): any {
+  public get Environment(): BpmnProcessExecutionEnvironment {
     return this.pengine.environment;
   }
 
@@ -355,11 +367,11 @@ export class BpmnProcessInstance extends EventEmitter {
     return this.pengine.stopped;
   }
 
-  public get Execution(): any {
+  public get Execution(): BpmnExecution {
     return this.pengine.execution;
   }
 
-  public async execute<R>(options?: BpmnProcessExecuteOptions): Promise<R> {
+  public async execute<R extends BpmnExecution>(options?: BpmnProcessExecuteOptions): Promise<R> {
     const p = new Promise<R>(async (resolve, reject) => {
       try {
         resolve(await this.pengine.execute(options));
@@ -379,7 +391,7 @@ export class BpmnProcessInstance extends EventEmitter {
   public async stop(): Promise<void> {
     const p = new Promise<void>(async (resolve, reject) => {
       try {
-        resolve(await this.pengine.stop());
+        resolve(this.pengine.stop());
       } catch (error) {
         reject(error);
       }
