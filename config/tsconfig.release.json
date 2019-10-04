@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-        "removeComments": true,
+        "removeComments": false,
         "sourceMap": false,
         "rootDir": "../src",
         "outDir": "../lib",
