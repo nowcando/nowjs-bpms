@@ -12,6 +12,7 @@ export interface BpmsEngineOptions {
 }
 export class BpmsEngine {
   private static cache: { [name: string]: BpmsEngine } = {};
+  private static default: BpmsEngine;
   private bpmnEngine: BpmnEngine;
   private dmnEngine: DmnEngine;
   private cmmnEngine: CmmnEngine;
@@ -32,9 +33,9 @@ export class BpmsEngine {
         );
       }
     }
-    this.bpmnEngine = BpmnEngine.createEngine(this.options.bpmnEngine);
-    this.dmnEngine = DmnEngine.createEngine(this.options.bpmnEngine);
-    this.cmmnEngine = CmmnEngine.createEngine(this.options.cmmnEngine);
+    this.bpmnEngine = BpmnEngine.createEngine({name: this.name, ...this.options.bpmnEngine});
+    this.dmnEngine = DmnEngine.createEngine({name: this.name, ...this.options.bpmnEngine});
+    this.cmmnEngine = CmmnEngine.createEngine({name: this.name, ...this.options.cmmnEngine});
   }
 
   public static createEngine(options?: BpmsEngineOptions): BpmsEngine {
@@ -76,5 +77,12 @@ export class BpmsEngine {
 
   public get CmmnEngine(): CmmnEngine {
     return this.cmmnEngine;
+  }
+
+  public static get Default() {
+    if (!BpmsEngine.default) {
+      BpmsEngine.default = BpmsEngine.createEngine({name: "Default"});
+    }
+    return BpmsEngine.default;
   }
 }
