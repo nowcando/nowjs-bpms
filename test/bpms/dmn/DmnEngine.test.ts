@@ -20,7 +20,7 @@ afterAll(() => {});
 describe("DmnEngine", () => {
   describe("new", () => {
     it("should be instantiated DmnEngine", () => {
-      const actual = new DmnEngine({ name: "MyEngine" });
+      const actual = new DmnEngine(undefined, { name: "MyEngine" });
       expect(actual).toBeDefined();
       expect(actual.Name).toBeDefined();
       expect(actual.Id).toBeDefined();

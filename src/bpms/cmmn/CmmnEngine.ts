@@ -10,8 +10,14 @@ export class CmmnEngine {
   private id: string = uuidv1();
   private name: string;
   private options: CmmnEngineOptions;
-  public static createEngine(bpmsEngine: BpmsEngine, options?: CmmnEngineOptions): CmmnEngine {
-    return new CmmnEngine(bpmsEngine, options);
+
+  public static createEngine(options?: CmmnEngineOptions): CmmnEngine;
+  public static createEngine(bpmsEngine: BpmsEngine, options?: CmmnEngineOptions): CmmnEngine;
+  public static createEngine(arg1?: BpmsEngine | CmmnEngineOptions, arg2?: CmmnEngineOptions): CmmnEngine {
+    if (arg1 instanceof BpmsEngine) {
+      return new CmmnEngine(arg1, arg2);
+    }
+    return new CmmnEngine(undefined, arg1);
   }
   constructor(private bpmsEngine?: BpmsEngine, options?: CmmnEngineOptions) {
     this.options = options || { name: "CmmnEngine-" + this.id };

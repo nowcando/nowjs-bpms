@@ -17,9 +17,17 @@ export class DmnEngine {
   private name: string;
   private options: DmnEngineOptions;
   private definitionPersistency: DmnDefinitionPersistency;
-  public static createEngine(bpmsEngine?: BpmsEngine, options?: DmnEngineOptions): DmnEngine {
-    return new DmnEngine(bpmsEngine, options);
+
+  public static createEngine(options?: DmnEngineOptions): DmnEngine;
+  public static createEngine(bpmsEngine?: BpmsEngine, options?: DmnEngineOptions): DmnEngine;
+  public static createEngine(arg1?: BpmsEngine | DmnEngineOptions, arg2?: DmnEngineOptions): DmnEngine {
+    if (arg1 instanceof BpmsEngine) {
+      return new DmnEngine(arg1, arg2);
+    }
+    return new DmnEngine(undefined, arg1);
   }
+
+
   constructor(private bpmsEngine?: BpmsEngine, options?: DmnEngineOptions) {
     this.options = options || { name: "DmnEngine-" + this.id };
     this.name = this.options.name;
