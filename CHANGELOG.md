@@ -1,3 +1,10 @@
+#### 0.4.1 (2019-10-05)
+
+##### New Features
+
+*  add overload to constructor and static createEngine , implement [#7](https://github.com/nowcando/nowjs-bpms/pull/7) ([c69dd347](https://github.com/nowcando/nowjs-bpms/commit/c69dd3476d933b1d690ad90dc6a69b0b9edd34f2))
+*  add  evaluateDecision service to BpmnEngine ([221be927](https://github.com/nowcando/nowjs-bpms/commit/221be92762fb73b0b7bddada4a5834702a9adc66))
+
 ### 0.4.0 (2019-10-05)
 
 ##### New Features
