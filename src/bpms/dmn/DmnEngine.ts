@@ -1,21 +1,29 @@
 // tslint:disable-next-line:no-var-requires
 const { decisionTable } = require("@hbtgmbh/dmn-eval-js");
 import { uuidv1 } from "nowjs-core/lib/utils/UuidUtils";
+import {
+  DmnDefinitionMemoryPersistent,
+  DmnDefinitionPersistency,
+} from "./DmnDefinitionPersistency";
 
 export interface DmnEngineOptions {
   name: string;
+  definitionPersistency?: DmnDefinitionPersistency;
 }
 export class DmnEngine {
   private definitionCache: { [name: string]: any } = {};
   private id: string = uuidv1();
   private name: string;
   private options: DmnEngineOptions;
+  private definitionPersistency: DmnDefinitionPersistency;
   public static createEngine(options?: DmnEngineOptions): DmnEngine {
     return new DmnEngine(options);
   }
   constructor(options?: DmnEngineOptions) {
     this.options = options || { name: "DmnEngine-" + this.id };
     this.name = this.options.name;
+    this.definitionPersistency =
+      this.options.definitionPersistency || new DmnDefinitionMemoryPersistent();
   }
 
   public get Id(): string {
@@ -24,6 +32,10 @@ export class DmnEngine {
 
   public get Name(): string {
     return this.name;
+  }
+
+  public get DefinitionPersistency(): DmnDefinitionPersistency {
+    return this.definitionPersistency;
   }
   /**
    * register Dmn Definitions
@@ -35,10 +47,18 @@ export class DmnEngine {
    */
   public async registerDefinitions(
     name: string,
-    decisions: DmnDecision[],
+    decisions: DmnDecision[] | string,
   ): Promise<boolean> {
-      this.definitionCache[name] = decisions;
-      return Promise.resolve(true);
+    let d = decisions;
+    if (typeof decisions === "string") {
+      const s = await this.definitionPersistency.find({ name });
+      d = await this.parseDmnXml(d as string);
+      if (!s) {
+        this.definitionPersistency.persist({ name, definitions: decisions });
+      }
+    }
+    this.definitionCache[name] = d;
+    return Promise.resolve(true);
   }
 
   /**
@@ -48,10 +68,8 @@ export class DmnEngine {
    * @returns {Promise<DmnDecision[]>}
    * @memberof DmnEngine
    */
-  public async getDecisions(
-    name: string,
-  ): Promise<DmnDecision[]> {
-    const decisions =  this.definitionCache[name];
+  public async getDecisions(name: string): Promise<DmnDecision[]> {
+    const decisions = this.definitionCache[name];
     return Promise.resolve(decisions);
   }
 
@@ -62,7 +80,7 @@ export class DmnEngine {
    * @memberof DmnEngine
    */
   public async getDefinitionNames(): Promise<string[]> {
-    return  Promise.resolve(Object.keys(this.definitionCache));
+    return Promise.resolve(Object.keys(this.definitionCache));
   }
 
   /**
