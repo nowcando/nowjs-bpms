@@ -42,6 +42,17 @@ export class BpmsEngine {
     return eng;
   }
 
+  public static getById(id: string): BpmsEngine | null {
+    const x = Object.entries(BpmsEngine.cache).find( (xx) => xx[1].Id === id);
+    if (x) {
+      return x[1];
+    } else {
+      return null;
+    }
+  }
+  public static getByName(name: string): BpmsEngine {
+    return BpmsEngine.cache[name];
+  }
   public static listCache(): BpmsEngine[] {
     return Object.entries(BpmsEngine.cache).map((xx) => xx[1]);
   }

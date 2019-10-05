@@ -1,3 +1,26 @@
+### 0.3.0 (2019-10-05)
+
+##### New Features
+
+*  add BpmnPersistency feature . ([9279a2a9](https://github.com/nowcando/nowjs-bpms/commit/9279a2a9999d67fb0e0ba4f005b9edb8dcba6234))
+
+#### 0.2.1 (2019-09-24)
+
+##### Chores
+
+*  rename BpmnProcess ([05d2322c](https://github.com/nowcando/nowjs-bpms/commit/05d2322c71de12a6681ffebef391bb1042d4d140))
+
+##### Bug Fixes
+
+*  execution environment ([49e820d8](https://github.com/nowcando/nowjs-bpms/commit/49e820d8e31a16683b77ccc6c9e110ff7d7f49e9))
+*  stop method in BpmnProcessInstance ([569938ba](https://github.com/nowcando/nowjs-bpms/commit/569938bac5e42b94c1ec5b7167d47af9b8d6ba75))
+
+### 0.2.0 (2019-09-23)
+
+##### Other Changes
+
+*  add cache control methods to bpmn engine . ([c0c19a95](https://github.com/nowcando/nowjs-bpms/commit/c0c19a95a21bdeb478f7f7724afcc407341166d4))
+
 #### 0.1.5 (2019-09-23)
 
 #### 0.1.4 (2019-09-23)

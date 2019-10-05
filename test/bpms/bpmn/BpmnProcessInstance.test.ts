@@ -1,5 +1,5 @@
 import "jest";
-import { BpmnProcess } from "../../../src";
+import { BpmnProcessInstance } from "../../../src";
 
 // tslint:disable:no-empty
 beforeAll(() => {});
@@ -10,7 +10,7 @@ afterAll(() => {});
 describe("BpmnProcess", () => {
   describe("new", () => {
     it("should be instantiated BpmnProcess", () => {
-      const actual = new BpmnProcess({} as any);
+      const actual = new BpmnProcessInstance({} as any);
       expect(actual).toBeDefined();
       expect(actual.Name).toBeDefined();
       expect(actual.Id).toBeDefined();
@@ -18,7 +18,7 @@ describe("BpmnProcess", () => {
   });
   describe("event.once", () => {
     it("should be call wait", async () => {
-      const actual = new BpmnProcess({} as any, {
+      const actual = new BpmnProcessInstance({} as any, {
         name: "BpmnProcess2",
         source: source2,
       });
