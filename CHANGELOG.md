@@ -1,3 +1,9 @@
+### 0.3.0 (2019-10-05)
+
+##### New Features
+
+*  add BpmnPersistency feature . ([9279a2a9](https://github.com/nowcando/nowjs-bpms/commit/9279a2a9999d67fb0e0ba4f005b9edb8dcba6234))
+
 #### 0.2.1 (2019-09-24)
 
 ##### Chores
