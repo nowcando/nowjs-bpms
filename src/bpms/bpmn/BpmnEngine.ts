@@ -1,4 +1,5 @@
 import { uuidv1 } from "nowjs-core/lib/utils";
+import { BpmsEngine } from "../BpmsEngine";
 import {
   BpmnDefinitionMemoryPersistent,
   BpmnDefinitionPersistency,
@@ -35,7 +36,7 @@ export class BpmnEngine {
   private processPersistency: BpmnProcessPersistency;
   private definitionPersistency: BpmnDefinitionPersistency;
   private options: BpmnEngineOptions;
-  constructor(options?: BpmnEngineOptions) {
+  constructor(private bpmsEngine?: BpmsEngine , options?: BpmnEngineOptions) {
     this.options = options || { name: "BpmnEngine-" + this.id };
     this.name = this.options.name;
     this.processPersistency =
@@ -52,6 +53,11 @@ export class BpmnEngine {
     return this.name;
   }
 
+  public get BpmsEngine(): BpmsEngine | undefined {
+    return this.bpmsEngine;
+  }
+
+
   public get ProcessPersistency(): BpmnProcessPersistency {
     return this.processPersistency;
   }
@@ -60,8 +66,8 @@ export class BpmnEngine {
     return this.definitionPersistency;
   }
 
-  public static createEngine(options?: BpmnEngineOptions): BpmnEngine {
-    return new BpmnEngine(options);
+  public static createEngine(bpmsEngine?: BpmsEngine, options?: BpmnEngineOptions): BpmnEngine {
+    return new BpmnEngine(bpmsEngine, options);
   }
 
   public async registerDefinitions(

@@ -1,6 +1,7 @@
 // tslint:disable-next-line:no-var-requires
 const { decisionTable } = require("@hbtgmbh/dmn-eval-js");
 import { uuidv1 } from "nowjs-core/lib/utils/UuidUtils";
+import { BpmsEngine } from "../BpmsEngine";
 import {
   DmnDefinitionMemoryPersistent,
   DmnDefinitionPersistency,
@@ -16,10 +17,10 @@ export class DmnEngine {
   private name: string;
   private options: DmnEngineOptions;
   private definitionPersistency: DmnDefinitionPersistency;
-  public static createEngine(options?: DmnEngineOptions): DmnEngine {
-    return new DmnEngine(options);
+  public static createEngine(bpmsEngine?: BpmsEngine, options?: DmnEngineOptions): DmnEngine {
+    return new DmnEngine(bpmsEngine, options);
   }
-  constructor(options?: DmnEngineOptions) {
+  constructor(private bpmsEngine?: BpmsEngine, options?: DmnEngineOptions) {
     this.options = options || { name: "DmnEngine-" + this.id };
     this.name = this.options.name;
     this.definitionPersistency =
@@ -32,6 +33,10 @@ export class DmnEngine {
 
   public get Name(): string {
     return this.name;
+  }
+
+  public get BpmsEngine(): BpmsEngine | undefined {
+    return this.bpmsEngine;
   }
 
   public get DefinitionPersistency(): DmnDefinitionPersistency {
