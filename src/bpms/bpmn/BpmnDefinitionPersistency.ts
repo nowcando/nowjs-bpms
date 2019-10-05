@@ -9,6 +9,9 @@ export interface BpmnDefinitionFindOptions {
 export interface BpmnDefinitionLoadOptions {
   name: string;
 }
+export interface BpmnDefinitionRemoveOptions {
+  name: string;
+}
 export interface BpmnDefinitionPersistOptions {
   name: string;
 
@@ -32,12 +35,27 @@ export interface BpmnDefinitionPersistency {
     options: BpmnDefinitionLoadOptions,
   ): Promise<R[]>;
   persist(options: BpmnDefinitionPersistOptions): Promise<boolean>;
+  remove(options: BpmnDefinitionRemoveOptions): Promise<boolean>;
+  clear(): Promise<void>;
 }
 
 export class BpmnDefinitionMemoryPersistent
   implements BpmnDefinitionPersistency {
   private store: BpmnDefinitionPersistedData[] = [];
-  public count(): Promise<number> {
+
+  public async clear(): Promise<void> {
+    this.store = [];
+  }
+  public async remove(options: BpmnDefinitionRemoveOptions): Promise<boolean> {
+    const f = this.store.findIndex((xx) => xx.name === options.name);
+    if (f >= 0) {
+      this.store.splice(f, 1);
+      return true;
+    }
+    return false;
+  }
+
+  public async count(): Promise<number> {
     return Promise.resolve(this.store.length);
   }
   public async list<R extends BpmnDefinitionPersistedData>(

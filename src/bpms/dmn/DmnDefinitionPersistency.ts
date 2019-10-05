@@ -6,6 +6,10 @@ export interface DmnDefinitionFindOptions {
   name?: string;
 }
 
+export interface DmnDefinitionRemoveOptions {
+  name?: string;
+}
+
 export interface DmnDefinitionLoadOptions {
   name: string;
 }
@@ -22,6 +26,7 @@ export interface DmnDefinitionPersistedData {
 }
 export interface DmnDefinitionPersistency {
   count(): Promise<number>;
+
   list<R extends DmnDefinitionPersistedData>(
     options?: DmnDefinitionListOptions,
   ): Promise<R[]>;
@@ -32,11 +37,27 @@ export interface DmnDefinitionPersistency {
     options: DmnDefinitionLoadOptions,
   ): Promise<R[]>;
   persist(options: DmnDefinitionPersistOptions): Promise<boolean>;
+
+  remove(options: DmnDefinitionRemoveOptions): Promise<boolean>;
+  clear(): Promise<void>;
 }
 
 export class DmnDefinitionMemoryPersistent implements DmnDefinitionPersistency {
+
   private store: DmnDefinitionPersistedData[] = [];
-  public count(): Promise<number> {
+
+  public async clear(): Promise<void> {
+    this.store = [];
+  }
+  public async remove(options: DmnDefinitionRemoveOptions): Promise<boolean> {
+    const f = this.store.findIndex((xx) => xx.name === options.name);
+    if (f >= 0) {
+      this.store.splice(f, 1);
+      return true;
+    }
+    return false;
+  }
+  public async count(): Promise<number> {
     return Promise.resolve(this.store.length);
   }
   public async list<R extends DmnDefinitionPersistedData>(

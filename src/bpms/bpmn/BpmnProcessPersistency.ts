@@ -4,7 +4,12 @@ export interface BpmnProcessListOptions {
   state?: string;
 }
 
-export interface BpmnPersistentFindOptions {
+export interface BpmnProcessFindOptions {
+  id?: string | string[];
+  name?: string | string[];
+  state?: string;
+}
+export interface BpmnProcessRemoveOptions {
   id?: string | string[];
   name?: string | string[];
   state?: string;
@@ -29,41 +34,59 @@ export interface BpmnProcessPersistedData {
 }
 
 export interface BpmnProcessPersistency {
-
-  count(): Promise<number> ;
+  count(): Promise<number>;
   list<R extends BpmnProcessPersistedData>(
     options?: BpmnProcessListOptions,
   ): Promise<R[]>;
   find<R extends BpmnProcessPersistedData>(
-    options: BpmnPersistentFindOptions,
+    options: BpmnProcessFindOptions,
   ): Promise<R[]>;
   load<R extends BpmnProcessPersistedData>(
     options: BpmnProcessLoadOptions,
   ): Promise<R[]>;
   persist(options: BpmnProcessPersistOptions): Promise<boolean>;
+
+  remove(options: BpmnProcessRemoveOptions): Promise<boolean>;
+  clear(): Promise<void>;
 }
 export class BpmnProcessMemoryPersistent implements BpmnProcessPersistency {
-
   private store: BpmnProcessPersistedData[] = [];
 
-  public count(): Promise<number> {
+  public async clear(): Promise<void> {
+    this.store = [];
+  }
+  public async remove(options: BpmnProcessRemoveOptions): Promise<boolean> {
+    const f = this.store.findIndex(
+      (xx) =>
+        (options.name && xx.name === options.name) ||
+        (options.id && xx.id === options.id),
+    );
+    if (f >= 0) {
+      this.store.splice(f, 1);
+      return true;
+    }
+    return false;
+  }
+
+  public async count(): Promise<number> {
     return Promise.resolve(this.store.length);
   }
 
   public list<R extends BpmnProcessPersistedData>(
     options?: BpmnProcessListOptions | undefined,
   ): Promise<R[]> {
-    const f = options && (options.id || options.name || options.state)
-      ? this.store.filter(
-          (xx) =>
-            (xx.id && xx.id === options.id) ||
-            (xx.name && xx.name === options.name),
-        )
-      : this.store.slice();
+    const f =
+      options && (options.id || options.name || options.state)
+        ? this.store.filter(
+            (xx) =>
+              (xx.id && xx.id === options.id) ||
+              (xx.name && xx.name === options.name),
+          )
+        : this.store.slice();
     return Promise.resolve(f as any);
   }
   public find<R extends BpmnProcessPersistedData>(
-    options: BpmnPersistentFindOptions,
+    options: BpmnProcessFindOptions,
   ): Promise<R[]> {
     const f = this.store.filter(
       (xx) =>
@@ -79,7 +102,11 @@ export class BpmnProcessMemoryPersistent implements BpmnProcessPersistency {
         (xx.id && xx.id === options.id) || (xx.name && xx.name === options.name),
     );
     const d = f.map((xx) => {
-      return { ...xx, data: JSON.parse(xx.data) , persistedAt: new Date(xx.persistedAt) };
+      return {
+        ...xx,
+        data: JSON.parse(xx.data),
+        persistedAt: new Date(xx.persistedAt),
+      };
     });
     return Promise.resolve(d as any[]);
   }
@@ -99,6 +126,3 @@ export class BpmnProcessMemoryPersistent implements BpmnProcessPersistency {
     return Promise.resolve(true);
   }
 }
-
-
-
