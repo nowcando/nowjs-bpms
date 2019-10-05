@@ -1,3 +1,9 @@
+### 0.4.0 (2019-10-05)
+
+##### New Features
+
+*  implement issue [#5](https://github.com/nowcando/nowjs-bpms/pull/5) . Default BpmsEngine ([b989f0c7](https://github.com/nowcando/nowjs-bpms/commit/b989f0c77b2b5820d6230fb883c49c03b9322e80))
+
 ### 0.3.0 (2019-10-05)
 
 ##### New Features
