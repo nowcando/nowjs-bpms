@@ -118,15 +118,26 @@ export class DmnEngine {
    */
   public async evaluateDecision<R = any>(
     decisionId: string,
-    decisions: DmnDecision[],
+    decisions: DmnDecision[] | string,
     context: any,
+  ): Promise<R | undefined>;
+  public async evaluateDecision<R = any>(
+    arg1: string,
+    arg2: DmnDecision[] | string,
+    arg3: any,
   ): Promise<R | undefined> {
-    const p = new Promise<R>((resolve, reject) => {
+    const p = new Promise<R>(async (resolve, reject) => {
       try {
+        if (typeof arg2 === "string") {
+          arg2 = await this.getDecisions(arg2 as string);
+        }
+        if (!arg2) {
+          return Promise.resolve(undefined);
+        }
         const data = decisionTable.evaluateDecision(
-          decisionId,
-          decisions,
-          context,
+          arg1,
+          arg2,
+          arg3,
         );
         resolve(data);
       } catch (error) {

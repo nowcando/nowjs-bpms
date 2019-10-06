@@ -3,6 +3,7 @@ import { EventEmitter } from "events";
 import { uuidv1 } from "nowjs-core/lib/utils";
 import { BpmnEngine } from "./BpmnEngine";
 import { BpmnProcessPersistedData } from "./BpmnProcessPersistency";
+import BusinessRuleTask from "./elements/BusinessRuleTask";
 // tslint:disable-next-line:no-var-requires
 const { Engine } = require("bpmn-engine");
 
@@ -162,7 +163,7 @@ export interface BpmnProcessActivity {
   getState(): any;
 
   message(messageContent: any): void;
-
+  signal: (message?: any , options?: any) => void;
   next(): void;
 
   recover(state: any): void;
@@ -365,24 +366,26 @@ export class BpmnProcessInstance extends EventEmitter {
       throw new Error("BpmnProcess name must be string");
     }
     const self = this;
+    const internalElements =  {
+      BusinessRuleTask,
+    };
+
     const internalServices = {
       async evaluateDecision<T>(
         name: string,
+        decisionId: string,
         context?: any,
       ): Promise<T | undefined> {
         if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
           const dmn = self.BpmnEngine.BpmsEngine.DmnEngine;
-          const decisions = await dmn.getDecisions(name);
-          if (decisions) {
-            return Promise.resolve(undefined);
-          }
-          return dmn.evaluateDecision<T>(name, decisions, context);
+          return dmn.evaluateDecision<T>(decisionId, name, context);
         } else {
           return Promise.resolve(undefined);
         }
       },
     };
     this.options.services = { ...internalServices, ...this.options.services };
+    this.options.elements =  { ...internalElements, ...this.options.elements};
     this.options = { listener: self, ...this.options };
     this.processEngine = Engine(this.options);
   }
