@@ -1,3 +1,13 @@
+#### 0.4.2 (2019-10-06)
+
+##### New Features
+
+*  add clear and remove method to persistency ([86fb9e25](https://github.com/nowcando/nowjs-bpms/commit/86fb9e252b863e916edab983ce2819e33a049247))
+
+##### Bug Fixes
+
+*  some issues in dmn fixed . add BusinessRuletask ([210946a7](https://github.com/nowcando/nowjs-bpms/commit/210946a729c6add75088f5d74eab445828133037))
+
 #### 0.4.1 (2019-10-05)
 
 ##### New Features
