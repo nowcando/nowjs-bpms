@@ -1,3 +1,9 @@
+#### 0.4.3 (2019-10-06)
+
+##### Bug Fixes
+
+*  some issues in tslint ([bb506f31](https://github.com/nowcando/nowjs-bpms/commit/bb506f31fa19627536ce6632593503cd07e45b9e))
+
 #### 0.4.2 (2019-10-06)
 
 ##### New Features
