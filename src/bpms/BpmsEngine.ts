@@ -33,9 +33,9 @@ export class BpmsEngine {
         );
       }
     }
-    this.bpmnEngine = BpmnEngine.createEngine({name: this.name, ...this.options.bpmnEngine});
-    this.dmnEngine = DmnEngine.createEngine({name: this.name, ...this.options.bpmnEngine});
-    this.cmmnEngine = CmmnEngine.createEngine({name: this.name, ...this.options.cmmnEngine});
+    this.bpmnEngine = BpmnEngine.createEngine(this, {name: this.name, ...this.options.bpmnEngine});
+    this.dmnEngine = DmnEngine.createEngine(this, {name: this.name, ...this.options.bpmnEngine});
+    this.cmmnEngine = CmmnEngine.createEngine(this, {name: this.name, ...this.options.cmmnEngine});
   }
 
   public static createEngine(options?: BpmsEngineOptions): BpmsEngine {

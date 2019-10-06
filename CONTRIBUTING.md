@@ -1,7 +1,7 @@
 # Contribute to nowjs-bpms
 
 ## Pushing into main repository
-If you'd like to contribute to nowjs-core with a patch follow the following steps:
+If you'd like to contribute to nowjs-bpms with a patch follow the following steps:
 * fork the repository interested in your change. The main one is https://github.com/nowcando/nowjs-bpms .
 * select the "develop" branch i present
 * apply your changes,

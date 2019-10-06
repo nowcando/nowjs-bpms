@@ -1,3 +1,32 @@
+#### 0.4.4 (2019-10-06)
+
+##### Bug Fixes
+
+*  update readme and contributing . ([57c2f012](https://github.com/nowcando/nowjs-bpms/commit/57c2f012d54f02316b02fff0ebc4598b8710cf04))
+
+#### 0.4.3 (2019-10-06)
+
+##### Bug Fixes
+
+*  some issues in tslint ([bb506f31](https://github.com/nowcando/nowjs-bpms/commit/bb506f31fa19627536ce6632593503cd07e45b9e))
+
+#### 0.4.2 (2019-10-06)
+
+##### New Features
+
+*  add clear and remove method to persistency ([86fb9e25](https://github.com/nowcando/nowjs-bpms/commit/86fb9e252b863e916edab983ce2819e33a049247))
+
+##### Bug Fixes
+
+*  some issues in dmn fixed . add BusinessRuletask ([210946a7](https://github.com/nowcando/nowjs-bpms/commit/210946a729c6add75088f5d74eab445828133037))
+
+#### 0.4.1 (2019-10-05)
+
+##### New Features
+
+*  add overload to constructor and static createEngine , implement [#7](https://github.com/nowcando/nowjs-bpms/pull/7) ([c69dd347](https://github.com/nowcando/nowjs-bpms/commit/c69dd3476d933b1d690ad90dc6a69b0b9edd34f2))
+*  add  evaluateDecision service to BpmnEngine ([221be927](https://github.com/nowcando/nowjs-bpms/commit/221be92762fb73b0b7bddada4a5834702a9adc66))
+
 ### 0.4.0 (2019-10-05)
 
 ##### New Features

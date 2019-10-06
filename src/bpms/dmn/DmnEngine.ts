@@ -1,6 +1,7 @@
 // tslint:disable-next-line:no-var-requires
 const { decisionTable } = require("@hbtgmbh/dmn-eval-js");
 import { uuidv1 } from "nowjs-core/lib/utils/UuidUtils";
+import { BpmsEngine } from "../BpmsEngine";
 import {
   DmnDefinitionMemoryPersistent,
   DmnDefinitionPersistency,
@@ -16,10 +17,18 @@ export class DmnEngine {
   private name: string;
   private options: DmnEngineOptions;
   private definitionPersistency: DmnDefinitionPersistency;
-  public static createEngine(options?: DmnEngineOptions): DmnEngine {
-    return new DmnEngine(options);
+
+  public static createEngine(options?: DmnEngineOptions): DmnEngine;
+  public static createEngine(bpmsEngine?: BpmsEngine, options?: DmnEngineOptions): DmnEngine;
+  public static createEngine(arg1?: BpmsEngine | DmnEngineOptions, arg2?: DmnEngineOptions): DmnEngine {
+    if (arg1 instanceof BpmsEngine) {
+      return new DmnEngine(arg1, arg2);
+    }
+    return new DmnEngine(undefined, arg1);
   }
-  constructor(options?: DmnEngineOptions) {
+
+
+  constructor(private bpmsEngine?: BpmsEngine, options?: DmnEngineOptions) {
     this.options = options || { name: "DmnEngine-" + this.id };
     this.name = this.options.name;
     this.definitionPersistency =
@@ -32,6 +41,10 @@ export class DmnEngine {
 
   public get Name(): string {
     return this.name;
+  }
+
+  public get BpmsEngine(): BpmsEngine | undefined {
+    return this.bpmsEngine;
   }
 
   public get DefinitionPersistency(): DmnDefinitionPersistency {
@@ -105,15 +118,26 @@ export class DmnEngine {
    */
   public async evaluateDecision<R = any>(
     decisionId: string,
-    decisions: DmnDecision[],
+    decisions: DmnDecision[] | string,
     context: any,
+  ): Promise<R | undefined>;
+  public async evaluateDecision<R = any>(
+    arg1: string,
+    arg2: DmnDecision[] | string,
+    arg3: any,
   ): Promise<R | undefined> {
-    const p = new Promise<R>((resolve, reject) => {
+    const p = new Promise<R>(async (resolve, reject) => {
       try {
+        if (typeof arg2 === "string") {
+          arg2 = await this.getDecisions(arg2 as string);
+        }
+        if (!arg2) {
+          return Promise.resolve(undefined);
+        }
         const data = decisionTable.evaluateDecision(
-          decisionId,
-          decisions,
-          context,
+          arg1,
+          arg2,
+          arg3,
         );
         resolve(data);
       } catch (error) {

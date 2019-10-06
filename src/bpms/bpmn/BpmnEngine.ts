@@ -1,4 +1,5 @@
 import { uuidv1 } from "nowjs-core/lib/utils";
+import { BpmsEngine } from "../BpmsEngine";
 import {
   BpmnDefinitionMemoryPersistent,
   BpmnDefinitionPersistency,
@@ -35,9 +36,23 @@ export class BpmnEngine {
   private processPersistency: BpmnProcessPersistency;
   private definitionPersistency: BpmnDefinitionPersistency;
   private options: BpmnEngineOptions;
-  constructor(options?: BpmnEngineOptions) {
-    this.options = options || { name: "BpmnEngine-" + this.id };
-    this.name = this.options.name;
+  private bpmsEngine: BpmsEngine | undefined;
+  constructor(options?: BpmnEngineOptions);
+  constructor(bpmsEngine?: BpmsEngine, options?: BpmnEngineOptions);
+  constructor(
+    arg1?: BpmsEngine | BpmnEngineOptions,
+    arg2?: BpmnEngineOptions,
+  ) {
+    if (arg1 instanceof BpmsEngine) {
+      this.bpmsEngine = arg1;
+      this.options = arg2 || { name: "BpmnEngine-" + this.id };
+      this.name = this.options.name;
+    } else {
+      this.bpmsEngine = undefined;
+      this.options = arg1 || { name: "BpmnEngine-" + this.id };
+      this.name = this.options.name;
+    }
+
     this.processPersistency =
       this.options.processPersistency || new BpmnProcessMemoryPersistent();
     this.definitionPersistency =
@@ -52,6 +67,10 @@ export class BpmnEngine {
     return this.name;
   }
 
+  public get BpmsEngine(): BpmsEngine | undefined {
+    return this.bpmsEngine;
+  }
+
   public get ProcessPersistency(): BpmnProcessPersistency {
     return this.processPersistency;
   }
@@ -59,9 +78,19 @@ export class BpmnEngine {
   public get DefinitionPersistency(): BpmnDefinitionPersistency {
     return this.definitionPersistency;
   }
-
-  public static createEngine(options?: BpmnEngineOptions): BpmnEngine {
-    return new BpmnEngine(options);
+  public static createEngine(options?: BpmnEngineOptions): BpmnEngine;
+  public static createEngine(
+    bpmsEngine?: BpmsEngine,
+    options?: BpmnEngineOptions,
+  ): BpmnEngine;
+  public static createEngine(
+    arg1?: BpmsEngine | BpmnEngineOptions,
+    arg2?: BpmnEngineOptions,
+  ): BpmnEngine {
+    if (arg1 instanceof BpmsEngine) {
+      return new BpmnEngine(arg1, arg2);
+    }
+    return new BpmnEngine(undefined, arg1);
   }
 
   public async registerDefinitions(
