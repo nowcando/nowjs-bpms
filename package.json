@@ -1,7 +1,7 @@
 {
   "name": "nowjs-bpms",
   "description": "NowCanDo Javascript Core [nowjs-bpms] is a  library written by TypeScript code maintains under MIT licence",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": false,
   "scripts": {
     "debug": "npm run-script build:debug ",
