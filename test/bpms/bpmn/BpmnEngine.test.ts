@@ -117,26 +117,26 @@ describe("BpmnEngine", () => {
       const pr1 = await bpe.createProcess({ name: "proc1", source: source4 });
 
       pr1.on("activity.enter", (elementApi, engineApi) => {
-        console.log(
-          `${elementApi.type} <${elementApi.id}> of ${engineApi.name} is entered`,
-        );
+        // console.log(
+        //   `${elementApi.type} <${elementApi.id}> of ${engineApi.name} is entered`,
+        // );
       });
 
       pr1.on(
         "activity.end",
         async (elementApi: BpmnProcessActivity, instance) => {
-          console.log(
-            `${elementApi.type} <${elementApi.id}> of ${instance.name} is ended`,
-          );
+          // console.log(
+          //   `${elementApi.type} <${elementApi.id}> of ${instance.name} is ended`,
+          // );
         },
       );
 
       pr1.on(
         "activity.wait",
         async (elementApi: BpmnProcessActivity, instance) => {
-          console.log(
-            `${elementApi.type} <${elementApi.id}> of ${instance.name} is waiting for input`,
-          );
+          // console.log(
+          //   `${elementApi.type} <${elementApi.id}> of ${instance.name} is waiting for input`,
+          // );
           const svc = elementApi.environment.services;
           if (elementApi.id === "Decide_Team") {
             const r = await svc.evaluateDecision(
