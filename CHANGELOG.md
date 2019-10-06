@@ -1,3 +1,9 @@
+#### 0.4.4 (2019-10-06)
+
+##### Bug Fixes
+
+*  update readme and contributing . ([57c2f012](https://github.com/nowcando/nowjs-bpms/commit/57c2f012d54f02316b02fff0ebc4598b8710cf04))
+
 #### 0.4.3 (2019-10-06)
 
 ##### Bug Fixes
