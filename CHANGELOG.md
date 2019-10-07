@@ -1,3 +1,15 @@
+#### 0.4.6 (2019-10-07)
+
+##### Bug Fixes
+
+*  DmnDecision definition ([f45f4db6](https://github.com/nowcando/nowjs-bpms/commit/f45f4db6b788c379925efdbc3d84d07014daa7f3))
+
+#### 0.4.5 (2019-10-06)
+
+##### Chores
+
+*  install nowjs-bpmn-moddle to dev depndency ([4713c8ff](https://github.com/nowcando/nowjs-bpms/commit/4713c8fffaac70df1f52bd4a651c23bbf4b0fbaf))
+
 #### 0.4.4 (2019-10-06)
 
 ##### Bug Fixes
