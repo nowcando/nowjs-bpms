@@ -9,33 +9,60 @@ export interface BpmsEngineOptions {
   bpmnEngine?: BpmnEngineOptions;
   dmnEngine?: DmnEngineOptions;
   cmmnEngine?: CmmnEngineOptions;
+
+  meta?: any;
 }
+
+/**
+ * Bpms Engine
+ *
+ * @export
+ * @class BpmsEngine
+ */
 export class BpmsEngine {
-  private static cache: { [name: string]: BpmsEngine } = {};
+  private static registry: { [name: string]: BpmsEngine } = {};
   private static default: BpmsEngine;
-  private bpmnEngine: BpmnEngine;
-  private dmnEngine: DmnEngine;
-  private cmmnEngine: CmmnEngine;
+  private bpmnEngine: BpmnEngine | null;
+  private dmnEngine: DmnEngine | null;
+  private cmmnEngine: CmmnEngine | null;
 
   private id: string = uuidv1();
   private name: string;
   private options: BpmsEngineOptions;
   constructor(options?: BpmsEngineOptions) {
+    this.name = "";
+    this.options = { name: this.name };
+    this.bpmnEngine = null;
+    this.dmnEngine = null;
+    this.cmmnEngine = null;
+    this.init(options);
+  }
+
+  private init(options: BpmsEngineOptions | undefined) {
     this.options = options || { name: "BpmsEngine-" + this.id };
     this.options.cache = this.options.cache ? this.options.cache : true;
     this.name = this.options.name;
     if (this.options.cache) {
-      if (!BpmsEngine.cache[this.name]) {
-        BpmsEngine.cache[this.name] = this;
+      if (!BpmsEngine.registry[this.name]) {
+        BpmsEngine.registry[this.name] = this;
       } else {
         throw new Error(
           `The BpmsEngine with current name '${this.name}' already exist in cache`,
         );
       }
     }
-    this.bpmnEngine = BpmnEngine.createEngine(this, {name: this.name, ...this.options.bpmnEngine});
-    this.dmnEngine = DmnEngine.createEngine(this, {name: this.name, ...this.options.bpmnEngine});
-    this.cmmnEngine = CmmnEngine.createEngine(this, {name: this.name, ...this.options.cmmnEngine});
+    this.bpmnEngine = BpmnEngine.createEngine(this, {
+      name: this.name,
+      ...this.options.bpmnEngine,
+    });
+    this.dmnEngine = DmnEngine.createEngine(this, {
+      name: this.name,
+      ...this.options.bpmnEngine,
+    });
+    this.cmmnEngine = CmmnEngine.createEngine(this, {
+      name: this.name,
+      ...this.options.cmmnEngine,
+    });
   }
 
   public static createEngine(options?: BpmsEngineOptions): BpmsEngine {
@@ -44,7 +71,7 @@ export class BpmsEngine {
   }
 
   public static getById(id: string): BpmsEngine | null {
-    const x = Object.entries(BpmsEngine.cache).find( (xx) => xx[1].Id === id);
+    const x = Object.entries(BpmsEngine.registry).find((xx) => xx[1].Id === id);
     if (x) {
       return x[1];
     } else {
@@ -52,13 +79,34 @@ export class BpmsEngine {
     }
   }
   public static getByName(name: string): BpmsEngine {
-    return BpmsEngine.cache[name];
+    return BpmsEngine.registry[name];
   }
-  public static listCache(): BpmsEngine[] {
-    return Object.entries(BpmsEngine.cache).map((xx) => xx[1]);
+  public static list(): BpmsEngine[] {
+    return Object.entries(BpmsEngine.registry).map((xx) => xx[1]);
   }
-  public static resetCache(): void {
-    BpmsEngine.cache = {};
+  public static reset(): void {
+    BpmsEngine.registry = {};
+  }
+
+  public static remove(name: string): boolean {
+    if (BpmsEngine.registry[name]) {
+      delete BpmsEngine.registry[name];
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public async reload(options?: BpmsEngineOptions | undefined): Promise<void> {
+    if (options) {
+      options.name = this.options.name;
+    }
+    this.init(options || this.options);
+    return ;
+  }
+
+  public get Options(): BpmnEngineOptions {
+    return this.options;
   }
 
   public get Id(): string {
@@ -69,19 +117,19 @@ export class BpmsEngine {
     return this.name;
   }
   public get BpmnEngine(): BpmnEngine {
-    return this.bpmnEngine;
+    return this.bpmnEngine as any;
   }
   public get DmnEngine(): DmnEngine {
-    return this.dmnEngine;
+    return this.dmnEngine as any;
   }
 
   public get CmmnEngine(): CmmnEngine {
-    return this.cmmnEngine;
+    return this.cmmnEngine as any;
   }
 
   public static get Default() {
     if (!BpmsEngine.default) {
-      BpmsEngine.default = BpmsEngine.createEngine({name: "Default"});
+      BpmsEngine.default = BpmsEngine.createEngine({ name: "default" });
     }
     return BpmsEngine.default;
   }
