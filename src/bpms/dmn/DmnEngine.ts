@@ -60,7 +60,7 @@ export class DmnEngine {
    */
   public async registerDefinitions(
     name: string,
-    decisions: DmnDecision[] | string,
+    decisions: DmnDefinition | string,
   ): Promise<boolean> {
     let d = decisions;
     if (typeof decisions === "string") {
@@ -78,10 +78,10 @@ export class DmnEngine {
    * Get decision from special definition name
    *
    * @param {string} name definition name
-   * @returns {Promise<DmnDecision[]>}
+   * @returns {Promise<DmnDefinition>}
    * @memberof DmnEngine
    */
-  public async getDecisions(name: string): Promise<DmnDecision[]> {
+  public async getDecisions(name: string): Promise<DmnDefinition> {
     const decisions = this.definitionCache[name];
     return Promise.resolve(decisions);
   }
@@ -111,19 +111,19 @@ export class DmnEngine {
    * evaluate Decision from decision in the special context
    *
    * @param {string} decisionId start decision id
-   * @param {DmnDecision[]} decisions desicions to be evaluated
+   * @param {DmnDefinition} decisions desicions to be evaluated
    * @param {*} context context to evaluate
    * @returns {(Promise<R|undefined>)}
    * @memberof DmnEngine
    */
   public async evaluateDecision<R = any>(
     decisionId: string,
-    decisions: DmnDecision[] | string,
+    decisions: DmnDefinition | string,
     context: any,
   ): Promise<R | undefined>;
   public async evaluateDecision<R = any>(
     arg1: string,
-    arg2: DmnDecision[] | string,
+    arg2: DmnDefinition | string,
     arg3: any,
   ): Promise<R | undefined> {
     const p = new Promise<R>(async (resolve, reject) => {
@@ -152,15 +152,15 @@ export class DmnEngine {
    *
    * @param {string} xmlContent xml content
    * @param {{ lax?: boolean; model?: any }} [options] xml reader options
-   * @returns {Promise<DmnDecision[]>}
+   * @returns {Promise<DmnDefinition>}
    * @memberof DmnEngine
    */
   public async parseDmnXml(
     xmlContent: string,
     options?: { lax?: boolean; model?: any },
-  ): Promise<DmnDecision[]> {
+  ): Promise<DmnDefinition> {
     try {
-      const decisions: DmnDecision[] = await decisionTable.parseDmnXml(
+      const decisions: DmnDefinition = await decisionTable.parseDmnXml(
         xmlContent,
         options,
       );
@@ -191,5 +191,11 @@ export interface DmnDecisionTableRule {
   outputValues?: any[];
 }
 // tslint:disable: no-empty-interface
-export interface DmnDecision {}
+export interface DmnDecision {
+  decisionTable: DmnDecisionTable;
+  requiredDecisions: any[];
+}
+export interface DmnDefinition {
+  [name: string]: DmnDecision;
+}
 export interface DmnEvaluateResult {}
