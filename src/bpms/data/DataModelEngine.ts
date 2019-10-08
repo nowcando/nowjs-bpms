@@ -10,6 +10,7 @@ export interface DataModelEngineOptions {
   name: string;
   datamodelPersistency?: DataModelPersistency;
 }
+// tslint:disable-next-line:no-empty-interface
 export interface DataModelSchema extends JsonSchemaDefinition {}
 export interface DataModelRelation {
 
