@@ -5,7 +5,7 @@ import { BpmsEngine } from "../../src";
 // tslint:disable:no-empty
 beforeAll(() => {});
 beforeEach(() => {
-  BpmsEngine.resetCache();
+  BpmsEngine.reset();
 });
 afterEach(() => {});
 afterAll(() => {});
@@ -56,19 +56,19 @@ describe("BpmsEngine", () => {
       expect(() => BpmsEngine.createEngine({ name: "MyEngine1" })).toThrowError();
     });
   });
-  describe("resetCache", () => {
-    it("should be resetCache ", () => {
+  describe("reset", () => {
+    it("should be reset", () => {
       BpmsEngine.createEngine({ name: "MyEngine1" });
-      BpmsEngine.resetCache();
+      BpmsEngine.reset();
       const actual = BpmsEngine.createEngine({ name: "MyEngine1" });
       expect(actual).toBeDefined();
     });
   });
-  describe("listCache", () => {
-    it("should be listCache and return 2 items", () => {
+  describe("list", () => {
+    it("should be list and return 2 items", () => {
       BpmsEngine.createEngine({ name: "MyEngine1" });
       BpmsEngine.createEngine({ name: "MyEngine2" });
-      const actual = BpmsEngine.listCache();
+      const actual = BpmsEngine.list();
       expect(actual).toBeDefined();
       expect(actual.length).toEqual(2);
       expect(actual[0].Name).toEqual("MyEngine1");

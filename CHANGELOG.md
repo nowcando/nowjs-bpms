@@ -1,3 +1,21 @@
+#### 0.4.8 (2019-10-07)
+
+#### 0.4.7 (2019-10-07)
+
+##### New Features
+
+*  add reload feature to BpmsEngine ([80d36f3a](https://github.com/nowcando/nowjs-bpms/commit/80d36f3a891d8df8422b714b71f7ea962aab5951))
+
+##### Bug Fixes
+
+*  fix BpmsEngine test file ([543289c9](https://github.com/nowcando/nowjs-bpms/commit/543289c9a5d217851d47c8be6d17cfaf01f06ed1))
+
+#### 0.4.7 (2019-10-07)
+
+##### New Features
+
+*  add reload feature to BpmsEngine ([80d36f3a](https://github.com/nowcando/nowjs-bpms/commit/80d36f3a891d8df8422b714b71f7ea962aab5951))
+
 #### 0.4.6 (2019-10-07)
 
 ##### Bug Fixes
