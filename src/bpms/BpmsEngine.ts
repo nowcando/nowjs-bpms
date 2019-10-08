@@ -1,6 +1,7 @@
 import { uuidv1 } from "nowjs-core/lib/utils/UuidUtils";
 import { BpmnEngine, BpmnEngineOptions } from "./bpmn";
 import { CmmnEngine, CmmnEngineOptions } from "./cmmn";
+import { DataModelEngine, DataModelEngineOptions, DataSourceEngine } from "./data";
 import { DmnEngine, DmnEngineOptions } from "./dmn";
 
 export interface BpmsEngineOptions {
@@ -9,7 +10,8 @@ export interface BpmsEngineOptions {
   bpmnEngine?: BpmnEngineOptions;
   dmnEngine?: DmnEngineOptions;
   cmmnEngine?: CmmnEngineOptions;
-
+  datamodelEngine?: DataModelEngineOptions;
+  datasourceEngine?: DataModelEngineOptions;
   meta?: any;
 }
 
@@ -25,7 +27,8 @@ export class BpmsEngine {
   private bpmnEngine: BpmnEngine | null;
   private dmnEngine: DmnEngine | null;
   private cmmnEngine: CmmnEngine | null;
-
+  private datamodelEngine: DataModelEngine | null;
+  private datasourceEngine: DataSourceEngine | null;
   private id: string = uuidv1();
   private name: string;
   private options: BpmsEngineOptions;
@@ -35,6 +38,8 @@ export class BpmsEngine {
     this.bpmnEngine = null;
     this.dmnEngine = null;
     this.cmmnEngine = null;
+    this.datamodelEngine = null;
+    this.datasourceEngine = null;
     this.init(options);
   }
 
@@ -62,6 +67,14 @@ export class BpmsEngine {
     this.cmmnEngine = CmmnEngine.createEngine(this, {
       name: this.name,
       ...this.options.cmmnEngine,
+    });
+    this.datamodelEngine = DataModelEngine.createEngine(this, {
+      name: this.name,
+      ...this.options.datamodelEngine,
+    });
+    this.datasourceEngine = DataSourceEngine.createEngine(this, {
+      name: this.name,
+      ...this.options.datasourceEngine,
     });
   }
 
@@ -125,6 +138,15 @@ export class BpmsEngine {
 
   public get CmmnEngine(): CmmnEngine {
     return this.cmmnEngine as any;
+  }
+
+
+  public get DataModelEngine(): DataModelEngine {
+    return this.datamodelEngine as any;
+  }
+
+  public get DataSourceEngine(): DataSourceEngine {
+    return this.datasourceEngine as any;
   }
 
   public static get Default() {
