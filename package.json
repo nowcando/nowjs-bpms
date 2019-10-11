@@ -1,6 +1,6 @@
 {
   "name": "nowjs-bpms",
-  "description": "NowCanDo Javascript Core [nowjs-bpms] is a  library written by TypeScript code maintains under MIT licence",
+  "description": "NowCanDo Javascript  [nowjs-bpms] is a  library written by TypeScript code maintains under MIT licence",
   "version": "0.5.0",
   "private": false,
   "scripts": {
@@ -17,9 +17,9 @@
     "preversion": "npm test",
     "version": "npm run build:release ",
     "postversion": "npm run clean:release",
-    "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major && git push origin && git push origin --tags",
-    "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor && git push origin && git push origin --tags",
-    "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch && git push origin && git push origin --tags",
+    "release:major": "npm run lint && changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major && git push origin && git push origin --tags",
+    "release:minor": "npm run lint && changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor && git push origin && git push origin --tags",
+    "release:patch": "npm run lint && changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch && git push origin && git push origin --tags",
     "changelog:update": "",
     "test": "jest --runInBand --no-cache --config ./jest.json",
     "test:watch": "jest --runInBand --watch --config ./jest.json",
