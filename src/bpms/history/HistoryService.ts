@@ -49,6 +49,7 @@ export class HistoryService<T extends HistoryData = HistoryData> {
         throw new Error("Method not implemented.");
     }
     public async removeEntry(entryId: string): Promise<boolean>;
+    // tslint:disable:unified-signatures
     public async removeEntry(data: T): Promise<boolean>;
     public async removeEntry(arg1: T| string): Promise<boolean> {
         throw new Error("Method not implemented.");

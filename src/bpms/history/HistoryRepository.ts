@@ -12,8 +12,9 @@ export interface HistoryData {
 export interface HistoryRepository<T extends HistoryData = HistoryData> {
      createEntry(data: HistoryData): Promise<T> ;
      removeEntry(entryId: string): Promise<boolean>;
+     // tslint:disable:unified-signatures
      removeEntry(data: T): Promise<boolean>;
-     removeEntry(arg1: T | string ): Promise<boolean> ;
+     removeEntry(arg1: string | T ): Promise<boolean> ;
      findEntry(): Promise<T> ;
      findEntries(): Promise<T[]> ;
      count(): Promise<number> ;
