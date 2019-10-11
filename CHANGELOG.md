@@ -1,3 +1,9 @@
+### 0.5.0 (2019-10-08)
+
+##### New Features
+
+*  implement issue [#11](https://github.com/nowcando/nowjs-bpms/pull/11) , [#12](https://github.com/nowcando/nowjs-bpms/pull/12) . ([83a0285d](https://github.com/nowcando/nowjs-bpms/commit/83a0285debd8f4fd4b1a1aec463411359f366a41))
+
 #### 0.4.8 (2019-10-07)
 
 #### 0.4.7 (2019-10-07)
