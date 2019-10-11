@@ -35,6 +35,20 @@ export class TenantService<T extends Tenant = Tenant> {
     }
     return new TenantService(undefined, arg1);
   }
+
+  public get Id(): string {
+    return this.id;
+  }
+
+  public get Name(): string {
+    return this.options.name;
+  }
+  public get TaskRepository(): TenantRepository<T> {
+    return this.taskRepository;
+  }
+  public get BpmsEngine(): BpmsEngine | undefined {
+    return this.bpmsEngine;
+  }
   public async create(tenant: T): Promise<T> {
       return this.taskRepository.create(tenant);
   }
