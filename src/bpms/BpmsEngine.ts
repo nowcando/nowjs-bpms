@@ -5,8 +5,10 @@ import { DataModelEngine, DataModelEngineOptions, DataSourceEngine } from "./dat
 import { DmnEngine, DmnEngineOptions } from "./dmn";
 import { HistoryService, HistoryServiceOptions } from "./history/HistoryService";
 import { IdentityService, IdentityServiceOptions } from "./identity/IdentityService";
+import { NavigationService, NavigationServiceOptions } from "./navigation/NavigationService";
 import { TaskService, TaskServiceOptions } from "./task/TaskService";
 import { TenantService, TenantServiceOptions } from "./tenant/TenantService";
+import { UIService, UIServiceOptions } from "./ui/UIService";
 export interface BpmsEngineOptions {
   name: string;
   cache?: boolean;
@@ -19,6 +21,8 @@ export interface BpmsEngineOptions {
   historyService?: HistoryServiceOptions;
   taskService?: TaskServiceOptions;
   tenantService?: TenantServiceOptions;
+  navigationService?: NavigationServiceOptions;
+  uiService?: UIServiceOptions;
   meta?: any;
 }
 
@@ -41,6 +45,8 @@ export class BpmsEngine {
   private taskService: TaskService | null;
 
   private tenantService: TenantService | null;
+  private uiService: UIService | null;
+  private navigationService: NavigationService | null;
   private id: string = uuidv1();
   private name: string;
   private options: BpmsEngineOptions;
@@ -56,6 +62,8 @@ export class BpmsEngine {
     this.identityService = null;
     this.taskService = null;
     this.tenantService = null;
+    this.navigationService = null;
+    this.uiService = null;
     this.init(options);
   }
 
@@ -107,6 +115,14 @@ export class BpmsEngine {
     this.taskService = TaskService.createService(this, {
       name: this.name,
       ...this.options.taskService,
+    });
+    this.uiService = UIService.createService(this, {
+      name: this.name,
+      ...this.options.uiService,
+    });
+    this.navigationService = NavigationService.createService(this, {
+      name: this.name,
+      ...this.options.navigationService,
     });
   }
 
@@ -181,6 +197,15 @@ export class BpmsEngine {
     return this.datasourceEngine as any;
   }
 
+  public get NavigationService(): NavigationService {
+    return this.navigationService as any;
+  }
+  public get UIService(): UIService {
+    return this.uiService as any;
+  }
+  public get TenantService(): TenantService {
+    return this.tenantService as any;
+  }
   public get TaskService(): TaskService {
     return this.taskService as any;
   }
