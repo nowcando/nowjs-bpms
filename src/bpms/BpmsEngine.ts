@@ -3,7 +3,10 @@ import { BpmnEngine, BpmnEngineOptions } from "./bpmn";
 import { CmmnEngine, CmmnEngineOptions } from "./cmmn";
 import { DataModelEngine, DataModelEngineOptions, DataSourceEngine } from "./data";
 import { DmnEngine, DmnEngineOptions } from "./dmn";
-
+import { HistoryService, HistoryServiceOptions } from "./history/HistoryService";
+import { IdentityService, IdentityServiceOptions } from "./identity/IdentityService";
+import { TaskService, TaskServiceOptions } from "./task/TaskService";
+import { TenantService, TenantServiceOptions } from "./tenant/TenantService";
 export interface BpmsEngineOptions {
   name: string;
   cache?: boolean;
@@ -12,6 +15,10 @@ export interface BpmsEngineOptions {
   cmmnEngine?: CmmnEngineOptions;
   datamodelEngine?: DataModelEngineOptions;
   datasourceEngine?: DataModelEngineOptions;
+  identityService?: IdentityServiceOptions;
+  historyService?: HistoryServiceOptions;
+  taskService?: TaskServiceOptions;
+  tenantService?: TenantServiceOptions;
   meta?: any;
 }
 
@@ -29,6 +36,11 @@ export class BpmsEngine {
   private cmmnEngine: CmmnEngine | null;
   private datamodelEngine: DataModelEngine | null;
   private datasourceEngine: DataSourceEngine | null;
+  private historyService: HistoryService | null;
+  private identityService: IdentityService | null;
+  private taskService: TaskService | null;
+
+  private tenantService: TenantService | null;
   private id: string = uuidv1();
   private name: string;
   private options: BpmsEngineOptions;
@@ -40,6 +52,10 @@ export class BpmsEngine {
     this.cmmnEngine = null;
     this.datamodelEngine = null;
     this.datasourceEngine = null;
+    this.historyService = null;
+    this.identityService = null;
+    this.taskService = null;
+    this.tenantService = null;
     this.init(options);
   }
 
@@ -75,6 +91,22 @@ export class BpmsEngine {
     this.datasourceEngine = DataSourceEngine.createEngine(this, {
       name: this.name,
       ...this.options.datasourceEngine,
+    });
+    this.tenantService = TenantService.createService(this, {
+      name: this.name,
+      ...this.options.tenantService,
+    });
+    this.identityService = IdentityService.createService(this, {
+      name: this.name,
+      ...this.options.identityService,
+    });
+    this.historyService = HistoryService.createService(this, {
+      name: this.name,
+      ...this.options.historyService,
+    });
+    this.taskService = TaskService.createService(this, {
+      name: this.name,
+      ...this.options.taskService,
     });
   }
 
@@ -147,6 +179,16 @@ export class BpmsEngine {
 
   public get DataSourceEngine(): DataSourceEngine {
     return this.datasourceEngine as any;
+  }
+
+  public get TaskService(): TaskService {
+    return this.taskService as any;
+  }
+  public get IdentityService(): IdentityService {
+    return this.identityService as any;
+  }
+  public get HistoryService(): HistoryService {
+    return this.historyService as any;
   }
 
   public static get Default() {
