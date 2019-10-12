@@ -120,7 +120,7 @@ export interface BpmnProcessExecutionContext {
   loadExtensions(activity: BpmnProcessActivity): void;
 }
 
-export interface BpmnProcessActivity {
+export interface BpmnProcessActivity extends EventEmitter {
   id: string;
   type: string;
   name: string;
@@ -371,6 +371,16 @@ export class BpmnProcessInstance extends EventEmitter {
     };
 
     const internalServices = {
+
+      async getManagerOfUser() {
+        return "saeed";
+      },
+      async getCoWorkerOfUser() {
+        return "hamid";
+      },
+      async getUser() {
+        return "majid";
+      },
       async evaluateDecision<T>(
         name: string,
         decisionId: string,
@@ -384,8 +394,36 @@ export class BpmnProcessInstance extends EventEmitter {
         }
       },
     };
+
+    const internalExtentions = {
+       humanInvolvement(activity: BpmnProcessActivity) {
+        if (!activity.behaviour.resources ||
+            !activity.behaviour.resources.length) { return; }
+
+        const humanPerformer = activity.behaviour.resources.find((resource: any) => resource.type === "bpmn:HumanPerformer");
+        const potentialOwner = activity.behaviour.resources.find((resource: any) => resource.type === "bpmn:PotentialOwner");
+
+        activity.on("enter", (api) => {
+          const h = api.resolveExpression(humanPerformer.expression);
+          const p = api.resolveExpression(potentialOwner.expression);
+          activity.broker.publish("format", "run.call.humans", {
+            humanPerformer: h,
+            potentialOwner: p,
+          });
+        });
+
+        // activity.on("wait", (api) => {
+        //   api.owner.broker.publish("event", "activity.call", {...api.content});
+        // });
+      },
+    };
+    const internalModdles = {
+      nowjs: require("nowjs-bpmn-moddle/resources/nowjs.json"),
+    };
+    this.options.moddleOptions = { ...internalModdles, ...this.options.moddleOptions};
     this.options.services = { ...internalServices, ...this.options.services };
     this.options.elements =  { ...internalElements, ...this.options.elements};
+    this.options.extensions =  { ...internalExtentions, ...this.options.extensions};
     this.options = { listener: self, ...this.options };
     this.processEngine = Engine(this.options);
   }
@@ -448,6 +486,10 @@ export class BpmnProcessInstance extends EventEmitter {
       }
     });
     return p;
+  }
+
+  public onActivityWait(callback: (activity: BpmnProcessActivity, processApi: any) => void) {
+    this.on("activity.wait", callback);
   }
 
   public onEnd(callback: (payload?: any) => void) {

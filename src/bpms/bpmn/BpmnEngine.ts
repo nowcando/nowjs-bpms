@@ -4,7 +4,7 @@ import {
   BpmnDefinitionMemoryPersistent,
   BpmnDefinitionPersistency,
 } from "./BpmnDefinitionPersistency";
-import { BpmnProcessInstance, BpmnProcessOptions } from "./BpmnProcessInstance";
+import { BpmnProcessActivity, BpmnProcessInstance, BpmnProcessOptions } from "./BpmnProcessInstance";
 import {
   BpmnProcessMemoryPersistent,
   BpmnProcessPersistency,
@@ -120,12 +120,40 @@ export class BpmnEngine {
         proc.onEnd((e) => {
           delete this.processCache[proc.Id];
         });
+      //  proc.onActivityWait((a, b) => this.onProcessWaitActivity.call(this, proc, a, b));
         resolve(proc);
       } catch (error) {
         reject(error);
       }
     });
     return p;
+  }
+
+  private async onProcessWaitActivity(
+    processInstance: BpmnProcessInstance,
+    activityApi: BpmnProcessActivity,
+    processApi: any) {
+
+    console.log("Activity Type: " + activityApi.type);
+    switch (activityApi.type) {
+      case "bpmn:UserTask":
+        console.log("UserTask " + activityApi.id);
+        if (this.bpmsEngine) {
+         const t = await this.bpmsEngine.TaskService.createTask({
+            name: activityApi.name,
+            refProcessInstanceId: processInstance.Id,
+            refProcessId: activityApi.environment.variables.content.id,
+            refProcessExecutionId: activityApi.environment.variables.content.executionId,
+            refTaskId: activityApi.id,
+            refTenantId: this.bpmsEngine.Name,
+          });
+         console.log("Task " + t.id);
+        }
+        break;
+
+      default:
+        break;
+    }
   }
 
   public async processCount(): Promise<number> {

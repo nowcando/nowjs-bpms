@@ -1,7 +1,7 @@
 import { uuidv1 } from "nowjs-core/lib/utils";
 
 export interface Task {
-  id: string;
+  id?: string;
   title?: string;
   descriptipns?: string;
   name?: string;
@@ -10,6 +10,7 @@ export interface Task {
   refTenantId?: string;
   refProcessInstanceId?: string;
   refProcessId?: string;
+  refProcessExecutionId?: string;
   refTaskId?: string;
   createdAt?: Date;
   seenAt?: Date;
