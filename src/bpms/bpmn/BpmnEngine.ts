@@ -128,34 +128,6 @@ export class BpmnEngine {
     });
     return p;
   }
-
-  private async onProcessWaitActivity(
-    processInstance: BpmnProcessInstance,
-    activityApi: BpmnProcessActivity,
-    processApi: any) {
-
-    console.log("Activity Type: " + activityApi.type);
-    switch (activityApi.type) {
-      case "bpmn:UserTask":
-        console.log("UserTask " + activityApi.id);
-        if (this.bpmsEngine) {
-         const t = await this.bpmsEngine.TaskService.createTask({
-            name: activityApi.name,
-            refProcessInstanceId: processInstance.Id,
-            refProcessId: activityApi.environment.variables.content.id,
-            refProcessExecutionId: activityApi.environment.variables.content.executionId,
-            refTaskId: activityApi.id,
-            refTenantId: this.bpmsEngine.Name,
-          });
-         console.log("Task " + t.id);
-        }
-        break;
-
-      default:
-        break;
-    }
-  }
-
   public async processCount(): Promise<number> {
     return Promise.resolve(Object.entries(this.processCache).length);
   }

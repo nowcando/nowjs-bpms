@@ -1,4 +1,5 @@
 import * as bm from "bpmn-moddle";
+import { listeners } from "cluster";
 import { EventEmitter } from "events";
 import { uuidv1 } from "nowjs-core/lib/utils";
 import { BpmnEngine } from "./BpmnEngine";
@@ -137,7 +138,7 @@ export interface BpmnProcessActivity extends EventEmitter {
   environment: BpmnProcessExecutionEnvironment;
   execution: any;
   executionId: string;
-  extensions: any;
+  extensions: any[];
 
   inbound: any[];
   isRunning: boolean;
@@ -163,7 +164,7 @@ export interface BpmnProcessActivity extends EventEmitter {
   getState(): any;
 
   message(messageContent: any): void;
-  signal: (message?: any , options?: any) => void;
+  signal: (message?: any, options?: any) => void;
   next(): void;
 
   recover(state: any): void;
@@ -366,12 +367,11 @@ export class BpmnProcessInstance extends EventEmitter {
       throw new Error("BpmnProcess name must be string");
     }
     const self = this;
-    const internalElements =  {
+    const internalElements = {
       BusinessRuleTask,
     };
 
     const internalServices = {
-
       async getManagerOfUser() {
         return "saeed";
       },
@@ -396,12 +396,51 @@ export class BpmnProcessInstance extends EventEmitter {
     };
 
     const internalExtentions = {
-       humanInvolvement(activity: BpmnProcessActivity) {
-        if (!activity.behaviour.resources ||
-            !activity.behaviour.resources.length) { return; }
+      evaluateDecision(activity: BpmnProcessActivity) {
+        if (
+          activity.type.toLowerCase() !== "bpmn:BusinessRuleTask".toLowerCase()
+        ) {
+          return;
+        }
+        const dmnRef = activity.behaviour.dmnRef;
+        const decisionRef = activity.behaviour.decisionRef;
+        const decisionRefTenantId = activity.behaviour.decisionRefTenantId;
+        // activity.on("enter", (api: BpmnProcessActivity) => {
+        //   // console.log(activity.id);
+        // });
+        activity.on("wait", async (api: BpmnProcessActivity) => {
+          // console.log(activity.id);
+          if (dmnRef && decisionRef) {
+            try {
+              const ctx = { input: api.environment.variables };
+              const msg = await api.environment.services.evaluateDecision(
+                dmnRef,
+                decisionRef,
+                ctx,
+              );
+              api.signal(msg);
+            } catch (error) {
+              api.environment.Logger.error(
+                `error in evaluating decision in 'bpmn:BusinessRuleTask' (${api.id})`,
+              );
+            }
+          }
+        });
+      },
+      humanInvolvement(activity: BpmnProcessActivity) {
+        if (
+          !activity.behaviour.resources ||
+          !activity.behaviour.resources.length
+        ) {
+          return;
+        }
 
-        const humanPerformer = activity.behaviour.resources.find((resource: any) => resource.type === "bpmn:HumanPerformer");
-        const potentialOwner = activity.behaviour.resources.find((resource: any) => resource.type === "bpmn:PotentialOwner");
+        const humanPerformer = activity.behaviour.resources.find(
+          (resource: any) => resource.type === "bpmn:HumanPerformer",
+        );
+        const potentialOwner = activity.behaviour.resources.find(
+          (resource: any) => resource.type === "bpmn:PotentialOwner",
+        );
 
         activity.on("enter", (api) => {
           const h = api.resolveExpression(humanPerformer.expression);
@@ -412,18 +451,149 @@ export class BpmnProcessInstance extends EventEmitter {
           });
         });
 
-        // activity.on("wait", (api) => {
-        //   api.owner.broker.publish("event", "activity.call", {...api.content});
-        // });
+        activity.on("wait", (api) => {
+          api.owner.broker.publish("event", "activity.call", {
+            ...api.content,
+          });
+        });
+      },
+      nowjs(activity: BpmnProcessActivity, definition: any) {
+        if (!definition.rextention) {
+          // process dynamic view
+          const proceses = definition.getExecutableProcesses();
+          // tslint:disable-next-line:no-shadowed-variable
+          const views: any = {};
+          for (const process of proceses) {
+            if (process.behaviour &&
+                   process.behaviour.extensionElements  &&
+                   process.behaviour.extensionElements.values) {
+              for (const extn of process.behaviour.extensionElements.values) {
+                if (
+                  extn.$type.toLowerCase() ===
+                    "camunda:dynamicView".toLowerCase() ||
+                  extn.$type.toLowerCase() === "nowjs:dynamicView".toLowerCase()
+                ) {
+                  const lscript = extn && extn.script && extn.script.value;
+                  views[extn.name || "list"] = lscript;
+                  // if (lscript) {
+                  //   try {
+                  //     // tslint:disable-next-line:no-eval
+                  //     const dview = eval(lscript);
+                  //     extn.view = dview;
+                  //   } catch (error) {
+                  //     process.Logger.error(`error in parsing dynamic view .`);
+                  //   }
+                  // }
+                }
+                // process listener
+                if (
+                  extn.$type.toLowerCase() ===
+                    "camunda:executionListener".toLowerCase() ||
+                  extn.$type.toLowerCase() ===
+                    "nowjs:executionListener".toLowerCase()
+                ) {
+                  const lscript = extn && extn.script && extn.script.value;
+                  if (lscript) {
+                    try {
+                      const func = new Function("return " + lscript)();
+                      process.on(extn.event, func);
+                    } catch (error) {
+                      process.Logger.error(
+                        `error in parsing listener function.`,
+                      );
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        definition.rextention = true;
+        if (!activity.behaviour.extensionElements) {
+          return;
+        }
+        let form;
+        const views: any = {};
+        // activity listener
+        for (const extn of activity.behaviour.extensionElements.values) {
+          if (
+            extn.$type.toLowerCase() ===
+              "camunda:executionListener".toLowerCase() ||
+            extn.$type.toLowerCase() === "nowjs:executionListener".toLowerCase()
+          ) {
+            const lscript = extn && extn.script && extn.script.value;
+            if (lscript) {
+              try {
+                const func = new Function("return " + lscript)();
+                activity.on(extn.event, func);
+              } catch (error) {
+                activity.environment.Logger.error(
+                  `error in parsing listener function of ${activity.id}.`,
+                );
+              }
+            }
+          }
+
+          if (
+            extn.$type.toLowerCase() === "camunda:DynamicView".toLowerCase() ||
+            extn.$type.toLowerCase() === "nowjs:DynamicView".toLowerCase()
+          ) {
+            const view = extn && extn.script && extn.script.value;
+            const viewType = "DynamicView";
+            const name = extn.name || "default";
+            const data = extn.data;
+            views[name] = {name, view, viewType, data};
+          }
+
+          if (
+            extn.$type.toLowerCase() === "camunda:FormData".toLowerCase() ||
+            extn.$type.toLowerCase() === "nowjs:FormData".toLowerCase()
+          ) {
+            form = {
+              fields: extn && extn.fields && extn.fields.map((f) => ({ ...f })),
+            };
+          }
+        }
+
+        activity.on("enter", () => {
+          activity.broker.publish("format", "run.form", { form });
+        });
+
+        if (activity.type.toLowerCase() !== "bpmn:UserTask".toLowerCase() ||
+        activity.type.toLowerCase() !== "bpmn:StartEvent".toLowerCase()
+        ) {
+          activity.on("wait", async (api: BpmnProcessActivity) => {
+            const bpms = self.bpmnEngine.BpmsEngine;
+            if (bpms) {
+              const t = await bpms.TaskService.createTask({
+                name: api.name,
+                refProcessInstanceId: self.Id,
+                refProcessId: api.environment.variables.content.id,
+                refProcessExecutionId:
+                  api.environment.variables.content.executionId,
+                refActivityId: api.id,
+                refTenantId: bpms.Name,
+                views,
+              });
+            }
+          });
+        }
       },
     };
     const internalModdles = {
       nowjs: require("nowjs-bpmn-moddle/resources/nowjs.json"),
+      // camunda: require("camunda-bpmn-moddle/resources/camunda.json"),
     };
-    this.options.moddleOptions = { ...internalModdles, ...this.options.moddleOptions};
+    this.options.moddleOptions = {
+      ...internalModdles,
+      ...this.options.moddleOptions,
+    };
     this.options.services = { ...internalServices, ...this.options.services };
-    this.options.elements =  { ...internalElements, ...this.options.elements};
-    this.options.extensions =  { ...internalExtentions, ...this.options.extensions};
+    this.options.elements = { ...internalElements, ...this.options.elements };
+    this.options.extensions = {
+      ...internalExtentions,
+      ...this.options.extensions,
+    };
     this.options = { listener: self, ...this.options };
     this.processEngine = Engine(this.options);
   }
@@ -488,7 +658,9 @@ export class BpmnProcessInstance extends EventEmitter {
     return p;
   }
 
-  public onActivityWait(callback: (activity: BpmnProcessActivity, processApi: any) => void) {
+  public onActivityWait(
+    callback: (activity: BpmnProcessActivity, processApi: any) => void,
+  ) {
     this.on("activity.wait", callback);
   }
 

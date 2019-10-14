@@ -11,7 +11,7 @@ export interface Task {
   refProcessInstanceId?: string;
   refProcessId?: string;
   refProcessExecutionId?: string;
-  refTaskId?: string;
+  refActivityId?: string;
   createdAt?: Date;
   seenAt?: Date;
   updatedAt?: Date;
@@ -20,6 +20,8 @@ export interface Task {
   followUpDate?: Date;
   tags?: string;
   categories?: string;
+
+  views?: string;
 }
 
 export interface TaskQueryFilter {

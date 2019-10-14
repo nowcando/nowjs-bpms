@@ -259,4 +259,24 @@ describe("BpmnEngine", () => {
       // await ap2.stop();
     });
   });
+  describe("listeners", () => {
+    it("start", async () => {
+      const bpms = BpmsEngine.createEngine({ name: "MyEngine1" });
+      const bpe = bpms.BpmnEngine;
+      expect(bpe).toBeDefined();
+      await bpms.DmnEngine.registerDefinitions("Decide Team Rules", sample_Decide_Team);
+      const pr1 = await bpe.createProcess({
+        name: "Process1",
+        source: source4,
+      });
+      expect(pr1).toBeDefined();
+      pr1.on("wait", (activity: BpmnProcessActivity, instance) => {
+        activity.environment.variables.color = "red";
+        activity.signal({color: "red"});
+      });
+      // const d = await pr1.getDefinitions();
+      const r = await pr1.execute();
+      expect(r).toBeDefined();
+    });
+  });
 });

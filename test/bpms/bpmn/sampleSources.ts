@@ -136,31 +136,70 @@ export  const source3 = `<?xml version="1.0" encoding="UTF-8"?>
 </definitions>`;
 export const source4 = `
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" id="Definitions_1rqyz86" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.3.2">
-  <bpmn:process id="Process_103i680" name="Team Choosing Process" isExecutable="true" camunda:candidateStarterGroups="Admins,Publishers" camunda:candidateStarterUsers="Saeed,Hamid" camunda:versionTag="1">
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+ xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+   xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+   xmlns:nowjs="http://schema.nowcando.com/schema/1.0/bpmn"
+   xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0"
+   id="Definitions_1rqyz86"
+    targetNamespace="http://bpmn.io/schema/bpmn"
+     exporter="Camunda Modeler" exporterVersion="3.3.2">
+  <bpmn:process id="Process_103i680" name="Team Choosing Process" isExecutable="true" nowjs:candidateStarterGroups="Admins,Publishers" nowjs:candidateStarterUsers="Saeed,Hamid" nowjs:versionTag="1">
     <bpmn:extensionElements>
-      <camunda:executionListener event="start">
-        <camunda:script scriptFormat="javascript">function(t,i){
+    <nowjs:dynamicView updatedAt="2019-08-30T14:36:53.322Z">
+          <nowjs:script scriptFormat="javascript" updatedAt="2019-08-30T14:36:53.322Z">module.exports = {
+        "activeViews":"main",
+        "dataSources":{},
+        "views":{
+            "main":{
+                elements:[
+                    {type:"singleText",title:"Firstname"},
+                    {type:"singleText",title:"Lastname"},
+
+                    ]
+            },
+        }
+    }</nowjs:script>
+        </nowjs:dynamicView>
+      <nowjs:executionListener event="start">
+        <nowjs:script scriptFormat="javascript">function(t,i){
   console.log("Hello Start Execution Process");
-}</camunda:script>
-      </camunda:executionListener>
-      <camunda:executionListener event="end">
-        <camunda:script scriptFormat="javascript">function(t,i){
+}</nowjs:script>
+      </nowjs:executionListener>
+      <nowjs:executionListener event="end">
+        <nowjs:script scriptFormat="javascript">function(t,i){
   console.log("Hello End Execution Process");
-}</camunda:script>
-      </camunda:executionListener>
+}</nowjs:script>
+      </nowjs:executionListener>
     </bpmn:extensionElements>
-    <bpmn:startEvent id="StartEvent_1tujz7n" name="start" camunda:formKey="StartForm" camunda:initiator="startedBy">
+    <bpmn:startEvent id="StartEvent_1tujz7n" name="start" nowjs:formKey="StartForm" nowjs:initiator="startedBy">
       <bpmn:extensionElements>
-        <camunda:formData businessKey="TeamChoose">
-          <camunda:formField id="teacherName" label="teacherName" type="string" />
-          <camunda:formField id="lesson" label="lesson" type="string" />
-        </camunda:formData>
+      <nowjs:dynamicView updatedAt="2019-08-30T14:36:53.322Z">
+          <nowjs:script scriptFormat="javascript" updatedAt="2019-08-30T14:36:53.322Z">module.exports = {
+        "activeViews":"main",
+        "dataSources":{},
+        "views":{
+            "main":{
+                elements:[
+                    {type:"singleText",title:"Firstname"},
+                    {type:"singleText",title:"Lastname"},
+
+                    ]
+            },
+        }
+    }</nowjs:script>
+        </nowjs:dynamicView>
+        <nowjs:formData businessKey="TeamChoose">
+          <nowjs:formField id="teacherName" label="teacherName" type="string" />
+          <nowjs:formField id="lesson" label="lesson" type="string" />
+        </nowjs:formData>
       </bpmn:extensionElements>
       <bpmn:outgoing>SequenceFlow_1je870d</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1je870d" sourceRef="StartEvent_1tujz7n" targetRef="Decide_Team" />
-    <bpmn:businessRuleTask id="Decide_Team" name="Decide Team" camunda:decisionRef="Decide_Team" camunda:decisionRefTenantId="\${tenantId}">
+    <bpmn:businessRuleTask id="Decide_Team" name="Decide Team" nowjs:dmnRef="Decide Team Rules" nowjs:decisionRef="decide_team_decision" nowjs:decisionRefTenantId="\${tenantId}">
       <bpmn:incoming>SequenceFlow_1je870d</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_10my2rq</bpmn:outgoing>
     </bpmn:businessRuleTask>
@@ -192,44 +231,44 @@ export const source4 = `
       <bpmn:incoming>SequenceFlow_0iyhdmw</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0iyhdmw" sourceRef="Task_12dw5b1" targetRef="EndEvent_1ocbbdx" />
-    <bpmn:userTask id="Task_09font7" name="Register to Perspolis club" camunda:formKey="PerspolisForm" camunda:assignee="\${startedBy}" camunda:candidateUsers="Saeed,Majid,Hamid" camunda:candidateGroups="Admins,Reviewers" camunda:priority="2">
+    <bpmn:userTask id="Task_09font7" name="Register to Perspolis club" nowjs:formKey="PerspolisForm" nowjs:assignee="\${startedBy}" nowjs:candidateUsers="Saeed,Majid,Hamid" nowjs:candidateGroups="Admins,Reviewers" nowjs:priority="2">
       <bpmn:extensionElements>
-        <camunda:taskListener event="create">
-          <camunda:script scriptFormat="javascript">function(t,i){
+        <nowjs:taskListener event="create">
+          <nowjs:script scriptFormat="javascript">function(t,i){
   console.log("Hello Create Task");
 }
-</camunda:script>
-        </camunda:taskListener>
-        <camunda:taskListener event="complete">
-          <camunda:script scriptFormat="javascript">function(t,i){
+</nowjs:script>
+        </nowjs:taskListener>
+        <nowjs:taskListener event="complete">
+          <nowjs:script scriptFormat="javascript">function(t,i){
   console.log("Hello Complete Task");
-}</camunda:script>
-        </camunda:taskListener>
-        <camunda:executionListener event="start">
-          <camunda:script scriptFormat="javascript">function(t,i){
+}</nowjs:script>
+        </nowjs:taskListener>
+        <nowjs:executionListener event="start">
+          <nowjs:script scriptFormat="javascript">function(t,i){
   console.log("Hello Start Exeution Task");
-}</camunda:script>
-        </camunda:executionListener>
-        <camunda:executionListener event="end">
-          <camunda:script scriptFormat="javascript">function(t,i){
+}</nowjs:script>
+        </nowjs:executionListener>
+        <nowjs:executionListener event="end">
+          <nowjs:script scriptFormat="javascript">function(t,i){
   console.log("Hello End Execution Task");
-}</camunda:script>
-        </camunda:executionListener>
-        <camunda:taskListener event="assignment">
-          <camunda:script scriptFormat="javascript">function(t,i){
+}</nowjs:script>
+        </nowjs:executionListener>
+        <nowjs:taskListener event="assignment">
+          <nowjs:script scriptFormat="javascript">function(t,i){
   console.log("Hello Assignment Task");
-}</camunda:script>
-        </camunda:taskListener>
-        <camunda:taskListener event="delete">
-          <camunda:script scriptFormat="javascript">function(t,i){
+}</nowjs:script>
+        </nowjs:taskListener>
+        <nowjs:taskListener event="delete">
+          <nowjs:script scriptFormat="javascript">function(t,i){
   console.log("Hello Delete Task");
-}</camunda:script>
-        </camunda:taskListener>
-        <camunda:formData>
-          <camunda:formField id="firstname" label="firstname" type="string" />
-          <camunda:formField id="lastname" label="lastname" type="string" />
-          <camunda:formField id="age" label="age" type="long" />
-        </camunda:formData>
+}</nowjs:script>
+        </nowjs:taskListener>
+        <nowjs:formData>
+          <nowjs:formField id="firstname" label="firstname" type="string" />
+          <nowjs:formField id="lastname" label="lastname" type="string" />
+          <nowjs:formField id="age" label="age" type="long" />
+        </nowjs:formData>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1vuzw1z</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1d4cawv</bpmn:outgoing>
@@ -238,7 +277,7 @@ export const source4 = `
       <bpmn:incoming>SequenceFlow_0hwz78d</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1e0voyf</bpmn:outgoing>
     </bpmn:manualTask>
-    <bpmn:userTask id="Task_03ssesp" name="Register to Saipa club" camunda:assignee="\${startedBy}">
+    <bpmn:userTask id="Task_03ssesp" name="Register to Saipa club" nowjs:assignee="\${startedBy}">
       <bpmn:incoming>SequenceFlow_02ejtlc</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0ksp1pp</bpmn:outgoing>
       <bpmn:humanPerformer>
