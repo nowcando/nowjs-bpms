@@ -519,7 +519,9 @@ export class BpmnProcessInstance extends EventEmitter {
           if (
             extn.$type.toLowerCase() ===
               "camunda:executionListener".toLowerCase() ||
-            extn.$type.toLowerCase() === "nowjs:executionListener".toLowerCase()
+            extn.$type.toLowerCase() === "nowjs:executionListener".toLowerCase() ||
+            "camunda:taskListener".toLowerCase() ||
+            extn.$type.toLowerCase() === "nowjs:taskListener".toLowerCase()
           ) {
             const lscript = extn && extn.script && extn.script.value;
             if (lscript) {
