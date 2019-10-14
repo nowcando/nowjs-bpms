@@ -139,7 +139,7 @@ export interface BpmnProcessActivity extends EventEmitter {
   execution: any;
   executionId: string;
   extensions: any[];
-
+  logger: BpmnLogger;
   inbound: any[];
   isRunning: boolean;
   isStart: boolean;
@@ -520,7 +520,7 @@ export class BpmnProcessInstance extends EventEmitter {
             extn.$type.toLowerCase() ===
               "camunda:executionListener".toLowerCase() ||
             extn.$type.toLowerCase() === "nowjs:executionListener".toLowerCase() ||
-            "camunda:taskListener".toLowerCase() ||
+            extn.$type.toLowerCase() === "camunda:taskListener".toLowerCase() ||
             extn.$type.toLowerCase() === "nowjs:taskListener".toLowerCase()
           ) {
             const lscript = extn && extn.script && extn.script.value;
@@ -529,7 +529,7 @@ export class BpmnProcessInstance extends EventEmitter {
                 const func = new Function("return " + lscript)();
                 activity.on(extn.event, func);
               } catch (error) {
-                activity.environment.Logger.error(
+                activity.logger.error(
                   `error in parsing listener function of ${activity.id}.`,
                 );
               }
