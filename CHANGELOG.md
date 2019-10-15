@@ -1,3 +1,13 @@
+#### 0.6.1 (2019-10-15)
+
+##### New Features
+
+*  implement TaskMemoryRepository ([76229051](https://github.com/nowcando/nowjs-bpms/commit/76229051c5276ad513838b1fcdab29675dbd7a2b))
+
+##### Bug Fixes
+
+*  issue with undefined . ([889884d5](https://github.com/nowcando/nowjs-bpms/commit/889884d5cd7db14e70014c71f79e8d6e37651a3b))
+
 ### 0.6.0 (2019-10-14)
 
 ##### Chores
