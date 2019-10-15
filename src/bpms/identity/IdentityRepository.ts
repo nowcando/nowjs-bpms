@@ -15,9 +15,9 @@ export interface ProfileData {
 }
 
 export interface IdentityRepository<
-TUser extends UserData = UserData,
-TGroup extends GroupData = GroupData,
-TProfile extends ProfileData = ProfileData
+  TUser extends UserData = UserData,
+  TGroup extends GroupData = GroupData,
+  TProfile extends ProfileData = ProfileData
 > {
   getUserById(userId: string): Promise<TUser>;
   getUserByUsername(username: string): Promise<TUser>;
@@ -29,17 +29,24 @@ TProfile extends ProfileData = ProfileData
   getUserGroups(userId?: string): Promise<string[]>;
 }
 export class IdentityMemoryRepository<
-TUser extends UserData = UserData,
-TGroup extends GroupData = GroupData,
-TProfile extends ProfileData = ProfileData
->
-  implements IdentityRepository<TUser, TGroup, TProfile> {
-  private users: UserData[] = [{ id: "11", username: "admin" }];
+  TUser extends UserData = UserData,
+  TGroup extends GroupData = GroupData,
+  TProfile extends ProfileData = ProfileData
+> implements IdentityRepository<TUser, TGroup, TProfile> {
+  private users: UserData[] = [
+    { id: "11", username: "admin" },
+    { id: "12", username: "demo" },
+  ];
   private userProfiles: ProfileData[] = [
     { id: "15", userId: "11", firstname: "admin", lastname: "admin" },
+    { id: "16", userId: "12", firstname: "demo", lastname: "demo" },
   ];
-  private userGroups: { [name: string]: string[] } = { admin: ["Admin"] };
-  private groups: GroupData[] = [{ id: "16", name: "Admin" }];
+  private userGroups: { [name: string]: string[] } = { admin: ["Admins"] };
+  private groups: GroupData[] = [
+    { id: "16", name: "Admins" },
+    { id: "17", name: "Demo" },
+    { id: "18", name: "Reports" },
+  ];
   public async getUserById(userId: string): Promise<TUser> {
     const d = this.users.find((xx) => xx.id === userId);
     return Promise.resolve(d as any);
@@ -79,8 +86,8 @@ TProfile extends ProfileData = ProfileData
   }
   public async getUserGroups(userId?: string): Promise<string[]> {
     const entry = Object.keys(this.userGroups)
-                        .filter((xx) => xx === userId)
-                        .map((xx) => xx);
+      .filter((xx) => xx === userId)
+      .map((xx) => xx);
     if (entry) {
       return entry;
     }
