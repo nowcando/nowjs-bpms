@@ -3,7 +3,7 @@ import { listeners } from "cluster";
 import { EventEmitter } from "events";
 import { uuidv1 } from "nowjs-core/lib/utils";
 import { BpmnEngine } from "./BpmnEngine";
-import { BpmnProcessPersistedData } from "./BpmnProcessPersistency";
+import { BpmnProcessPersistedData } from "./BpmnProcessRepository";
 import BusinessRuleTask from "./elements/BusinessRuleTask";
 // tslint:disable-next-line:no-var-requires
 const { Engine } = require("bpmn-engine");

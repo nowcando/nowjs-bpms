@@ -23,7 +23,7 @@ export interface DataModelPersistedData {
 
   persistedAt: Date;
 }
-export interface DataModelPersistency {
+export interface DataModelRepository {
   count(): Promise<number>;
   list<R extends DataModelPersistedData>(
     options?: DataModelListOptions,
@@ -39,7 +39,7 @@ export interface DataModelPersistency {
   clear(): Promise<void>;
 }
 
-export class DataModelMemoryPersistent implements DataModelPersistency {
+export class DataModelMemoryRepository implements DataModelRepository {
   private store: DataModelPersistedData[] = [];
 
   public async clear(): Promise<void> {

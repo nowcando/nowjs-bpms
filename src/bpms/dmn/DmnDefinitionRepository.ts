@@ -1,52 +1,55 @@
-export interface BpmnDefinitionListOptions {
+export interface DmnDefinitionListOptions {
   name?: string;
 }
 
-export interface BpmnDefinitionFindOptions {
+export interface DmnDefinitionFindOptions {
   name?: string;
 }
 
-export interface BpmnDefinitionLoadOptions {
+export interface DmnDefinitionRemoveOptions {
+  name?: string;
+}
+
+export interface DmnDefinitionLoadOptions {
   name: string;
 }
-export interface BpmnDefinitionRemoveOptions {
-  name: string;
-}
-export interface BpmnDefinitionPersistOptions {
+export interface DmnDefinitionPersistOptions {
   name: string;
 
   definitions: any;
 }
-export interface BpmnDefinitionPersistedData {
+export interface DmnDefinitionPersistedData {
   name: string;
   definitions: any;
 
   persistedAt: Date;
 }
-export interface BpmnDefinitionPersistency {
+export interface DmnDefinitionRepository {
   count(): Promise<number>;
-  list<R extends BpmnDefinitionPersistedData>(
-    options?: BpmnDefinitionListOptions,
+
+  list<R extends DmnDefinitionPersistedData>(
+    options?: DmnDefinitionListOptions,
   ): Promise<R[]>;
-  find<R extends BpmnDefinitionPersistedData>(
-    options: BpmnDefinitionFindOptions,
-  ): Promise<R |  null>;
-  load<R extends BpmnDefinitionPersistedData>(
-    options: BpmnDefinitionLoadOptions,
+  find<R extends DmnDefinitionPersistedData>(
+    options: DmnDefinitionFindOptions,
+  ): Promise<R | null>;
+  load<R extends DmnDefinitionPersistedData>(
+    options: DmnDefinitionLoadOptions,
   ): Promise<R[]>;
-  persist(options: BpmnDefinitionPersistOptions): Promise<boolean>;
-  remove(options: BpmnDefinitionRemoveOptions): Promise<boolean>;
+  persist(options: DmnDefinitionPersistOptions): Promise<boolean>;
+
+  remove(options: DmnDefinitionRemoveOptions): Promise<boolean>;
   clear(): Promise<void>;
 }
 
-export class BpmnDefinitionMemoryPersistent
-  implements BpmnDefinitionPersistency {
-  private store: BpmnDefinitionPersistedData[] = [];
+export class DmnDefinitionMemoryRepository implements DmnDefinitionRepository {
+
+  private store: DmnDefinitionPersistedData[] = [];
 
   public async clear(): Promise<void> {
     this.store = [];
   }
-  public async remove(options: BpmnDefinitionRemoveOptions): Promise<boolean> {
+  public async remove(options: DmnDefinitionRemoveOptions): Promise<boolean> {
     const f = this.store.findIndex((xx) => xx.name === options.name);
     if (f >= 0) {
       this.store.splice(f, 1);
@@ -54,12 +57,11 @@ export class BpmnDefinitionMemoryPersistent
     }
     return false;
   }
-
   public async count(): Promise<number> {
     return Promise.resolve(this.store.length);
   }
-  public async list<R extends BpmnDefinitionPersistedData>(
-    options?: BpmnDefinitionListOptions | undefined,
+  public async list<R extends DmnDefinitionPersistedData>(
+    options?: DmnDefinitionListOptions | undefined,
   ): Promise<R[]> {
     if (options) {
       const f = this.store.filter((xx) => xx.name === options.name);
@@ -68,8 +70,8 @@ export class BpmnDefinitionMemoryPersistent
       return this.store.slice() as any;
     }
   }
-  public async find<R extends BpmnDefinitionPersistedData>(
-    options: BpmnDefinitionFindOptions,
+  public async find<R extends DmnDefinitionPersistedData>(
+    options: DmnDefinitionFindOptions,
   ): Promise<R | null> {
     if (options) {
       const f = this.store.find((xx) => xx.name === options.name);
@@ -78,8 +80,8 @@ export class BpmnDefinitionMemoryPersistent
       return null;
     }
   }
-  public async load<R extends BpmnDefinitionPersistedData>(
-    options: BpmnDefinitionLoadOptions,
+  public async load<R extends DmnDefinitionPersistedData>(
+    options: DmnDefinitionLoadOptions,
   ): Promise<R[]> {
     if (options) {
       const f = this.store.filter((xx) => xx.name === options.name);
@@ -88,9 +90,7 @@ export class BpmnDefinitionMemoryPersistent
       return this.store.slice() as any;
     }
   }
-  public async persist(
-    options: BpmnDefinitionPersistOptions,
-  ): Promise<boolean> {
+  public async persist(options: DmnDefinitionPersistOptions): Promise<boolean> {
     const ix = this.store.findIndex((xx) => xx.name === options.name);
     if (ix) {
       this.store.splice(ix, 1);
