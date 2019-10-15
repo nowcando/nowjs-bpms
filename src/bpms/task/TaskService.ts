@@ -95,22 +95,22 @@ export class TaskService<T extends Task = Task> {
 
   public async updateTaskDueDate(
     taskId: string,
-    dueDate: Date | null,
+    dueDate: Date | undefined,
   ): Promise<T> {
     return this.taskRepository.updateTaskDueDate(taskId, dueDate);
   }
   public async updateTaskFollowUpDate(
     taskId: string,
-    followUpDate: Date | null,
+    followUpDate: Date | undefined,
   ): Promise<T> {
     return this.taskRepository.updateTaskFollowUpDate(taskId, followUpDate);
   }
-  public async updateTaskTags(taskId: string, tags: string | null): Promise<T> {
+  public async updateTaskTags(taskId: string, tags: string | undefined): Promise<T> {
     return this.taskRepository.updateTaskTags(taskId, tags);
   }
   public async updateTaskCategories(
     taskId: string,
-    categories: string | null,
+    categories: string | undefined,
   ): Promise<T> {
     return this.taskRepository.updateTaskCategories(taskId, categories);
   }
