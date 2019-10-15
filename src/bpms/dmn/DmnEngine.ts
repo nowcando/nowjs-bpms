@@ -3,7 +3,12 @@ const { decisionTable } = require("@hbtgmbh/dmn-eval-js");
 import { uuidv1 } from "nowjs-core/lib/utils/UuidUtils";
 import { BpmsEngine } from "../BpmsEngine";
 import {
+  DmnDefinitionFindOptions,
+  DmnDefinitionLoadOptions,
   DmnDefinitionMemoryRepository,
+  DmnDefinitionPersistedData,
+  DmnDefinitionPersistOptions,
+  DmnDefinitionRemoveOptions,
   DmnDefinitionRepository,
 } from "./DmnDefinitionRepository";
 
@@ -168,6 +173,32 @@ export class DmnEngine {
     } catch (error) {
       throw error;
     }
+  }
+
+  public async clear(): Promise<void> {
+    return this.definitionRepository.clear();
+  }
+
+  public async count(): Promise<number> {
+    return this.definitionRepository.count();
+  }
+  public async find<R extends DmnDefinitionPersistedData>(
+    options: DmnDefinitionFindOptions,
+  ): Promise<R | undefined> {
+    return this.definitionRepository.find(options);
+  }
+  public async load<R extends DmnDefinitionPersistedData>(
+    options: DmnDefinitionLoadOptions,
+  ): Promise<R[]> {
+    return this.definitionRepository.load(options);
+  }
+
+  public async persist(options: DmnDefinitionPersistOptions): Promise<boolean> {
+    return this.definitionRepository.persist(options);
+  }
+
+  public async remove(options: DmnDefinitionRemoveOptions): Promise<boolean> {
+    return this.definitionRepository.remove(options);
   }
 }
 

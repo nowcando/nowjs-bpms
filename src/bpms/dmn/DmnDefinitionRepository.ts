@@ -32,7 +32,7 @@ export interface DmnDefinitionRepository {
   ): Promise<R[]>;
   find<R extends DmnDefinitionPersistedData>(
     options: DmnDefinitionFindOptions,
-  ): Promise<R | null>;
+  ): Promise<R | undefined>;
   load<R extends DmnDefinitionPersistedData>(
     options: DmnDefinitionLoadOptions,
   ): Promise<R[]>;
@@ -72,12 +72,12 @@ export class DmnDefinitionMemoryRepository implements DmnDefinitionRepository {
   }
   public async find<R extends DmnDefinitionPersistedData>(
     options: DmnDefinitionFindOptions,
-  ): Promise<R | null> {
+  ): Promise<R | undefined> {
     if (options) {
       const f = this.store.find((xx) => xx.name === options.name);
       return f as any;
     } else {
-      return null;
+      return undefined;
     }
   }
   public async load<R extends DmnDefinitionPersistedData>(
