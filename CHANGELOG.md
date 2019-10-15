@@ -1,3 +1,9 @@
+### 0.7.0 (2019-10-15)
+
+##### Chores
+
+*  rename Persistency to Repository ([cc9060ab](https://github.com/nowcando/nowjs-bpms/commit/cc9060aba788fe89fe4ecce401cd18cff6b8962f))
+
 #### 0.6.1 (2019-10-15)
 
 ##### New Features
