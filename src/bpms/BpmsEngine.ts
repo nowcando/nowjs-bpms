@@ -86,7 +86,7 @@ export class BpmsEngine {
     });
     this.dmnEngine = DmnEngine.createEngine(this, {
       name: this.name,
-      ...this.options.bpmnEngine,
+      ...this.options.dmnEngine,
     });
     this.cmmnEngine = CmmnEngine.createEngine(this, {
       name: this.name,
