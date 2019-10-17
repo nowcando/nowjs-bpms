@@ -6,6 +6,8 @@ export interface UIServiceOptions {
 }
 
 export class UIService {
+
+  private views: any[] = [];
   private id: string = uuidv1();
   private options: UIServiceOptions;
   constructor(
@@ -44,4 +46,18 @@ export class UIService {
   public get BpmsEngine(): BpmsEngine | undefined {
     return this.bpmsEngine;
   }
+
+  public async registerProcessViews(processName: string, views: any): Promise<any> {
+    const d = {processName, views};
+    this.views.push(d);
+    return d;
+  }
+  public async findView(processName: string, viewName: string): Promise<any> {
+    return this.views.find((xx) => xx.name === viewName);
+  }
+  public async listViews(): Promise<any[]> {
+    return this.views;
+  }
+
+
 }
