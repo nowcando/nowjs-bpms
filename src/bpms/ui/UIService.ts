@@ -47,8 +47,8 @@ export class UIService {
     return this.bpmsEngine;
   }
 
-  public async registerProcessViews(processName: string, views: any): Promise<any> {
-    const d = {processName, views};
+  public async registerProcessViews(processName: string, view: any): Promise<any> {
+    const d = {processName, view};
     this.views.push(d);
     return d;
   }
