@@ -1,3 +1,19 @@
+### 0.8.0 (2019-10-18)
+
+##### Chores
+
+*  update dependencies ([811fb317](https://github.com/nowcando/nowjs-bpms/commit/811fb317511ed1b525834346e3d96fb683a05f50))
+
+##### New Features
+
+*  implement Notification service [#22](https://github.com/nowcando/nowjs-bpms/pull/22) ([51d08cd6](https://github.com/nowcando/nowjs-bpms/commit/51d08cd6e7f969885fc21ef57940a9b8f89f2a85))
+*  implement DmnEngine methods ([e4828512](https://github.com/nowcando/nowjs-bpms/commit/e48285127893e89ea927187fccc9cb0b6983f829))
+
+##### Bug Fixes
+
+*  process view extention ([dda1810c](https://github.com/nowcando/nowjs-bpms/commit/dda1810c76da206bcfc582b8736ffd3acf2fd5b5))
+*  dmn options ([fc9b7fa9](https://github.com/nowcando/nowjs-bpms/commit/fc9b7fa9bd20323a39950b9fbf7e92af6b96b5b0))
+
 ### 0.7.0 (2019-10-15)
 
 ##### Chores
