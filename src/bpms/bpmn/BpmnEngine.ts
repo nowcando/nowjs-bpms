@@ -1,21 +1,21 @@
 import { uuidv1 } from "nowjs-core/lib/utils";
 import { BpmsEngine } from "../BpmsEngine";
 import {
-  BpmnDefinitionMemoryPersistent,
-  BpmnDefinitionPersistency,
-} from "./BpmnDefinitionPersistency";
-import { BpmnProcessInstance, BpmnProcessOptions } from "./BpmnProcessInstance";
+  BpmnDefinitionMemoryRepository,
+  BpmnDefinitionRepository,
+} from "./BpmnDefinitionRepository";
+import { BpmnProcessActivity, BpmnProcessInstance, BpmnProcessOptions } from "./BpmnProcessInstance";
 import {
-  BpmnProcessMemoryPersistent,
-  BpmnProcessPersistency,
-} from "./BpmnProcessPersistency";
+  BpmnProcessMemoryRepository,
+  BpmnProcessRepository,
+} from "./BpmnProcessRepository";
 
 export type BpmnSource = string;
 
 export interface BpmnEngineOptions {
   name: string;
-  processPersistency?: BpmnProcessPersistency;
-  definitionPersistency?: BpmnDefinitionPersistency;
+  processRepository?: BpmnProcessRepository;
+  definitionRepository?: BpmnDefinitionRepository;
 }
 
 export interface BpmnEngineRecoverOptions {
@@ -33,8 +33,8 @@ export class BpmnEngine {
   private processCache: { [name: string]: BpmnProcessInstance } = {};
   private id: string = uuidv1();
   private name: string;
-  private processPersistency: BpmnProcessPersistency;
-  private definitionPersistency: BpmnDefinitionPersistency;
+  private processRepository: BpmnProcessRepository;
+  private definitionRepository: BpmnDefinitionRepository;
   private options: BpmnEngineOptions;
   private bpmsEngine: BpmsEngine | undefined;
   constructor(options?: BpmnEngineOptions);
@@ -53,11 +53,11 @@ export class BpmnEngine {
       this.name = this.options.name;
     }
 
-    this.processPersistency =
-      this.options.processPersistency || new BpmnProcessMemoryPersistent();
-    this.definitionPersistency =
-      this.options.definitionPersistency ||
-      new BpmnDefinitionMemoryPersistent();
+    this.processRepository =
+      this.options.processRepository || new BpmnProcessMemoryRepository();
+    this.definitionRepository =
+      this.options.definitionRepository ||
+      new BpmnDefinitionMemoryRepository();
   }
 
   public get Id(): string {
@@ -71,12 +71,12 @@ export class BpmnEngine {
     return this.bpmsEngine;
   }
 
-  public get ProcessPersistency(): BpmnProcessPersistency {
-    return this.processPersistency;
+  public get ProcessRepository(): BpmnProcessRepository {
+    return this.processRepository;
   }
 
-  public get DefinitionPersistency(): BpmnDefinitionPersistency {
-    return this.definitionPersistency;
+  public get DefinitionPersistency(): BpmnDefinitionRepository {
+    return this.definitionRepository;
   }
   public static createEngine(options?: BpmnEngineOptions): BpmnEngine;
   public static createEngine(
@@ -97,7 +97,7 @@ export class BpmnEngine {
     name: string,
     source: BpmnSource,
   ): Promise<boolean> {
-    this.definitionPersistency.persist({ definitions: source, name });
+    this.definitionRepository.persist({ definitions: source, name });
     return Promise.resolve(true);
   }
   public async createProcess(
@@ -108,7 +108,7 @@ export class BpmnEngine {
       try {
         // using  registered definition if name already registered .
         if (options && options.name && !options.source) {
-          const d = await this.definitionPersistency.find({
+          const d = await this.definitionRepository.find({
             name: options.name,
           });
           if (d) {
@@ -120,6 +120,7 @@ export class BpmnEngine {
         proc.onEnd((e) => {
           delete this.processCache[proc.Id];
         });
+      //  proc.onActivityWait((a, b) => this.onProcessWaitActivity.call(this, proc, a, b));
         resolve(proc);
       } catch (error) {
         reject(error);
@@ -127,12 +128,11 @@ export class BpmnEngine {
     });
     return p;
   }
-
   public async processCount(): Promise<number> {
     return Promise.resolve(Object.entries(this.processCache).length);
   }
   public async definitionCount(): Promise<number> {
-    return this.definitionPersistency.count();
+    return this.definitionRepository.count();
   }
   public async processList(): Promise<BpmnProcessInstance[]> {
     return Promise.resolve(Object.entries(this.processCache).map((xx) => xx[1]));
@@ -170,7 +170,7 @@ export class BpmnEngine {
   public async recover(options?: BpmnEngineRecoverOptions): Promise<boolean> {
     try {
       if (options) {
-        const plist = await this.processPersistency.list({
+        const plist = await this.processRepository.list({
           id: options.id,
           name: options.name,
         });
@@ -188,7 +188,7 @@ export class BpmnEngine {
           }
         }
       } else {
-        const plist = await this.processPersistency.list();
+        const plist = await this.processRepository.list();
         const clist = await this.processList();
         for (const pitem of plist) {
           if (!clist.some((xx) => xx.Id === pitem.id)) {
@@ -225,7 +225,7 @@ export class BpmnEngine {
         if (item) {
           const p = item[1];
           const d = await p.getState();
-          const r = await this.processPersistency.persist({
+          const r = await this.processRepository.persist({
             id: p.Id,
             name: p.Name,
             data: d,
@@ -241,7 +241,7 @@ export class BpmnEngine {
             const p = item[1];
             const d = await p.getState();
             pr.push(
-              this.processPersistency.persist({
+              this.processRepository.persist({
                 id: p.Id,
                 name: p.Name,
                 data: d,

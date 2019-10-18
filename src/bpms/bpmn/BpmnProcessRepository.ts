@@ -33,7 +33,7 @@ export interface BpmnProcessPersistedData {
   data: any;
 }
 
-export interface BpmnProcessPersistency {
+export interface BpmnProcessRepository {
   count(): Promise<number>;
   list<R extends BpmnProcessPersistedData>(
     options?: BpmnProcessListOptions,
@@ -49,7 +49,7 @@ export interface BpmnProcessPersistency {
   remove(options: BpmnProcessRemoveOptions): Promise<boolean>;
   clear(): Promise<void>;
 }
-export class BpmnProcessMemoryPersistent implements BpmnProcessPersistency {
+export class BpmnProcessMemoryRepository implements BpmnProcessRepository {
   private store: BpmnProcessPersistedData[] = [];
 
   public async clear(): Promise<void> {

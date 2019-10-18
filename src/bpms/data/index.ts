@@ -1,4 +1,4 @@
 export * from "./DataModelEngine";
-export * from "./DataModelPersistency";
+export * from "./DataModelRepository";
 export * from "./DataSourceEngine";
-export * from "./DataSourcePersistency";
+export * from "./DataSourceRepository";

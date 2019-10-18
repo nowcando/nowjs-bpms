@@ -2,13 +2,13 @@ import { JsonSchemaDefinition, uuidv1 } from "nowjs-core/lib/utils";
 import {ValidationDefinition} from "nowjs-core/lib/validation";
 import { BpmsEngine } from "../BpmsEngine";
 import {
-  DataModelMemoryPersistent,
-  DataModelPersistency,
-} from "./DataModelPersistency";
+  DataModelMemoryRepository,
+  DataModelRepository,
+} from "./DataModelRepository";
 
 export interface DataModelEngineOptions {
   name: string;
-  datamodelPersistency?: DataModelPersistency;
+  datamodelPersistency?: DataModelRepository;
 }
 // tslint:disable-next-line:no-empty-interface
 export interface DataModelSchema extends JsonSchemaDefinition {}
@@ -32,7 +32,7 @@ export class DataModelEngine {
   private dataModelCache: { [name: string]: any } = {};
   private id: string = uuidv1();
   private name: string;
-  private datamodelPersistency: DataModelPersistency;
+  private datamodelRepository: DataModelRepository;
   private options: DataModelEngineOptions;
   private bpmsEngine: BpmsEngine | undefined;
 
@@ -52,8 +52,8 @@ export class DataModelEngine {
       this.name = this.options.name;
     }
 
-    this.datamodelPersistency =
-      this.options.datamodelPersistency || new DataModelMemoryPersistent();
+    this.datamodelRepository =
+      this.options.datamodelPersistency || new DataModelMemoryRepository();
   }
 
   public get Id(): string {
@@ -67,8 +67,8 @@ export class DataModelEngine {
     return this.bpmsEngine;
   }
 
-  public get DataModelPersistency(): DataModelPersistency {
-    return this.datamodelPersistency;
+  public get DataModelPersistency(): DataModelRepository {
+    return this.datamodelRepository;
   }
 
   public static createEngine(options?: DataModelEngineOptions): DataModelEngine;
@@ -90,7 +90,7 @@ export class DataModelEngine {
     name: string,
     definition: DataModelDefinition,
   ): Promise<boolean> {
-    this.datamodelPersistency.persist({ definitions: definition, name });
+    this.datamodelRepository.persist({ definitions: definition, name });
     return Promise.resolve(true);
   }
 

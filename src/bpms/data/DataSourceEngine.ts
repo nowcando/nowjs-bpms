@@ -1,13 +1,13 @@
 import { uuidv1 } from "nowjs-core/lib/utils";
 import { BpmsEngine } from "../BpmsEngine";
 import {
-  DataSourceMemoryPersistent,
-  DataSourcePersistency,
-} from "./DataSourcePersistency";
+  DataSourceMemoryRepository,
+  DataSourceRepository,
+} from "./DataSourceRepository";
 
 export interface DataSourceEngineOptions {
   name: string;
-  datasourcePersistency?: DataSourcePersistency;
+  datasourceRepository?: DataSourceRepository;
 }
 export interface DataSourceSchema<T>  {
   name: string;
@@ -37,7 +37,7 @@ export class DataSourceEngine {
   private datasourceCache: { [name: string]: any } = {};
   private id: string = uuidv1();
   private name: string;
-  private datasourcePersistency: DataSourcePersistency;
+  private datasourceRepository: DataSourceRepository;
   private options: DataSourceEngineOptions;
   private bpmsEngine: BpmsEngine | undefined;
 
@@ -57,8 +57,8 @@ export class DataSourceEngine {
       this.name = this.options.name;
     }
 
-    this.datasourcePersistency =
-      this.options.datasourcePersistency || new DataSourceMemoryPersistent();
+    this.datasourceRepository =
+      this.options.datasourceRepository || new DataSourceMemoryRepository();
   }
 
   public get Id(): string {
@@ -72,8 +72,8 @@ export class DataSourceEngine {
     return this.bpmsEngine;
   }
 
-  public get DataSourcePersistency(): DataSourcePersistency {
-    return this.datasourcePersistency;
+  public get DataSourcePersistency(): DataSourceRepository {
+    return this.datasourceRepository;
   }
 
   public static createEngine(options?: DataSourceEngineOptions): DataSourceEngine;
@@ -95,7 +95,7 @@ export class DataSourceEngine {
     name: string,
     definition: DataSourceDefinition,
   ): Promise<boolean> {
-    this.datasourcePersistency.persist({ definitions: definition, name });
+    this.datasourceRepository.persist({ definitions: definition, name });
     return Promise.resolve(true);
   }
 

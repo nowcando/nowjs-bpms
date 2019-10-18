@@ -23,7 +23,7 @@ export interface DataSourcePersistedData {
 
     persistedAt: Date;
   }
-export interface DataSourcePersistency {
+export interface DataSourceRepository {
     count(): Promise<number>;
     list<R extends DataSourcePersistedData>(
       options?: DataSourceListOptions,
@@ -39,7 +39,7 @@ export interface DataSourcePersistency {
     clear(): Promise<void>;
   }
 
-export class DataSourceMemoryPersistent implements DataSourcePersistency {
+export class DataSourceMemoryRepository implements DataSourceRepository {
     private store: DataSourcePersistedData[] = [];
 
     public async clear(): Promise<void> {

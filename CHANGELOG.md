@@ -1,3 +1,78 @@
+### 0.8.0 (2019-10-18)
+
+##### Chores
+
+*  update dependencies ([811fb317](https://github.com/nowcando/nowjs-bpms/commit/811fb317511ed1b525834346e3d96fb683a05f50))
+
+##### New Features
+
+*  implement Notification service [#22](https://github.com/nowcando/nowjs-bpms/pull/22) ([51d08cd6](https://github.com/nowcando/nowjs-bpms/commit/51d08cd6e7f969885fc21ef57940a9b8f89f2a85))
+*  implement DmnEngine methods ([e4828512](https://github.com/nowcando/nowjs-bpms/commit/e48285127893e89ea927187fccc9cb0b6983f829))
+
+##### Bug Fixes
+
+*  process view extention ([dda1810c](https://github.com/nowcando/nowjs-bpms/commit/dda1810c76da206bcfc582b8736ffd3acf2fd5b5))
+*  dmn options ([fc9b7fa9](https://github.com/nowcando/nowjs-bpms/commit/fc9b7fa9bd20323a39950b9fbf7e92af6b96b5b0))
+
+### 0.7.0 (2019-10-15)
+
+##### Chores
+
+*  rename Persistency to Repository ([cc9060ab](https://github.com/nowcando/nowjs-bpms/commit/cc9060aba788fe89fe4ecce401cd18cff6b8962f))
+
+#### 0.6.1 (2019-10-15)
+
+##### New Features
+
+*  implement TaskMemoryRepository ([76229051](https://github.com/nowcando/nowjs-bpms/commit/76229051c5276ad513838b1fcdab29675dbd7a2b))
+
+##### Bug Fixes
+
+*  issue with undefined . ([889884d5](https://github.com/nowcando/nowjs-bpms/commit/889884d5cd7db14e70014c71f79e8d6e37651a3b))
+
+### 0.6.0 (2019-10-14)
+
+##### Chores
+
+*  update package dependencies ([2d1ba64c](https://github.com/nowcando/nowjs-bpms/commit/2d1ba64c7456f8d8347b125b0968907b10d82daf))
+
+##### New Features
+
+*  add task , decision , listener extention ([ed242acd](https://github.com/nowcando/nowjs-bpms/commit/ed242acdcc4c1092844df5f7a2c4c285129c75b6))
+*  first commit for [#15](https://github.com/nowcando/nowjs-bpms/pull/15),[#21](https://github.com/nowcando/nowjs-bpms/pull/21) implementation ([ee573842](https://github.com/nowcando/nowjs-bpms/commit/ee5738429702411845ab1f7c312f1951474288ef))
+*  add some properties to TenantService ([fd64e9fe](https://github.com/nowcando/nowjs-bpms/commit/fd64e9fe28533b918c8a035027c783fbe1de2cb3))
+*  first implementation of [#13](https://github.com/nowcando/nowjs-bpms/pull/13),[#14](https://github.com/nowcando/nowjs-bpms/pull/14),[#16](https://github.com/nowcando/nowjs-bpms/pull/16),[#19](https://github.com/nowcando/nowjs-bpms/pull/19) ([e7fb97c2](https://github.com/nowcando/nowjs-bpms/commit/e7fb97c21693c059b2c2fb3e3b057a04cc7ee49d))
+
+##### Bug Fixes
+
+*  issue in nowjs  extention , taskListener. ([81657c6e](https://github.com/nowcando/nowjs-bpms/commit/81657c6e8e996fb05e8e6dfe56fd93952c77feee))
+*  add tasklistener to nowjs extention ([eb4a7549](https://github.com/nowcando/nowjs-bpms/commit/eb4a75490d735c27b04df12a27128b338b0c2eba))
+*  pre version lint ([32d795ec](https://github.com/nowcando/nowjs-bpms/commit/32d795ece03c11bb067d62bca58efaafa84ac835))
+*  some linting issues . ([ca221b74](https://github.com/nowcando/nowjs-bpms/commit/ca221b7435ba5961dbf42d01eebe5d77b5e8de59))
+*  TaskQueryOptions ([efce273f](https://github.com/nowcando/nowjs-bpms/commit/efce273f0bba8867e7f5966eb241f93f065c5e12))
+*  some linting issue ([24197bc4](https://github.com/nowcando/nowjs-bpms/commit/24197bc4f3a62d7e5cda94898a901ec0f87a980c))
+
+### 0.6.0 (2019-10-14)
+
+##### Chores
+
+*  update package dependencies ([2d1ba64c](https://github.com/nowcando/nowjs-bpms/commit/2d1ba64c7456f8d8347b125b0968907b10d82daf))
+
+##### New Features
+
+*  add task , decision , listener extention ([ed242acd](https://github.com/nowcando/nowjs-bpms/commit/ed242acdcc4c1092844df5f7a2c4c285129c75b6))
+*  first commit for [#15](https://github.com/nowcando/nowjs-bpms/pull/15),[#21](https://github.com/nowcando/nowjs-bpms/pull/21) implementation ([ee573842](https://github.com/nowcando/nowjs-bpms/commit/ee5738429702411845ab1f7c312f1951474288ef))
+*  add some properties to TenantService ([fd64e9fe](https://github.com/nowcando/nowjs-bpms/commit/fd64e9fe28533b918c8a035027c783fbe1de2cb3))
+*  first implementation of [#13](https://github.com/nowcando/nowjs-bpms/pull/13),[#14](https://github.com/nowcando/nowjs-bpms/pull/14),[#16](https://github.com/nowcando/nowjs-bpms/pull/16),[#19](https://github.com/nowcando/nowjs-bpms/pull/19) ([e7fb97c2](https://github.com/nowcando/nowjs-bpms/commit/e7fb97c21693c059b2c2fb3e3b057a04cc7ee49d))
+
+##### Bug Fixes
+
+*  add tasklistener to nowjs extention ([eb4a7549](https://github.com/nowcando/nowjs-bpms/commit/eb4a75490d735c27b04df12a27128b338b0c2eba))
+*  pre version lint ([32d795ec](https://github.com/nowcando/nowjs-bpms/commit/32d795ece03c11bb067d62bca58efaafa84ac835))
+*  some linting issues . ([ca221b74](https://github.com/nowcando/nowjs-bpms/commit/ca221b7435ba5961dbf42d01eebe5d77b5e8de59))
+*  TaskQueryOptions ([efce273f](https://github.com/nowcando/nowjs-bpms/commit/efce273f0bba8867e7f5966eb241f93f065c5e12))
+*  some linting issue ([24197bc4](https://github.com/nowcando/nowjs-bpms/commit/24197bc4f3a62d7e5cda94898a901ec0f87a980c))
+
 ### 0.5.0 (2019-10-08)
 
 ##### New Features

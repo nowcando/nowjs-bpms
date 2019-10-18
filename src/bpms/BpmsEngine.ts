@@ -6,6 +6,7 @@ import { DmnEngine, DmnEngineOptions } from "./dmn";
 import { HistoryService, HistoryServiceOptions } from "./history/HistoryService";
 import { IdentityService, IdentityServiceOptions } from "./identity/IdentityService";
 import { NavigationService, NavigationServiceOptions } from "./navigation/NavigationService";
+import { NotificationService } from "./notification/NotificationService";
 import { TaskService, TaskServiceOptions } from "./task/TaskService";
 import { TenantService, TenantServiceOptions } from "./tenant/TenantService";
 import { UIService, UIServiceOptions } from "./ui/UIService";
@@ -23,6 +24,8 @@ export interface BpmsEngineOptions {
   tenantService?: TenantServiceOptions;
   navigationService?: NavigationServiceOptions;
   uiService?: UIServiceOptions;
+
+  notificationService?: NotificationService;
   meta?: any;
 }
 
@@ -47,6 +50,8 @@ export class BpmsEngine {
   private tenantService: TenantService | null;
   private uiService: UIService | null;
   private navigationService: NavigationService | null;
+  private notificationService: NotificationService | null;
+
   private id: string = uuidv1();
   private name: string;
   private options: BpmsEngineOptions;
@@ -64,6 +69,7 @@ export class BpmsEngine {
     this.tenantService = null;
     this.navigationService = null;
     this.uiService = null;
+    this.notificationService = null;
     this.init(options);
   }
 
@@ -86,7 +92,7 @@ export class BpmsEngine {
     });
     this.dmnEngine = DmnEngine.createEngine(this, {
       name: this.name,
-      ...this.options.bpmnEngine,
+      ...this.options.dmnEngine,
     });
     this.cmmnEngine = CmmnEngine.createEngine(this, {
       name: this.name,
@@ -123,6 +129,10 @@ export class BpmsEngine {
     this.navigationService = NavigationService.createService(this, {
       name: this.name,
       ...this.options.navigationService,
+    });
+    this.notificationService = NotificationService.createService(this, {
+      name: this.name,
+      ...this.options.notificationService,
     });
   }
 
@@ -202,6 +212,10 @@ export class BpmsEngine {
   }
   public get UIService(): UIService {
     return this.uiService as any;
+  }
+
+  public get NotificationService(): NotificationService {
+    return this.notificationService as any;
   }
   public get TenantService(): TenantService {
     return this.tenantService as any;

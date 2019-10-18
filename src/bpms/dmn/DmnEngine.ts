@@ -3,20 +3,25 @@ const { decisionTable } = require("@hbtgmbh/dmn-eval-js");
 import { uuidv1 } from "nowjs-core/lib/utils/UuidUtils";
 import { BpmsEngine } from "../BpmsEngine";
 import {
-  DmnDefinitionMemoryPersistent,
-  DmnDefinitionPersistency,
-} from "./DmnDefinitionPersistency";
+  DmnDefinitionFindOptions,
+  DmnDefinitionLoadOptions,
+  DmnDefinitionMemoryRepository,
+  DmnDefinitionPersistedData,
+  DmnDefinitionPersistOptions,
+  DmnDefinitionRemoveOptions,
+  DmnDefinitionRepository,
+} from "./DmnDefinitionRepository";
 
 export interface DmnEngineOptions {
   name: string;
-  definitionPersistency?: DmnDefinitionPersistency;
+  definitionRepository?: DmnDefinitionRepository;
 }
 export class DmnEngine {
   private definitionCache: { [name: string]: any } = {};
   private id: string = uuidv1();
   private name: string;
   private options: DmnEngineOptions;
-  private definitionPersistency: DmnDefinitionPersistency;
+  private definitionRepository: DmnDefinitionRepository;
 
   public static createEngine(options?: DmnEngineOptions): DmnEngine;
   public static createEngine(bpmsEngine?: BpmsEngine, options?: DmnEngineOptions): DmnEngine;
@@ -31,8 +36,8 @@ export class DmnEngine {
   constructor(private bpmsEngine?: BpmsEngine, options?: DmnEngineOptions) {
     this.options = options || { name: "DmnEngine-" + this.id };
     this.name = this.options.name;
-    this.definitionPersistency =
-      this.options.definitionPersistency || new DmnDefinitionMemoryPersistent();
+    this.definitionRepository =
+      this.options.definitionRepository || new DmnDefinitionMemoryRepository();
   }
 
   public get Id(): string {
@@ -47,8 +52,8 @@ export class DmnEngine {
     return this.bpmsEngine;
   }
 
-  public get DefinitionPersistency(): DmnDefinitionPersistency {
-    return this.definitionPersistency;
+  public get DefinitionRepository(): DmnDefinitionRepository {
+    return this.definitionRepository;
   }
   /**
    * register Dmn Definitions
@@ -64,10 +69,10 @@ export class DmnEngine {
   ): Promise<boolean> {
     let d = decisions;
     if (typeof decisions === "string") {
-      const s = await this.definitionPersistency.find({ name });
+      const s = await this.definitionRepository.find({ name });
       d = await this.parseDmnXml(d as string);
       if (!s) {
-        this.definitionPersistency.persist({ name, definitions: decisions });
+        this.definitionRepository.persist({ name, definitions: decisions });
       }
     }
     this.definitionCache[name] = d;
@@ -168,6 +173,32 @@ export class DmnEngine {
     } catch (error) {
       throw error;
     }
+  }
+
+  public async clear(): Promise<void> {
+    return this.definitionRepository.clear();
+  }
+
+  public async count(): Promise<number> {
+    return this.definitionRepository.count();
+  }
+  public async find<R extends DmnDefinitionPersistedData>(
+    options: DmnDefinitionFindOptions,
+  ): Promise<R | undefined> {
+    return this.definitionRepository.find(options);
+  }
+  public async load<R extends DmnDefinitionPersistedData>(
+    options: DmnDefinitionLoadOptions,
+  ): Promise<R[]> {
+    return this.definitionRepository.load(options);
+  }
+
+  public async persist(options: DmnDefinitionPersistOptions): Promise<boolean> {
+    return this.definitionRepository.persist(options);
+  }
+
+  public async remove(options: DmnDefinitionRemoveOptions): Promise<boolean> {
+    return this.definitionRepository.remove(options);
   }
 }
 
