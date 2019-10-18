@@ -146,7 +146,12 @@ export const source4 = `
    id="Definitions_1rqyz86"
     targetNamespace="http://bpmn.io/schema/bpmn"
      exporter="Camunda Modeler" exporterVersion="3.3.2">
-  <bpmn:process id="Process_103i680" name="Team Choosing Process" isExecutable="true" nowjs:candidateStarterGroups="Admins,Publishers" nowjs:candidateStarterUsers="Saeed,Hamid" nowjs:versionTag="1">
+  <bpmn:process id="Process_103i680" name="Team Choosing Process"
+                isExecutable="true"
+                nowjs:navigationKey="root.team_choosing_process"
+                nowjs:navigationEnabled="true"
+                nowjs:candidateStarterGroups="Admins,Publishers"
+                nowjs:candidateStarterUsers="Saeed,Hamid" nowjs:versionTag="1">
     <bpmn:extensionElements>
     <nowjs:dynamicView name="default" title="List" author="saeed" updatedAt="2019-08-30T14:36:53.322Z">
           <nowjs:script scriptFormat="javascript" updatedAt="2019-08-30T14:36:53.322Z">module.exports = {

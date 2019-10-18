@@ -53,7 +53,7 @@ export class UIService {
     return d;
   }
   public async findView(processName: string, viewName: string): Promise<any> {
-    return this.views.find((xx) => xx.name === viewName);
+    return this.views.find((xx) => xx.processName === processName && xx.name === viewName);
   }
   public async listViews(): Promise<any[]> {
     return this.views;

@@ -458,17 +458,6 @@ export class BpmnProcessInstance extends EventEmitter {
         });
       },
       nowjs(activity: BpmnProcessActivity, definition: any) {
-        // if (!definition.rextention) {
-        //   // process dynamic view
-        //   const proceses = definition.getExecutableProcesses();
-        //   // tslint:disable-next-line:no-shadowed-variable
-        //   const views: any = {};
-        //   for (const process of proceses) {
-
-        //   }
-        // }
-        // definition.rextention = true;
-
         if (activity.type.toLowerCase() === "bpmn:Process".toLowerCase()) {
           if (
             activity.behaviour &&
@@ -477,8 +466,7 @@ export class BpmnProcessInstance extends EventEmitter {
           ) {
             for (const extn of activity.behaviour.extensionElements.values) {
               if (
-                extn.$type.toLowerCase() ===
-                  "camunda:dynamicView".toLowerCase() ||
+                extn.$type.toLowerCase() === "camunda:dynamicView".toLowerCase() ||
                 extn.$type.toLowerCase() === "nowjs:dynamicView".toLowerCase()
               ) {
                 const lscript = extn && extn.script && extn.script.value;
