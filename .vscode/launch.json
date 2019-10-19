@@ -11,7 +11,7 @@
             "args": [
                 "--i",
                 "--config",
-                "jest.json"
+                "jest.config.js"
             ],
             "showAsyncStacks": true
         }

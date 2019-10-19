@@ -6,6 +6,8 @@ export interface NavigationServiceOptions {
 }
 
 export class NavigationService {
+
+  private navigations: any[] = [];
   private id: string = uuidv1();
   private options: NavigationServiceOptions;
   constructor(
@@ -43,5 +45,13 @@ export class NavigationService {
   }
   public get BpmsEngine(): BpmsEngine | undefined {
     return this.bpmsEngine;
+  }
+
+  public async registerNavigations(...navs: any[]) {
+    this.navigations.push(...navs);
+    return ;
+  }
+  public async listNavigations() {
+    return this.navigations.slice();
   }
 }

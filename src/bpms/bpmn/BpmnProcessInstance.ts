@@ -1,10 +1,10 @@
 import * as bm from "bpmn-moddle";
-import { listeners } from "cluster";
 import { EventEmitter } from "events";
 import { uuidv1 } from "nowjs-core/lib/utils";
 import { BpmnEngine } from "./BpmnEngine";
 import { BpmnProcessPersistedData } from "./BpmnProcessRepository";
 import BusinessRuleTask from "./elements/BusinessRuleTask";
+
 // tslint:disable-next-line:no-var-requires
 const { Engine } = require("bpmn-engine");
 
@@ -465,22 +465,22 @@ export class BpmnProcessInstance extends EventEmitter {
             activity.behaviour.extensionElements.values
           ) {
             for (const extn of activity.behaviour.extensionElements.values) {
-              if (
-                extn.$type.toLowerCase() === "camunda:dynamicView".toLowerCase() ||
-                extn.$type.toLowerCase() === "nowjs:dynamicView".toLowerCase()
-              ) {
-                const lscript = extn && extn.script && extn.script.value;
-                if (!definition.views) {
-                  definition.views = {};
-                }
-                definition.views[extn.name || "list"] = lscript;
-                if (self.BpmnEngine.BpmsEngine) {
-                  self.BpmnEngine.BpmsEngine.UIService.registerProcessViews(
-                    activity.name,
-                    { name: extn.name || "list", body: lscript },
-                  );
-                }
-              }
+              // if (
+              //   extn.$type.toLowerCase() === "camunda:dynamicView".toLowerCase() ||
+              //   extn.$type.toLowerCase() === "nowjs:dynamicView".toLowerCase()
+              // ) {
+              //   const lscript = extn && extn.script && extn.script.value;
+              //   if (!definition.views) {
+              //     definition.views = {};
+              //   }
+              //   definition.views[extn.name || "list"] = lscript;
+              //   if (self.BpmnEngine.BpmsEngine) {
+              //     self.BpmnEngine.BpmsEngine.UIService.registerProcessViews(
+              //       activity.name,
+              //       { name: extn.name || "list", body: lscript },
+              //     );
+              //   }
+              // }
               // process listener
               if (
                 extn.$type.toLowerCase() ===

@@ -259,24 +259,36 @@ describe("BpmnEngine", () => {
   //     // await ap2.stop();
   //   });
   // });
-  describe("listeners", () => {
-    it("start", async () => {
+  // describe("listeners", () => {
+  //   it("start", async () => {
+  //     const bpms = BpmsEngine.createEngine({ name: "MyEngine1" });
+  //     const bpe = bpms.BpmnEngine;
+  //     expect(bpe).toBeDefined();
+  //     await bpms.DmnEngine.registerDefinitions("Decide Team Rules", sample_Decide_Team);
+  //     const pr1 = await bpe.createProcess({
+  //       name: "Process1",
+  //       source: source4,
+  //     });
+  //     expect(pr1).toBeDefined();
+  //     pr1.on("wait", (activity: BpmnProcessActivity, instance) => {
+  //       activity.environment.variables.color = "red";
+  //       activity.signal({color: "red"});
+  //     });
+  //     // const d = await pr1.getDefinitions();
+  //     const r = await pr1.execute();
+  //     expect(r).toBeDefined();
+  //   });
+  // });
+  describe("registerDefinitions", () => {
+    it("check process views", async () => {
       const bpms = BpmsEngine.createEngine({ name: "MyEngine1" });
-      const bpe = bpms.BpmnEngine;
-      expect(bpe).toBeDefined();
-      await bpms.DmnEngine.registerDefinitions("Decide Team Rules", sample_Decide_Team);
-      const pr1 = await bpe.createProcess({
-        name: "Process1",
-        source: source4,
-      });
-      expect(pr1).toBeDefined();
-      pr1.on("wait", (activity: BpmnProcessActivity, instance) => {
-        activity.environment.variables.color = "red";
-        activity.signal({color: "red"});
-      });
-      // const d = await pr1.getDefinitions();
-      const r = await pr1.execute();
-      expect(r).toBeDefined();
+      const bpmn = bpms.BpmnEngine;
+      expect(bpmn).toBeDefined();
+      await bpmn.registerDefinitions("Team Choosing Process", source4);
+      const v = await bpms.UIService.listViews();
+      expect(v).toBeDefined();
+      const n = await bpms.NavigationService.listNavigations();
+      expect(n).toBeDefined();
     });
   });
 });

@@ -9,7 +9,9 @@ import {
   BpmnProcessMemoryRepository,
   BpmnProcessRepository,
 } from "./BpmnProcessRepository";
-
+import BusinessRuleTask from "./elements/BusinessRuleTask";
+// tslint:disable: no-var-requires
+const { Engine } = require("bpmn-engine");
 export type BpmnSource = string;
 
 export interface BpmnEngineOptions {
@@ -97,6 +99,76 @@ export class BpmnEngine {
     name: string,
     source: BpmnSource,
   ): Promise<boolean> {
+    const self = this;
+    const options = {
+      name,
+      source,
+      elements: {BusinessRuleTask},
+      moddleOptions: {nowjs: require("nowjs-bpmn-moddle/resources/nowjs.json")},
+      extensions: {
+        nowjs(element: any, definition: any) {
+          if (element.type.toLowerCase() === "bpmn:Process".toLowerCase()) {
+            if (
+              element.behaviour &&
+              element.behaviour.extensionElements &&
+              element.behaviour.extensionElements.values
+            ) {
+              const elm = element.behaviour;
+              if (self.BpmsEngine && elm.navigationEnabled && elm.navigationKey) {
+                self.BpmsEngine.NavigationService.registerNavigations({
+                  definitionName: name,
+                  processName: element.name,
+                  type: element.type,
+                  key: elm.navigationKey,
+                  title:  elm.navigationTitle || elm.title || elm.name,
+                  enabled: elm.navigationEnabled,
+                  authorization: elm.authorization,
+                });
+              }
+              for (const extn of element.behaviour.extensionElements.values) {
+                if (
+                  extn.$type.toLowerCase() === "camunda:dynamicView".toLowerCase() ||
+                  extn.$type.toLowerCase() === "nowjs:dynamicView".toLowerCase()
+                ) {
+                  const vscript = extn && extn.script && extn.script.value;
+                  if (self.BpmsEngine && vscript) {
+                    self.BpmsEngine.UIService.registerProcessViews(
+                      name,
+                      { name: extn.name || "default",
+                        title: extn.title || extn.navigationTitle || extn.name,
+                        navigationKey: extn.navigationKey,
+                        navigationTitle:  extn.navigationTitle || extn.title || extn.name,
+                        navigationEnabled: extn.navigationEnabled,
+                        authorization: extn.authorization,
+                        body: vscript },
+                    );
+                  }
+                  if (self.BpmsEngine && extn.navigationEnabled && extn.navigationKey) {
+                    self.BpmsEngine.NavigationService.registerNavigations({
+                      definitionName: name,
+                      processName: element.name,
+                      type: element.type,
+                      key: extn.navigationKey,
+                      title:  extn.navigationTitle || extn.title || extn.name,
+                      enabled: extn.navigationEnabled,
+                      authorization: extn.authorization,
+                    });
+                  }
+                }
+              }
+            }
+          } else { return; }
+        },
+      },
+    };
+    const engine =  new Engine(options);
+    const p = await engine.execute();
+    await p.stop();
+    // const definitions =  await engine.getDefinitions();
+    // if (definitions) {
+    //   const processes = definitions.context.getProcesses();
+    //   definitions.context.loadExtensions();
+    // }
     this.definitionRepository.persist({ definitions: source, name });
     return Promise.resolve(true);
   }
