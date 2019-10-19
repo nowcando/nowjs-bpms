@@ -1,3 +1,13 @@
+#### 0.8.1 (2019-10-19)
+
+##### Chores
+
+*  Update  dependencies ([88413faa](https://github.com/nowcando/nowjs-bpms/commit/88413faae64cdb9ea609d296912316169d5ffafc))
+
+##### Bug Fixes
+
+*  test cases for register definitions in bmn engine ([06552269](https://github.com/nowcando/nowjs-bpms/commit/06552269104cbffc8b19194b1b368feee1364597))
+
 ### 0.8.0 (2019-10-18)
 
 ##### Chores
