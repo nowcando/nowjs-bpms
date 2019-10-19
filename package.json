@@ -21,9 +21,9 @@
     "release:minor": "npm run lint && changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor && git push origin && git push origin --tags",
     "release:patch": "npm run lint && changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch && git push origin && git push origin --tags",
     "changelog:update": "",
-    "test": "jest --runInBand --no-cache --config ./jest.json",
-    "test:watch": "jest --runInBand --watch --config ./jest.json",
-    "coverage": " jest --runInBand  --no-cache --coverage  --config ./jest.json ",
+    "test": "jest --runInBand --no-cache --colors --config ./jest.config.js",
+    "test:watch": "jest --runInBand --watch --colors --config ./jest.config.js",
+    "coverage": " jest --runInBand  --no-cache --colors  --coverage  --config ./jest.config.js ",
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "lint:fix": "tslint --fix 'src/**/*.ts' 'test/**/*.ts' -t verbose"
   },

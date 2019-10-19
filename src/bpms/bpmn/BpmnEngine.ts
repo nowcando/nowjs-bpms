@@ -157,13 +157,14 @@ export class BpmnEngine {
                 }
               }
             }
-          } else { return; }
+            return true;
+          } else { return false; }
         },
       },
     };
     const engine =  new Engine(options);
     const p = await engine.execute();
-    await p.stop();
+    p.stop();
     // const definitions =  await engine.getDefinitions();
     // if (definitions) {
     //   const processes = definitions.context.getProcesses();
