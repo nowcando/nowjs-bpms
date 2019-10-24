@@ -1,3 +1,13 @@
+### 0.9.0 (2019-10-24)
+
+##### Bug Fixes
+
+*  BpmnBusinessRuleTask Service implementation. ([0ee493d4](https://github.com/nowcando/nowjs-bpms/commit/0ee493d4898022803118de568a4ad59dbdf844eb))
+
+##### Other Changes
+
+*  fix lint issue ([34308278](https://github.com/nowcando/nowjs-bpms/commit/34308278b045db117f22d1b3a1edc9685452c5bf))
+
 #### 0.8.1 (2019-10-19)
 
 ##### Chores
