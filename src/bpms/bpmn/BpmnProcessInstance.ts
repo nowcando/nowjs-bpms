@@ -398,6 +398,7 @@ export class BpmnProcessInstance extends EventEmitter {
           callback("saeed") ;
         };
       },
+      // tslint:disable-next-line:no-shadowed-variable
       evaluateDecision<T>(options: {
         name: string,
         decisionId: string,
