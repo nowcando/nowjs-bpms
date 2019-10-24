@@ -1,5 +1,6 @@
 import { uuidv1 } from "nowjs-core/lib/utils";
 import { BpmsEngine } from "../BpmsEngine";
+import BpmnUtils from "../utils/BpmnUtils";
 import {
   BpmnDefinitionMemoryRepository,
   BpmnDefinitionRepository,
@@ -10,8 +11,6 @@ import {
   BpmnProcessRepository,
 } from "./BpmnProcessRepository";
 import BusinessRuleTask from "./elements/BusinessRuleTask";
-// tslint:disable: no-var-requires
-const { Engine } = require("bpmn-engine");
 export type BpmnSource = string;
 
 export interface BpmnEngineOptions {
@@ -102,7 +101,6 @@ export class BpmnEngine {
     const self = this;
     const options = {
       name,
-      source,
       elements: {BusinessRuleTask},
       moddleOptions: {nowjs: require("nowjs-bpmn-moddle/resources/nowjs.json")},
       extensions: {
@@ -117,11 +115,21 @@ export class BpmnEngine {
               if (self.BpmsEngine && elm.navigationEnabled && elm.navigationKey) {
                 self.BpmsEngine.NavigationService.registerNavigations({
                   definitionName: name,
-                  processName: element.name,
+                  processName: element.title || element.name,
+                  processId: element.id,
+                  definitionId: definition.id,
+                  id: element.id,
                   type: element.type,
                   key: elm.navigationKey,
+                  icon: elm.navigationIcon,
+                  target: elm.navigationTarget,
                   title:  elm.navigationTitle || elm.title || elm.name,
                   enabled: elm.navigationEnabled,
+                  order: elm.navgationOrder,
+                  category: elm.category || "System",
+                  tags: elm.tags,
+                  defaultView: elm.defaultView || "default",
+                  allowedViews: elm.allowedViews,
                   authorization: elm.authorization,
                 });
               }
@@ -136,24 +144,39 @@ export class BpmnEngine {
                       name,
                       { name: extn.name || "default",
                         title: extn.title || extn.navigationTitle || extn.name,
-                        navigationKey: extn.navigationKey,
-                        navigationTitle:  extn.navigationTitle || extn.title || extn.name,
-                        navigationEnabled: extn.navigationEnabled,
+                        definitionName: name,
+                        processName: element.title || element.name,
+                        processId: element.id,
+                        definitionId: definition.id,
+                        id: extn.id,
+                        key: elm.navigationKey + "/" + extn.name || "default",
+                        enabled: elm.navigationEnabled,
                         authorization: extn.authorization,
+                        author: extn.author,
+                        icon: extn.icon || elm.navigationIcon,
+                        target: elm.navigationTarget,
+                        order: extn.displayOrder,
+                        category: extn.category,
+                        tags: extn.tags,
                         body: vscript },
                     );
                   }
-                  if (self.BpmsEngine && extn.navigationEnabled && extn.navigationKey) {
-                    self.BpmsEngine.NavigationService.registerNavigations({
-                      definitionName: name,
-                      processName: element.name,
-                      type: element.type,
-                      key: extn.navigationKey,
-                      title:  extn.navigationTitle || extn.title || extn.name,
-                      enabled: extn.navigationEnabled,
-                      authorization: extn.authorization,
-                    });
-                  }
+                  // if (self.BpmsEngine && extn.navigationEnabled && extn.navigationKey) {
+                  //   self.BpmsEngine.NavigationService.registerNavigations({
+                  //     definitionName: name,
+                  //     processName: element.title || element.name,
+                  //     processId: element.id,
+                  //     definitionId: definition.id,
+                  //     id: extn.id,
+                  //     type: element.type,
+                  //     key: extn.navigationKey,
+                  //     icon: elm.navigationIcon,
+                  //     target: elm.navigationTarget,
+                  //     title:  extn.navigationTitle || extn.title || extn.name,
+                  //     enabled: extn.navigationEnabled,
+                  //     authorization: extn.authorization,
+                  //   });
+                  // }
                 }
               }
             }
@@ -162,9 +185,11 @@ export class BpmnEngine {
         },
       },
     };
-    const engine =  new Engine(options);
-    const p = await engine.execute();
-    p.stop();
+    const ctx =  await BpmnUtils.context(source, options);
+    const processes = ctx.getProcesses();
+
+    // const p = await ctx.execute();
+    // p.stop();
     // const definitions =  await engine.getDefinitions();
     // if (definitions) {
     //   const processes = definitions.context.getProcesses();

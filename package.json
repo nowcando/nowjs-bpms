@@ -65,14 +65,14 @@
     "bpmn-moddle": "^6.0.0",
     "camunda-bpmn-moddle": "^4.2.0",
     "dmn-moddle": "^6.0.0",
-    "nowjs-bpmn-moddle": "^1.8.0",
-    "nowjs-core": "^0.35.0",
+    "nowjs-bpmn-moddle": "^1.11.0",
+    "nowjs-core": "^0.36.0",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@types/bpmn-moddle": "^5.1.2",
     "@types/jest": "^24.0.19",
-    "@types/node": "^12.11.1",
+    "@types/node": "^12.11.2",
     "generate-changelog": "^1.8.0",
     "jest": "^24.9.0",
     "jest-environment-node-debug": ">=2.0.0",

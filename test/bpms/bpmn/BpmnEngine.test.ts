@@ -107,6 +107,18 @@ describe("BpmnEngine", () => {
       expect(actual1).toEqual(true);
       expect(actual2).toEqual(true);
     });
+    it("check process views", async () => {
+      const bpms = BpmsEngine.createEngine({ name: "MyEngine2" });
+      const bpmn = bpms.BpmnEngine;
+      expect(bpmn).toBeDefined();
+      await bpmn.registerDefinitions("Team", source4);
+      const v = await bpms.UIService.listViews();
+      expect(v).toBeDefined();
+      const n = await bpms.NavigationService.listNavigations();
+      expect(n).toBeDefined();
+      const vn = await bpms.NavigationService.listViewNavigations();
+      expect(vn).toBeDefined();
+    });
   });
   describe("service", () => {
     it("should be use evaluateDecision service", async () => {
@@ -277,18 +289,6 @@ describe("BpmnEngine", () => {
       // const d = await pr1.getDefinitions();
       const r = await pr1.execute();
       expect(r).toBeDefined();
-    });
-  });
-  describe("registerDefinitions", () => {
-    it("check process views", async () => {
-      const bpms = BpmsEngine.createEngine({ name: "MyEngine2" });
-      const bpmn = bpms.BpmnEngine;
-      expect(bpmn).toBeDefined();
-      await bpmn.registerDefinitions("Team Choosing Process", source4);
-      const v = await bpms.UIService.listViews();
-      expect(v).toBeDefined();
-      const n = await bpms.NavigationService.listNavigations();
-      expect(n).toBeDefined();
     });
   });
 });
