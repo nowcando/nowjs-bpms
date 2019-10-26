@@ -1,3 +1,9 @@
+### 0.11.0 (2019-10-26)
+
+##### Tests
+
+*  add more test to cover method to be defined ([8dd4593a](https://github.com/nowcando/nowjs-bpms/commit/8dd4593a811bca5b419ca07f5d124d9c574c7835))
+
 ### 0.10.0 (2019-10-26)
 
 ##### Bug Fixes
