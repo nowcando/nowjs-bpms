@@ -99,6 +99,8 @@ export class BpmnEngine {
     source: BpmnSource,
   ): Promise<boolean> {
     const self = this;
+    const f = await this.definitionRepository.find({name});
+    if (!f) {
     const options = {
       name,
       elements: {BusinessRuleTask},
@@ -188,14 +190,8 @@ export class BpmnEngine {
     const ctx =  await BpmnUtils.context(source, options);
     const processes = ctx.getProcesses();
 
-    // const p = await ctx.execute();
-    // p.stop();
-    // const definitions =  await engine.getDefinitions();
-    // if (definitions) {
-    //   const processes = definitions.context.getProcesses();
-    //   definitions.context.loadExtensions();
-    // }
     this.definitionRepository.persist({ definitions: source, name });
+    }
     return Promise.resolve(true);
   }
   public async createProcess(
