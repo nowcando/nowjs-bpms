@@ -192,7 +192,7 @@ export class DmnEngine {
   }
 
   public async list<R extends DmnDefinitionPersistedData>(
-    options: DmnDefinitionListOptions,
+    options?: DmnDefinitionListOptions,
   ): Promise<R[]> {
     return this.definitionRepository.list(options);
   }
