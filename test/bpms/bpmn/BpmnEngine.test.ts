@@ -24,6 +24,12 @@ describe("BpmnEngine", () => {
       expect(actual.Id).toBeDefined();
       expect(actual.createProcess).toBeDefined();
       expect(actual.registerDefinitions).toBeDefined();
+      expect(actual.persist).toBeDefined();
+      expect(actual.recover).toBeDefined();
+      expect(actual.stop).toBeDefined();
+      expect(actual.loadedProcessList).toBeDefined();
+      expect(actual.getProcessesByName).toBeDefined();
+      expect(actual.getProcessById).toBeDefined();
     });
   });
   describe("new", () => {
@@ -34,6 +40,12 @@ describe("BpmnEngine", () => {
       expect(actual.Id).toBeDefined();
       expect(actual.createProcess).toBeDefined();
       expect(actual.registerDefinitions).toBeDefined();
+      expect(actual.persist).toBeDefined();
+      expect(actual.recover).toBeDefined();
+      expect(actual.stop).toBeDefined();
+      expect(actual.loadedProcessList).toBeDefined();
+      expect(actual.getProcessesByName).toBeDefined();
+      expect(actual.getProcessById).toBeDefined();
     });
   });
   describe("createEngine", () => {
@@ -55,6 +67,41 @@ describe("BpmnEngine", () => {
     //   expect(BpmsEngine.createEngine({ name: "MyEngine1" })).toThrowError();
     // });
   });
+  describe("createProcess", () => {
+    describe("registerDefinitions", () => {
+    it("should be registerDefinitions method return true", async () => {
+      const bpe = BpmnEngine.createEngine({ name: "MyEngine1" });
+      expect(bpe).toBeDefined();
+      const actual1 = await bpe.registerDefinitions("sample1", source1);
+      const actual2 = await bpe.registerDefinitions("sample2", source2);
+      expect(actual1).toEqual(true);
+      expect(actual2).toEqual(true);
+    });
+    it("should be check definition methods", async () => {
+      const bpe = BpmnEngine.createEngine({ name: "MyEngine1" });
+      expect(bpe).toBeDefined();
+      expect(bpe.clearDefinitions).toBeDefined();
+      expect(bpe.listDefinitions).toBeDefined();
+      expect(bpe.loadDefinitions).toBeDefined();
+      expect(bpe.findDefinition).toBeDefined();
+      expect(bpe.countDefinitions).toBeDefined();
+      expect(bpe.removeDefinition).toBeDefined();
+      expect(bpe.registerDefinitions).toBeDefined();
+    });
+    it("check process views", async () => {
+      const bpms = BpmsEngine.createEngine({ name: "MyEngine2" });
+      const bpmn = bpms.BpmnEngine;
+      expect(bpmn).toBeDefined();
+      await bpmn.registerDefinitions("Team", source4);
+      const v = await bpms.UIService.listViews();
+      expect(v).toBeDefined();
+      const n = await bpms.NavigationService.listNavigations();
+      expect(n).toBeDefined();
+      const vn = await bpms.NavigationService.listViewNavigations();
+      expect(vn).toBeDefined();
+    });
+  });
+  }),
   describe("createProcess", () => {
     it("should be instantiated a BpmnProcess by createProcess method", async () => {
       const bpe = BpmnEngine.createEngine({ name: "MyEngine1" });
@@ -98,28 +145,7 @@ describe("BpmnEngine", () => {
       expect(bpe.createProcess(prOpts)).rejects.toThrow();
     });
   });
-  describe("registerDefinitions", () => {
-    it("should be registerDefinitions method return true", async () => {
-      const bpe = BpmnEngine.createEngine({ name: "MyEngine1" });
-      expect(bpe).toBeDefined();
-      const actual1 = await bpe.registerDefinitions("sample1", source1);
-      const actual2 = await bpe.registerDefinitions("sample2", source2);
-      expect(actual1).toEqual(true);
-      expect(actual2).toEqual(true);
-    });
-    it("check process views", async () => {
-      const bpms = BpmsEngine.createEngine({ name: "MyEngine2" });
-      const bpmn = bpms.BpmnEngine;
-      expect(bpmn).toBeDefined();
-      await bpmn.registerDefinitions("Team", source4);
-      const v = await bpms.UIService.listViews();
-      expect(v).toBeDefined();
-      const n = await bpms.NavigationService.listNavigations();
-      expect(n).toBeDefined();
-      const vn = await bpms.NavigationService.listViewNavigations();
-      expect(vn).toBeDefined();
-    });
-  });
+
   describe("service", () => {
     it("should be use evaluateDecision service", async () => {
       const bpms = BpmsEngine.Default;

@@ -2,7 +2,12 @@ import { uuidv1 } from "nowjs-core/lib/utils";
 import { BpmsEngine } from "../BpmsEngine";
 import BpmnUtils from "../utils/BpmnUtils";
 import {
+  BpmnDefinitionFindOptions,
+  BpmnDefinitionListOptions,
+  BpmnDefinitionLoadOptions,
   BpmnDefinitionMemoryRepository,
+  BpmnDefinitionPersistedData,
+  BpmnDefinitionRemoveOptions,
   BpmnDefinitionRepository,
 } from "./BpmnDefinitionRepository";
 import { BpmnProcessActivity, BpmnProcessInstance, BpmnProcessOptions } from "./BpmnProcessInstance";
@@ -194,6 +199,37 @@ export class BpmnEngine {
     }
     return Promise.resolve(true);
   }
+
+  public async countDefinitions(): Promise<number> {
+    return this.definitionRepository.count();
+  }
+  public async findDefinition<R extends BpmnDefinitionPersistedData>(
+    options: BpmnDefinitionFindOptions,
+  ): Promise<R |  null> {
+    return this.definitionRepository.find(options);
+  }
+
+  public async  loadDefinitions<R extends BpmnDefinitionPersistedData>(
+    options: BpmnDefinitionLoadOptions,
+  ): Promise<R[]> {
+    return this.definitionRepository.load(options);
+  }
+
+
+  public async removeDefinition(options: BpmnDefinitionRemoveOptions): Promise<boolean> {
+    return this.definitionRepository.remove(options);
+  }
+
+  public async listDefinitions<R extends BpmnDefinitionPersistedData>(
+    options?: BpmnDefinitionListOptions,
+  ): Promise<R[]> {
+    return this.definitionRepository.list(options);
+  }
+
+  public async  clearDefinitions(): Promise<void> {
+    return this.definitionRepository.clear();
+  }
+
   public async createProcess(
     options?: BpmnProcessOptions,
   ): Promise<BpmnProcessInstance> {
@@ -228,9 +264,7 @@ export class BpmnEngine {
   public async registeredProcessCount(): Promise<number> {
     return this.processRepository.count();
   }
-  public async definitionCount(): Promise<number> {
-    return this.definitionRepository.count();
-  }
+
   public async loadedProcessList(): Promise<BpmnProcessInstance[]> {
     return Promise.resolve(Object.entries(this.loadedProcsses).map((xx) => xx[1]));
   }

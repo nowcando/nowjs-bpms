@@ -52,9 +52,6 @@ export class DmnEngine {
     return this.bpmsEngine;
   }
 
-  public get DefinitionRepository(): DmnDefinitionRepository {
-    return this.definitionRepository;
-  }
   /**
    * register Dmn Definitions
    *
