@@ -1,3 +1,9 @@
+### 0.12.0 (2019-10-26)
+
+##### Tests
+
+*  add some expect in test method ([84d0d19b](https://github.com/nowcando/nowjs-bpms/commit/84d0d19b6518d002e644b6f1ddd7725204562de0))
+
 ### 0.11.0 (2019-10-26)
 
 ##### Tests
