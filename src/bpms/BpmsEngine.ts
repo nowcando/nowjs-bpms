@@ -46,7 +46,6 @@ export class BpmsEngine {
   private historyService: HistoryService | null;
   private identityService: IdentityService | null;
   private taskService: TaskService | null;
-
   private tenantService: TenantService | null;
   private uiService: UIService | null;
   private navigationService: NavigationService | null;

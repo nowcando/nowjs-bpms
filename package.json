@@ -1,7 +1,7 @@
 {
   "name": "nowjs-bpms",
   "description": "NowCanDo Javascript  [nowjs-bpms] is a  library written by TypeScript code maintains under MIT licence",
-  "version": "0.8.0",
+  "version": "0.11.0",
   "private": false,
   "scripts": {
     "debug": "npm run-script build:debug ",
@@ -21,9 +21,9 @@
     "release:minor": "npm run lint && changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor && git push origin && git push origin --tags",
     "release:patch": "npm run lint && changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch && git push origin && git push origin --tags",
     "changelog:update": "",
-    "test": "jest --runInBand --no-cache --config ./jest.json",
-    "test:watch": "jest --runInBand --watch --config ./jest.json",
-    "coverage": " jest --runInBand  --no-cache --coverage  --config ./jest.json ",
+    "test": "jest --runInBand --no-cache --colors --config ./jest.config.js",
+    "test:watch": "jest --runInBand --watch --colors --config ./jest.config.js",
+    "coverage": " jest --runInBand  --no-cache --colors  --coverage  --config ./jest.config.js ",
     "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "lint:fix": "tslint --fix 'src/**/*.ts' 'test/**/*.ts' -t verbose"
   },
@@ -65,14 +65,14 @@
     "bpmn-moddle": "^6.0.0",
     "camunda-bpmn-moddle": "^4.2.0",
     "dmn-moddle": "^6.0.0",
-    "nowjs-bpmn-moddle": "^1.7.0",
-    "nowjs-core": "^0.35.0",
+    "nowjs-bpmn-moddle": "^1.11.0",
+    "nowjs-core": "^0.36.0",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@types/bpmn-moddle": "^5.1.2",
     "@types/jest": "^24.0.19",
-    "@types/node": "^12.11.1",
+    "@types/node": "^12.11.2",
     "generate-changelog": "^1.8.0",
     "jest": "^24.9.0",
     "jest-environment-node-debug": ">=2.0.0",

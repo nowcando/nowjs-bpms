@@ -1,4 +1,4 @@
-{
+module.exports = {
     "globals": {
         "ts-jest": {
             "tsConfig": "./config/tsconfig.test.json"

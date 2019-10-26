@@ -5,6 +5,31 @@ export interface UIServiceOptions {
   name: string;
 }
 
+export interface ProcessViewData {
+  definitionName: string;
+  view: ProcessView;
+
+}
+export interface ProcessView {
+  definitionName: string;
+  processName: string;
+  processId: string;
+  definitionId: string;
+  id: string;
+  type: string;
+  key: string;
+  icon: string;
+  target: string;
+  title: string;
+  enabled: string;
+  order: string;
+  category: string;
+  tags: string;
+  author: string;
+  authorization: string;
+  body: string;
+}
+
 export class UIService {
 
   private views: any[] = [];
@@ -47,15 +72,15 @@ export class UIService {
     return this.bpmsEngine;
   }
 
-  public async registerProcessViews(processName: string, view: any): Promise<any> {
-    const d = {processName, view};
+  public async registerProcessViews(definitionName: string, view: any): Promise<ProcessViewData> {
+    const d = {definitionName, view};
     this.views.push(d);
     return d;
   }
-  public async findView(processName: string, viewName: string): Promise<any> {
-    return this.views.find((xx) => xx.name === viewName);
+  public async findView(processName: string, viewName: string): Promise<ProcessViewData> {
+    return this.views.find((xx) => xx.processName === processName && xx.name === viewName);
   }
-  public async listViews(): Promise<any[]> {
+  public async listViews(): Promise<ProcessViewData[]> {
     return this.views;
   }
 

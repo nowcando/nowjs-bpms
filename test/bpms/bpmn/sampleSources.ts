@@ -146,9 +146,35 @@ export const source4 = `
    id="Definitions_1rqyz86"
     targetNamespace="http://bpmn.io/schema/bpmn"
      exporter="Camunda Modeler" exporterVersion="3.3.2">
-  <bpmn:process id="Process_103i680" name="Team Choosing Process" isExecutable="true" nowjs:candidateStarterGroups="Admins,Publishers" nowjs:candidateStarterUsers="Saeed,Hamid" nowjs:versionTag="1">
+  <bpmn:process id="Process_103i680" name="Team Selection"
+                isExecutable="true"
+                nowjs:category="Team Management"
+                nowjs:navigationIcon="list"
+                nowjs:navigationKey="/qc/team"
+                nowjs:navigationTitle="Team Selection"
+                nowjs:navigationEnabled="true"
+                nowjs:candidateStarterGroups="Admins,Publishers"
+                nowjs:candidateStarterUsers="Saeed,Hamid" nowjs:versionTag="1">
     <bpmn:extensionElements>
-    <nowjs:dynamicView name="default" title="List" author="saeed" updatedAt="2019-08-30T14:36:53.322Z">
+    <nowjs:dynamicView name="default" icon="team" title="Team List" author="saeed" updatedAt="2019-08-30T14:36:53.322Z">
+          <nowjs:script scriptFormat="javascript" updatedAt="2019-08-30T14:36:53.322Z">module.exports = {
+        "activeViews":"main",
+        "dataSources":{},
+        "views":{
+            "main":{
+                elements:[
+                    {type:"card",
+                      elements:[
+                        {type:"singleText",title:"Firstname"},
+                        {type:"singleText",title:"Lastname"},
+                        {type:"singleText",title:"Age"},
+                               ]}
+                    ]
+            },
+        }
+    }</nowjs:script>
+        </nowjs:dynamicView>
+        <nowjs:dynamicView name="list" title="Coach List" author="saeed" updatedAt="2019-08-30T14:36:53.322Z">
           <nowjs:script scriptFormat="javascript" updatedAt="2019-08-30T14:36:53.322Z">module.exports = {
         "activeViews":"main",
         "dataSources":{},
@@ -202,7 +228,10 @@ export const source4 = `
       <bpmn:outgoing>SequenceFlow_1je870d</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1je870d" sourceRef="StartEvent_1tujz7n" targetRef="Decide_Team" />
-    <bpmn:businessRuleTask id="Decide_Team" name="Decide Team" nowjs:dmnRef="Decide Team Rules" nowjs:decisionRef="decide_team_decision" nowjs:decisionRefTenantId="\${tenantId}">
+    <bpmn:businessRuleTask id="Decide_Team" name="Decide Team"
+       implementation="\${environment.services.evaluateDecision}"
+       nowjs:dmnRef="Decide Team Rules"
+       nowjs:decisionRef="decide_team_decision" nowjs:decisionRefTenantId="\${tenantId}">
       <bpmn:incoming>SequenceFlow_1je870d</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_10my2rq</bpmn:outgoing>
     </bpmn:businessRuleTask>

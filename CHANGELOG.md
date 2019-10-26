@@ -1,3 +1,37 @@
+### 0.11.0 (2019-10-26)
+
+##### Tests
+
+*  add more test to cover method to be defined ([8dd4593a](https://github.com/nowcando/nowjs-bpms/commit/8dd4593a811bca5b419ca07f5d124d9c574c7835))
+
+### 0.10.0 (2019-10-26)
+
+##### Bug Fixes
+
+*  naming issue ([b2d18193](https://github.com/nowcando/nowjs-bpms/commit/b2d1819360e56cf1f4aa8c25a68f4973016a105d))
+*  Bpmn processList method renamed ([80123c72](https://github.com/nowcando/nowjs-bpms/commit/80123c72838340d26eefffd7b3cb2f122958f4db))
+*  BpmnDefinition registry duplicate ([7e1ab70a](https://github.com/nowcando/nowjs-bpms/commit/7e1ab70a9267708436ad3f8aa25776de36c35bae))
+
+### 0.9.0 (2019-10-24)
+
+##### Bug Fixes
+
+*  BpmnBusinessRuleTask Service implementation. ([0ee493d4](https://github.com/nowcando/nowjs-bpms/commit/0ee493d4898022803118de568a4ad59dbdf844eb))
+
+##### Other Changes
+
+*  fix lint issue ([34308278](https://github.com/nowcando/nowjs-bpms/commit/34308278b045db117f22d1b3a1edc9685452c5bf))
+
+#### 0.8.1 (2019-10-19)
+
+##### Chores
+
+*  Update  dependencies ([88413faa](https://github.com/nowcando/nowjs-bpms/commit/88413faae64cdb9ea609d296912316169d5ffafc))
+
+##### Bug Fixes
+
+*  test cases for register definitions in bmn engine ([06552269](https://github.com/nowcando/nowjs-bpms/commit/06552269104cbffc8b19194b1b368feee1364597))
+
 ### 0.8.0 (2019-10-18)
 
 ##### Chores

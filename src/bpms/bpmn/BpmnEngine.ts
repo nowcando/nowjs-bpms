@@ -1,7 +1,13 @@
 import { uuidv1 } from "nowjs-core/lib/utils";
 import { BpmsEngine } from "../BpmsEngine";
+import BpmnUtils from "../utils/BpmnUtils";
 import {
+  BpmnDefinitionFindOptions,
+  BpmnDefinitionListOptions,
+  BpmnDefinitionLoadOptions,
   BpmnDefinitionMemoryRepository,
+  BpmnDefinitionPersistedData,
+  BpmnDefinitionRemoveOptions,
   BpmnDefinitionRepository,
 } from "./BpmnDefinitionRepository";
 import { BpmnProcessActivity, BpmnProcessInstance, BpmnProcessOptions } from "./BpmnProcessInstance";
@@ -9,7 +15,7 @@ import {
   BpmnProcessMemoryRepository,
   BpmnProcessRepository,
 } from "./BpmnProcessRepository";
-
+import BusinessRuleTask from "./elements/BusinessRuleTask";
 export type BpmnSource = string;
 
 export interface BpmnEngineOptions {
@@ -30,7 +36,7 @@ export interface BpmnEnginePersistOptions {
   resume?: boolean;
 }
 export class BpmnEngine {
-  private processCache: { [name: string]: BpmnProcessInstance } = {};
+  private loadedProcsses: { [name: string]: BpmnProcessInstance } = {};
   private id: string = uuidv1();
   private name: string;
   private processRepository: BpmnProcessRepository;
@@ -71,13 +77,13 @@ export class BpmnEngine {
     return this.bpmsEngine;
   }
 
-  public get ProcessRepository(): BpmnProcessRepository {
-    return this.processRepository;
-  }
+  // public get ProcessRepository(): BpmnProcessRepository {
+  //   return this.processRepository;
+  // }
 
-  public get DefinitionPersistency(): BpmnDefinitionRepository {
-    return this.definitionRepository;
-  }
+  // public get DefinitionPersistency(): BpmnDefinitionRepository {
+  //   return this.definitionRepository;
+  // }
   public static createEngine(options?: BpmnEngineOptions): BpmnEngine;
   public static createEngine(
     bpmsEngine?: BpmsEngine,
@@ -97,9 +103,133 @@ export class BpmnEngine {
     name: string,
     source: BpmnSource,
   ): Promise<boolean> {
+    const self = this;
+    const f = await this.definitionRepository.find({name});
+    if (!f) {
+    const options = {
+      name,
+      elements: {BusinessRuleTask},
+      moddleOptions: {nowjs: require("nowjs-bpmn-moddle/resources/nowjs.json")},
+      extensions: {
+        nowjs(element: any, definition: any) {
+          if (element.type.toLowerCase() === "bpmn:Process".toLowerCase()) {
+            if (
+              element.behaviour &&
+              element.behaviour.extensionElements &&
+              element.behaviour.extensionElements.values
+            ) {
+              const elm = element.behaviour;
+              if (self.BpmsEngine && elm.navigationEnabled && elm.navigationKey) {
+                self.BpmsEngine.NavigationService.registerNavigations({
+                  definitionName: name,
+                  processName: element.title || element.name,
+                  processId: element.id,
+                  definitionId: definition.id,
+                  id: element.id,
+                  type: element.type,
+                  key: elm.navigationKey,
+                  icon: elm.navigationIcon,
+                  target: elm.navigationTarget,
+                  title:  elm.navigationTitle || elm.title || elm.name,
+                  enabled: elm.navigationEnabled,
+                  order: elm.navgationOrder,
+                  category: elm.category || "System",
+                  tags: elm.tags,
+                  defaultView: elm.defaultView || "default",
+                  allowedViews: elm.allowedViews,
+                  authorization: elm.authorization,
+                });
+              }
+              for (const extn of element.behaviour.extensionElements.values) {
+                if (
+                  extn.$type.toLowerCase() === "camunda:dynamicView".toLowerCase() ||
+                  extn.$type.toLowerCase() === "nowjs:dynamicView".toLowerCase()
+                ) {
+                  const vscript = extn && extn.script && extn.script.value;
+                  if (self.BpmsEngine && vscript) {
+                    self.BpmsEngine.UIService.registerProcessViews(
+                      name,
+                      { name: extn.name || "default",
+                        title: extn.title || extn.navigationTitle || extn.name,
+                        definitionName: name,
+                        processName: element.title || element.name,
+                        processId: element.id,
+                        definitionId: definition.id,
+                        id: extn.id,
+                        key: elm.navigationKey + "/" + extn.name || "default",
+                        enabled: elm.navigationEnabled,
+                        authorization: extn.authorization,
+                        author: extn.author,
+                        icon: extn.icon || elm.navigationIcon,
+                        target: elm.navigationTarget,
+                        order: extn.displayOrder,
+                        category: extn.category,
+                        tags: extn.tags,
+                        body: vscript },
+                    );
+                  }
+                  // if (self.BpmsEngine && extn.navigationEnabled && extn.navigationKey) {
+                  //   self.BpmsEngine.NavigationService.registerNavigations({
+                  //     definitionName: name,
+                  //     processName: element.title || element.name,
+                  //     processId: element.id,
+                  //     definitionId: definition.id,
+                  //     id: extn.id,
+                  //     type: element.type,
+                  //     key: extn.navigationKey,
+                  //     icon: elm.navigationIcon,
+                  //     target: elm.navigationTarget,
+                  //     title:  extn.navigationTitle || extn.title || extn.name,
+                  //     enabled: extn.navigationEnabled,
+                  //     authorization: extn.authorization,
+                  //   });
+                  // }
+                }
+              }
+            }
+            return true;
+          } else { return false; }
+        },
+      },
+    };
+    const ctx =  await BpmnUtils.context(source, options);
+    const processes = ctx.getProcesses();
+
     this.definitionRepository.persist({ definitions: source, name });
+    }
     return Promise.resolve(true);
   }
+
+  public async countDefinitions(): Promise<number> {
+    return this.definitionRepository.count();
+  }
+  public async findDefinition<R extends BpmnDefinitionPersistedData>(
+    options: BpmnDefinitionFindOptions,
+  ): Promise<R |  null> {
+    return this.definitionRepository.find(options);
+  }
+
+  public async  loadDefinitions<R extends BpmnDefinitionPersistedData>(
+    options: BpmnDefinitionLoadOptions,
+  ): Promise<R[]> {
+    return this.definitionRepository.load(options);
+  }
+
+
+  public async removeDefinition(options: BpmnDefinitionRemoveOptions): Promise<boolean> {
+    return this.definitionRepository.remove(options);
+  }
+
+  public async listDefinitions<R extends BpmnDefinitionPersistedData>(
+    options?: BpmnDefinitionListOptions,
+  ): Promise<R[]> {
+    return this.definitionRepository.list(options);
+  }
+
+  public async  clearDefinitions(): Promise<void> {
+    return this.definitionRepository.clear();
+  }
+
   public async createProcess(
     options?: BpmnProcessOptions,
   ): Promise<BpmnProcessInstance> {
@@ -116,9 +246,9 @@ export class BpmnEngine {
           }
         }
         const proc = new BpmnProcessInstance(self, options);
-        this.processCache[proc.Id] = proc;
+        this.loadedProcsses[proc.Id] = proc;
         proc.onEnd((e) => {
-          delete this.processCache[proc.Id];
+          delete this.loadedProcsses[proc.Id];
         });
       //  proc.onActivityWait((a, b) => this.onProcessWaitActivity.call(this, proc, a, b));
         resolve(proc);
@@ -128,20 +258,21 @@ export class BpmnEngine {
     });
     return p;
   }
-  public async processCount(): Promise<number> {
-    return Promise.resolve(Object.entries(this.processCache).length);
+  public async loadedProcessCount(): Promise<number> {
+    return Promise.resolve(Object.entries(this.loadedProcsses).length);
   }
-  public async definitionCount(): Promise<number> {
-    return this.definitionRepository.count();
+  public async registeredProcessCount(): Promise<number> {
+    return this.processRepository.count();
   }
-  public async processList(): Promise<BpmnProcessInstance[]> {
-    return Promise.resolve(Object.entries(this.processCache).map((xx) => xx[1]));
+
+  public async loadedProcessList(): Promise<BpmnProcessInstance[]> {
+    return Promise.resolve(Object.entries(this.loadedProcsses).map((xx) => xx[1]));
   }
 
   public async getProcessesByName(
     name: string,
   ): Promise<BpmnProcessInstance[] | null> {
-    const x = Object.entries(this.processCache)
+    const x = Object.entries(this.loadedProcsses)
       .filter((xx) => xx[1].Name === name)
       .map((xx) => xx[1]);
     if (x) {
@@ -152,7 +283,7 @@ export class BpmnEngine {
   }
 
   public async getProcessById(id: string): Promise<BpmnProcessInstance | null> {
-    const x = Object.entries(this.processCache).find((xx) => xx[1].Id === id);
+    const x = Object.entries(this.loadedProcsses).find((xx) => xx[1].Id === id);
     if (x) {
       return Promise.resolve(x[1]);
     } else {
@@ -174,7 +305,7 @@ export class BpmnEngine {
           id: options.id,
           name: options.name,
         });
-        const clist = await this.processList();
+        const clist = await this.loadedProcessList();
         for (const pitem of plist) {
           if (!clist.some((xx) => xx.Id === pitem.id)) {
             const p = await this.createProcess({
@@ -189,7 +320,7 @@ export class BpmnEngine {
         }
       } else {
         const plist = await this.processRepository.list();
-        const clist = await this.processList();
+        const clist = await this.loadedProcessList();
         for (const pitem of plist) {
           if (!clist.some((xx) => xx.Id === pitem.id)) {
             const p = await this.createProcess({
@@ -217,7 +348,7 @@ export class BpmnEngine {
   public async persist(options?: BpmnEnginePersistOptions): Promise<boolean> {
     try {
       if (options) {
-        const item = Object.entries(this.processCache).find(
+        const item = Object.entries(this.loadedProcsses).find(
           (xx) =>
             (options.id && options.id === xx[1].Id) ||
             options.name === xx[1].Name,
@@ -234,7 +365,7 @@ export class BpmnEngine {
         }
         return Promise.resolve(false);
       } else {
-        const items = Object.entries(this.processCache);
+        const items = Object.entries(this.loadedProcsses);
         if (items) {
           const pr: Array<Promise<any>> = [];
           for (const item of items) {
@@ -269,11 +400,11 @@ export class BpmnEngine {
     if (persist === true) {
       await this.persist();
     }
-    const processes = await this.processList();
+    const processes = await this.loadedProcessList();
     for (const process of processes) {
       process.stop();
     }
-    this.processCache = {};
+    this.loadedProcsses = {};
     return Promise.resolve();
   }
 }

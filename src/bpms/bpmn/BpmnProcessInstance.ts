@@ -1,10 +1,14 @@
 import * as bm from "bpmn-moddle";
-import { listeners } from "cluster";
 import { EventEmitter } from "events";
 import { uuidv1 } from "nowjs-core/lib/utils";
 import { BpmnEngine } from "./BpmnEngine";
 import { BpmnProcessPersistedData } from "./BpmnProcessRepository";
 import BusinessRuleTask from "./elements/BusinessRuleTask";
+import { BusinessRuleTaskExtension } from "./extensions/BusinessRuleTaskExtension";
+import { HumanInvolvementExtension } from "./extensions/HumanInvolvementExtension";
+import { NowJsExtension } from "./extensions/NowJsExtension";
+import { ServiceTaskExtension } from "./extensions/ServiceTaskExtension";
+
 // tslint:disable-next-line:no-var-requires
 const { Engine } = require("bpmn-engine");
 
@@ -372,226 +376,54 @@ export class BpmnProcessInstance extends EventEmitter {
     };
 
     const internalServices = {
-      async getManagerOfUser() {
-        return "saeed";
+      getManagerOfUser(userIdOrName: string) {
+        return function getManagerOfUserService(executionContext, callback) {
+          callback("mohammad") ;
+        };
+
       },
-      async getCoWorkerOfUser() {
-        return "hamid";
+      getCoWorkerOfUser(userIdOrName: string) {
+        return function getCoWorkerOfUserService(executionContext, callback) {
+          callback("hamid") ;
+        };
+
       },
-      async getUser() {
-        return "majid";
+      getInitiatorUser() {
+        return function getInitiatorUserService(executionContext, callback) {
+          callback("ali") ;
+        };
       },
-      async evaluateDecision<T>(
+      getCurrentUser() {
+        return function getInitiatorUserService(executionContext, callback) {
+          callback("saeed") ;
+        };
+      },
+      // tslint:disable-next-line:no-shadowed-variable
+      evaluateDecision<T>(options: {
         name: string,
         decisionId: string,
-        context?: any,
-      ): Promise<T | undefined> {
-        if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-          const dmn = self.BpmnEngine.BpmsEngine.DmnEngine;
-          return dmn.evaluateDecision<T>(decisionId, name, context);
-        } else {
-          return Promise.resolve(undefined);
-        }
+        context: any,
+      }) {
+        return function getEvaludateDecisionService(executionContext, callback) {
+          const {name, decisionId, context} = options;
+          if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+            const dmn = self.BpmnEngine.BpmsEngine.DmnEngine;
+            dmn.evaluateDecision<T>(decisionId, name, context)
+               .then((result) => {
+                  callback(result);
+                });
+          } else {
+            return callback(undefined);
+          }
+        };
       },
     };
 
     const internalExtentions = {
-      evaluateDecision(activity: BpmnProcessActivity) {
-        if (
-          activity.type.toLowerCase() !== "bpmn:BusinessRuleTask".toLowerCase()
-        ) {
-          return;
-        }
-        const dmnRef = activity.behaviour.dmnRef;
-        const decisionRef = activity.behaviour.decisionRef;
-        const decisionRefTenantId = activity.behaviour.decisionRefTenantId;
-        // activity.on("enter", (api: BpmnProcessActivity) => {
-        //   // console.log(activity.id);
-        // });
-        activity.on("wait", async (api: BpmnProcessActivity) => {
-          // console.log(activity.id);
-          if (dmnRef && decisionRef) {
-            try {
-              const ctx = { input: api.environment.variables };
-              const msg = await api.environment.services.evaluateDecision(
-                dmnRef,
-                decisionRef,
-                ctx,
-              );
-              api.signal(msg);
-            } catch (error) {
-              api.environment.Logger.error(
-                `error in evaluating decision in 'bpmn:BusinessRuleTask' (${api.id})`,
-              );
-            }
-          }
-        });
-      },
-      humanInvolvement(activity: BpmnProcessActivity) {
-        if (
-          !activity.behaviour.resources ||
-          !activity.behaviour.resources.length
-        ) {
-          return;
-        }
-
-        const humanPerformer = activity.behaviour.resources.find(
-          (resource: any) => resource.type === "bpmn:HumanPerformer",
-        );
-        const potentialOwner = activity.behaviour.resources.find(
-          (resource: any) => resource.type === "bpmn:PotentialOwner",
-        );
-
-        activity.on("enter", (api) => {
-          const h = api.resolveExpression(humanPerformer.expression);
-          const p = api.resolveExpression(potentialOwner.expression);
-          activity.broker.publish("format", "run.call.humans", {
-            humanPerformer: h,
-            potentialOwner: p,
-          });
-        });
-
-        activity.on("wait", (api) => {
-          api.owner.broker.publish("event", "activity.call", {
-            ...api.content,
-          });
-        });
-      },
-      nowjs(activity: BpmnProcessActivity, definition: any) {
-        // if (!definition.rextention) {
-        //   // process dynamic view
-        //   const proceses = definition.getExecutableProcesses();
-        //   // tslint:disable-next-line:no-shadowed-variable
-        //   const views: any = {};
-        //   for (const process of proceses) {
-
-        //   }
-        // }
-        // definition.rextention = true;
-
-        if (activity.type.toLowerCase() === "bpmn:Process".toLowerCase()) {
-          if (
-            activity.behaviour &&
-            activity.behaviour.extensionElements &&
-            activity.behaviour.extensionElements.values
-          ) {
-            for (const extn of activity.behaviour.extensionElements.values) {
-              if (
-                extn.$type.toLowerCase() ===
-                  "camunda:dynamicView".toLowerCase() ||
-                extn.$type.toLowerCase() === "nowjs:dynamicView".toLowerCase()
-              ) {
-                const lscript = extn && extn.script && extn.script.value;
-                if (!definition.views) {
-                  definition.views = {};
-                }
-                definition.views[extn.name || "list"] = lscript;
-                if (self.BpmnEngine.BpmsEngine) {
-                  self.BpmnEngine.BpmsEngine.UIService.registerProcessViews(
-                    activity.name,
-                    { name: extn.name || "list", body: lscript },
-                  );
-                }
-              }
-              // process listener
-              if (
-                extn.$type.toLowerCase() ===
-                  "camunda:executionListener".toLowerCase() ||
-                extn.$type.toLowerCase() ===
-                  "nowjs:executionListener".toLowerCase()
-              ) {
-                const lscript = extn && extn.script && extn.script.value;
-                if (lscript) {
-                  try {
-                    const func = new Function("return " + lscript)();
-                    activity.on(extn.event, func);
-                  } catch (error) {
-                    activity.logger.error(
-                      `error in parsing listener function.`,
-                    );
-                  }
-                }
-              }
-            }
-          }
-        } else {
-          if (!activity.behaviour.extensionElements) {
-            return;
-          }
-          let form;
-          const views: any = {};
-          // activity listener
-          for (const extn of activity.behaviour.extensionElements.values) {
-            if (
-              extn.$type.toLowerCase() ===
-                "camunda:executionListener".toLowerCase() ||
-              extn.$type.toLowerCase() ===
-                "nowjs:executionListener".toLowerCase() ||
-              extn.$type.toLowerCase() ===
-                "camunda:taskListener".toLowerCase() ||
-              extn.$type.toLowerCase() === "nowjs:taskListener".toLowerCase()
-            ) {
-              const lscript = extn && extn.script && extn.script.value;
-              if (lscript) {
-                try {
-                  const func = new Function("return " + lscript)();
-                  activity.on(extn.event, func);
-                } catch (error) {
-                  activity.logger.error(
-                    `error in parsing listener function of ${activity.id}.`,
-                  );
-                }
-              }
-            }
-
-            if (
-              extn.$type.toLowerCase() ===
-                "camunda:DynamicView".toLowerCase() ||
-              extn.$type.toLowerCase() === "nowjs:DynamicView".toLowerCase()
-            ) {
-              const view = extn && extn.script && extn.script.value;
-              const viewType = "DynamicView";
-              const name = extn.name || "default";
-              const data = extn.data;
-              views[name] = { name, view, viewType, data };
-            }
-
-            if (
-              extn.$type.toLowerCase() === "camunda:FormData".toLowerCase() ||
-              extn.$type.toLowerCase() === "nowjs:FormData".toLowerCase()
-            ) {
-              form = {
-                fields: extn && extn.fields && extn.fields.map((f) => ({ ...f })),
-              };
-            }
-          }
-
-          activity.on("enter", () => {
-            activity.broker.publish("format", "run.form", { form });
-          });
-
-          if (
-            activity.type.toLowerCase() !== "bpmn:UserTask".toLowerCase() ||
-            activity.type.toLowerCase() !== "bpmn:StartEvent".toLowerCase()
-          ) {
-            activity.on("wait", async (api: BpmnProcessActivity) => {
-              const bpms = self.bpmnEngine.BpmsEngine;
-              if (bpms) {
-                const t = await bpms.TaskService.createTask({
-                  name: api.name,
-                  refProcessInstanceId: self.Id,
-                  refProcessId: api.environment.variables.content.id,
-                  refProcessExecutionId:
-                    api.environment.variables.content.executionId,
-                  refActivityId: api.id,
-                  refTenantId: bpms.Name,
-                  views,
-                });
-              }
-            });
-          }
-        }
-      },
+      NowJsExtension: NowJsExtension(self),
+      BusinessRuleTaskExtension : BusinessRuleTaskExtension(self),
+      HumanInvolvementExtension: HumanInvolvementExtension(self),
+      ServiceTaskExtension : ServiceTaskExtension(self),
     };
     const internalModdles = {
       nowjs: require("nowjs-bpmn-moddle/resources/nowjs.json"),
@@ -603,10 +435,7 @@ export class BpmnProcessInstance extends EventEmitter {
     };
     this.options.services = { ...internalServices, ...this.options.services };
     this.options.elements = { ...internalElements, ...this.options.elements };
-    this.options.extensions = {
-      ...internalExtentions,
-      ...this.options.extensions,
-    };
+    this.options.extensions = { ...internalExtentions, ...this.options.extensions };
     this.options = { listener: self, ...this.options };
     this.processEngine = Engine(this.options);
   }

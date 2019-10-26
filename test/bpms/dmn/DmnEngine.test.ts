@@ -24,6 +24,17 @@ describe("DmnEngine", () => {
       expect(actual).toBeDefined();
       expect(actual.Name).toBeDefined();
       expect(actual.Id).toBeDefined();
+      expect(actual.clearAllDefinitions).toBeDefined();
+      expect(actual.count).toBeDefined();
+      expect(actual.evaluateDecision).toBeDefined();
+      expect(actual.find).toBeDefined();
+      expect(actual.getDecisions).toBeDefined();
+      expect(actual.getDefinitionNames).toBeDefined();
+      expect(actual.load).toBeDefined();
+      expect(actual.parseDmnXml).toBeDefined();
+      expect(actual.persist).toBeDefined();
+      expect(actual.registerDefinitions).toBeDefined();
+      expect(actual.remove).toBeDefined();
     });
   });
   describe("createEngine", () => {
