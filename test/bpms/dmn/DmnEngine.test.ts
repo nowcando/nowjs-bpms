@@ -31,6 +31,7 @@ describe("DmnEngine", () => {
       expect(actual.getDecisions).toBeDefined();
       expect(actual.getDefinitionNames).toBeDefined();
       expect(actual.load).toBeDefined();
+      expect(actual.list).toBeDefined();
       expect(actual.parseDmnXml).toBeDefined();
       expect(actual.persist).toBeDefined();
       expect(actual.registerDefinitions).toBeDefined();

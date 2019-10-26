@@ -4,6 +4,7 @@ import { uuidv1 } from "nowjs-core/lib/utils/UuidUtils";
 import { BpmsEngine } from "../BpmsEngine";
 import {
   DmnDefinitionFindOptions,
+  DmnDefinitionListOptions,
   DmnDefinitionLoadOptions,
   DmnDefinitionMemoryRepository,
   DmnDefinitionPersistedData,
@@ -188,6 +189,12 @@ export class DmnEngine {
     options: DmnDefinitionLoadOptions,
   ): Promise<R[]> {
     return this.definitionRepository.load(options);
+  }
+
+  public async list<R extends DmnDefinitionPersistedData>(
+    options: DmnDefinitionListOptions,
+  ): Promise<R[]> {
+    return this.definitionRepository.list(options);
   }
 
   public async persist(options: DmnDefinitionPersistOptions): Promise<boolean> {
