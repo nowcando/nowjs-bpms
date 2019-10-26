@@ -31,7 +31,7 @@ export interface BpmnEnginePersistOptions {
   resume?: boolean;
 }
 export class BpmnEngine {
-  private processCache: { [name: string]: BpmnProcessInstance } = {};
+  private loadedProcsses: { [name: string]: BpmnProcessInstance } = {};
   private id: string = uuidv1();
   private name: string;
   private processRepository: BpmnProcessRepository;
@@ -210,9 +210,9 @@ export class BpmnEngine {
           }
         }
         const proc = new BpmnProcessInstance(self, options);
-        this.processCache[proc.Id] = proc;
+        this.loadedProcsses[proc.Id] = proc;
         proc.onEnd((e) => {
-          delete this.processCache[proc.Id];
+          delete this.loadedProcsses[proc.Id];
         });
       //  proc.onActivityWait((a, b) => this.onProcessWaitActivity.call(this, proc, a, b));
         resolve(proc);
@@ -223,19 +223,19 @@ export class BpmnEngine {
     return p;
   }
   public async processCount(): Promise<number> {
-    return Promise.resolve(Object.entries(this.processCache).length);
+    return Promise.resolve(Object.entries(this.loadedProcsses).length);
   }
   public async definitionCount(): Promise<number> {
     return this.definitionRepository.count();
   }
   public async processList(): Promise<BpmnProcessInstance[]> {
-    return Promise.resolve(Object.entries(this.processCache).map((xx) => xx[1]));
+    return Promise.resolve(Object.entries(this.loadedProcsses).map((xx) => xx[1]));
   }
 
   public async getProcessesByName(
     name: string,
   ): Promise<BpmnProcessInstance[] | null> {
-    const x = Object.entries(this.processCache)
+    const x = Object.entries(this.loadedProcsses)
       .filter((xx) => xx[1].Name === name)
       .map((xx) => xx[1]);
     if (x) {
@@ -246,7 +246,7 @@ export class BpmnEngine {
   }
 
   public async getProcessById(id: string): Promise<BpmnProcessInstance | null> {
-    const x = Object.entries(this.processCache).find((xx) => xx[1].Id === id);
+    const x = Object.entries(this.loadedProcsses).find((xx) => xx[1].Id === id);
     if (x) {
       return Promise.resolve(x[1]);
     } else {
@@ -311,7 +311,7 @@ export class BpmnEngine {
   public async persist(options?: BpmnEnginePersistOptions): Promise<boolean> {
     try {
       if (options) {
-        const item = Object.entries(this.processCache).find(
+        const item = Object.entries(this.loadedProcsses).find(
           (xx) =>
             (options.id && options.id === xx[1].Id) ||
             options.name === xx[1].Name,
@@ -328,7 +328,7 @@ export class BpmnEngine {
         }
         return Promise.resolve(false);
       } else {
-        const items = Object.entries(this.processCache);
+        const items = Object.entries(this.loadedProcsses);
         if (items) {
           const pr: Array<Promise<any>> = [];
           for (const item of items) {
@@ -367,7 +367,7 @@ export class BpmnEngine {
     for (const process of processes) {
       process.stop();
     }
-    this.processCache = {};
+    this.loadedProcsses = {};
     return Promise.resolve();
   }
 }
