@@ -189,7 +189,7 @@ describe("BpmnEngine", () => {
       const presult1 = await bpe.persist();
       expect(presult1).toBeDefined();
       expect(presult1).toBeTruthy();
-      const pCount = await bpe.ProcessRepository.count();
+      const pCount = await bpe.registeredProcessCount();
       expect(pCount).toBeDefined();
       expect(pCount).toEqual(2);
     });
@@ -225,7 +225,7 @@ describe("BpmnEngine", () => {
       await bpe.stop(true);
       const l = await bpe.processList();
       expect(l.length).toBe(0);
-      const c = await bpe.ProcessRepository.count();
+      const c = await bpe.registeredProcessCount();
       expect(c).toBe(3);
 
       // recover persisted

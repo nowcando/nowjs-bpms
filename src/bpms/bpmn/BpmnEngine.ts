@@ -72,13 +72,13 @@ export class BpmnEngine {
     return this.bpmsEngine;
   }
 
-  public get ProcessRepository(): BpmnProcessRepository {
-    return this.processRepository;
-  }
+  // public get ProcessRepository(): BpmnProcessRepository {
+  //   return this.processRepository;
+  // }
 
-  public get DefinitionPersistency(): BpmnDefinitionRepository {
-    return this.definitionRepository;
-  }
+  // public get DefinitionPersistency(): BpmnDefinitionRepository {
+  //   return this.definitionRepository;
+  // }
   public static createEngine(options?: BpmnEngineOptions): BpmnEngine;
   public static createEngine(
     bpmsEngine?: BpmsEngine,
@@ -222,13 +222,16 @@ export class BpmnEngine {
     });
     return p;
   }
-  public async processCount(): Promise<number> {
+  public async loadedProcessCount(): Promise<number> {
     return Promise.resolve(Object.entries(this.loadedProcsses).length);
+  }
+  public async registeredProcessCount(): Promise<number> {
+    return this.processRepository.count();
   }
   public async definitionCount(): Promise<number> {
     return this.definitionRepository.count();
   }
-  public async processList(): Promise<BpmnProcessInstance[]> {
+  public async loaddedProcessList(): Promise<BpmnProcessInstance[]> {
     return Promise.resolve(Object.entries(this.loadedProcsses).map((xx) => xx[1]));
   }
 
@@ -268,7 +271,7 @@ export class BpmnEngine {
           id: options.id,
           name: options.name,
         });
-        const clist = await this.processList();
+        const clist = await this.loaddedProcessList();
         for (const pitem of plist) {
           if (!clist.some((xx) => xx.Id === pitem.id)) {
             const p = await this.createProcess({
@@ -283,7 +286,7 @@ export class BpmnEngine {
         }
       } else {
         const plist = await this.processRepository.list();
-        const clist = await this.processList();
+        const clist = await this.loaddedProcessList();
         for (const pitem of plist) {
           if (!clist.some((xx) => xx.Id === pitem.id)) {
             const p = await this.createProcess({
@@ -363,7 +366,7 @@ export class BpmnEngine {
     if (persist === true) {
       await this.persist();
     }
-    const processes = await this.processList();
+    const processes = await this.loaddedProcessList();
     for (const process of processes) {
       process.stop();
     }
