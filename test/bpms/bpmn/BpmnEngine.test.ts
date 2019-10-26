@@ -223,7 +223,7 @@ describe("BpmnEngine", () => {
 
       // stop
       await bpe.stop(true);
-      const l = await bpe.processList();
+      const l = await bpe.loadedProcessList();
       expect(l.length).toBe(0);
       const c = await bpe.registeredProcessCount();
       expect(c).toBe(3);
@@ -231,7 +231,7 @@ describe("BpmnEngine", () => {
       // recover persisted
       const r = await bpe.recover({ resume: false });
       expect(r).toBe(true);
-      const al1 = await bpe.processList();
+      const al1 = await bpe.loadedProcessList();
       const ap1 = al1[0];
       expect(pr1.Id).toEqual(ap1.Id);
       expect(pr1.Name).toEqual(ap1.Name);

@@ -231,7 +231,7 @@ export class BpmnEngine {
   public async definitionCount(): Promise<number> {
     return this.definitionRepository.count();
   }
-  public async loaddedProcessList(): Promise<BpmnProcessInstance[]> {
+  public async loadedProcessList(): Promise<BpmnProcessInstance[]> {
     return Promise.resolve(Object.entries(this.loadedProcsses).map((xx) => xx[1]));
   }
 
@@ -271,7 +271,7 @@ export class BpmnEngine {
           id: options.id,
           name: options.name,
         });
-        const clist = await this.loaddedProcessList();
+        const clist = await this.loadedProcessList();
         for (const pitem of plist) {
           if (!clist.some((xx) => xx.Id === pitem.id)) {
             const p = await this.createProcess({
@@ -286,7 +286,7 @@ export class BpmnEngine {
         }
       } else {
         const plist = await this.processRepository.list();
-        const clist = await this.loaddedProcessList();
+        const clist = await this.loadedProcessList();
         for (const pitem of plist) {
           if (!clist.some((xx) => xx.Id === pitem.id)) {
             const p = await this.createProcess({
@@ -366,7 +366,7 @@ export class BpmnEngine {
     if (persist === true) {
       await this.persist();
     }
-    const processes = await this.loaddedProcessList();
+    const processes = await this.loadedProcessList();
     for (const process of processes) {
       process.stop();
     }
