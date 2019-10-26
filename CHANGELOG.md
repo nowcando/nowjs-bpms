@@ -1,3 +1,9 @@
+### 0.13.0 (2019-10-26)
+
+##### Bug Fixes
+
+*  add list to DmnEngine . ([b7ff69c2](https://github.com/nowcando/nowjs-bpms/commit/b7ff69c27d33cac6cbae67a7aa24978fc95f7d50))
+
 ### 0.12.0 (2019-10-26)
 
 ##### Tests
