@@ -24,12 +24,20 @@ describe("BpmnEngine", () => {
       expect(actual.Id).toBeDefined();
       expect(actual.createProcess).toBeDefined();
       expect(actual.registerDefinitions).toBeDefined();
-      expect(actual.persist).toBeDefined();
-      expect(actual.recover).toBeDefined();
-      expect(actual.stop).toBeDefined();
+      expect(actual.persistProcess).toBeDefined();
+      expect(actual.recoverProcesses).toBeDefined();
+      expect(actual.stopProcesses).toBeDefined();
       expect(actual.loadedProcessList).toBeDefined();
       expect(actual.getProcessesByName).toBeDefined();
       expect(actual.getProcessById).toBeDefined();
+      expect(actual.persistDefinition).toBeDefined();
+      expect(actual.clearDefinitions).toBeDefined();
+      expect(actual.listDefinitions).toBeDefined();
+      expect(actual.loadDefinitions).toBeDefined();
+      expect(actual.findDefinition).toBeDefined();
+      expect(actual.countDefinitions).toBeDefined();
+      expect(actual.removeDefinition).toBeDefined();
+      expect(actual.registerDefinitions).toBeDefined();
     });
   });
   describe("new", () => {
@@ -40,12 +48,20 @@ describe("BpmnEngine", () => {
       expect(actual.Id).toBeDefined();
       expect(actual.createProcess).toBeDefined();
       expect(actual.registerDefinitions).toBeDefined();
-      expect(actual.persist).toBeDefined();
-      expect(actual.recover).toBeDefined();
-      expect(actual.stop).toBeDefined();
+      expect(actual.persistProcess).toBeDefined();
+      expect(actual.recoverProcesses).toBeDefined();
+      expect(actual.stopProcesses).toBeDefined();
       expect(actual.loadedProcessList).toBeDefined();
       expect(actual.getProcessesByName).toBeDefined();
       expect(actual.getProcessById).toBeDefined();
+      expect(actual.persistDefinition).toBeDefined();
+      expect(actual.clearDefinitions).toBeDefined();
+      expect(actual.listDefinitions).toBeDefined();
+      expect(actual.loadDefinitions).toBeDefined();
+      expect(actual.findDefinition).toBeDefined();
+      expect(actual.countDefinitions).toBeDefined();
+      expect(actual.removeDefinition).toBeDefined();
+      expect(actual.registerDefinitions).toBeDefined();
     });
   });
   describe("createEngine", () => {
@@ -80,6 +96,7 @@ describe("BpmnEngine", () => {
     it("should be check definition methods", async () => {
       const bpe = BpmnEngine.createEngine({ name: "MyEngine1" });
       expect(bpe).toBeDefined();
+      expect(bpe.persistDefinition).toBeDefined();
       expect(bpe.clearDefinitions).toBeDefined();
       expect(bpe.listDefinitions).toBeDefined();
       expect(bpe.loadDefinitions).toBeDefined();
@@ -212,7 +229,7 @@ describe("BpmnEngine", () => {
       const prState2 = await pr2.getState();
       expect(prState2).toBeDefined();
       // persist
-      const presult1 = await bpe.persist();
+      const presult1 = await bpe.persistProcess();
       expect(presult1).toBeDefined();
       expect(presult1).toBeTruthy();
       const pCount = await bpe.registeredProcessCount();
@@ -248,14 +265,14 @@ describe("BpmnEngine", () => {
       expect(prState3).toBeDefined();
 
       // stop
-      await bpe.stop(true);
+      await bpe.stopProcesses(true);
       const l = await bpe.loadedProcessList();
       expect(l.length).toBe(0);
       const c = await bpe.registeredProcessCount();
       expect(c).toBe(3);
 
       // recover persisted
-      const r = await bpe.recover({ resume: false });
+      const r = await bpe.recoverProcesses({ resume: false });
       expect(r).toBe(true);
       const al1 = await bpe.loadedProcessList();
       const ap1 = al1[0];

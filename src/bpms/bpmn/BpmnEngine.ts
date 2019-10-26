@@ -7,6 +7,7 @@ import {
   BpmnDefinitionLoadOptions,
   BpmnDefinitionMemoryRepository,
   BpmnDefinitionPersistedData,
+  BpmnDefinitionPersistOptions,
   BpmnDefinitionRemoveOptions,
   BpmnDefinitionRepository,
 } from "./BpmnDefinitionRepository";
@@ -230,6 +231,12 @@ export class BpmnEngine {
     return this.definitionRepository.clear();
   }
 
+  public async persistDefinition(
+    options: BpmnDefinitionPersistOptions,
+  ): Promise<boolean> {
+    return this.definitionRepository.persist(options);
+  }
+
   public async createProcess(
     options?: BpmnProcessOptions,
   ): Promise<BpmnProcessInstance> {
@@ -298,7 +305,7 @@ export class BpmnEngine {
    * @returns {Promise<boolean>}
    * @memberof BpmnEngine
    */
-  public async recover(options?: BpmnEngineRecoverOptions): Promise<boolean> {
+  public async recoverProcesses(options?: BpmnEngineRecoverOptions): Promise<boolean> {
     try {
       if (options) {
         const plist = await this.processRepository.list({
@@ -345,7 +352,7 @@ export class BpmnEngine {
    * @returns {Promise<boolean>}
    * @memberof BpmnEngine
    */
-  public async persist(options?: BpmnEnginePersistOptions): Promise<boolean> {
+  public async persistProcess(options?: BpmnEnginePersistOptions): Promise<boolean> {
     try {
       if (options) {
         const item = Object.entries(this.loadedProcsses).find(
@@ -396,9 +403,9 @@ export class BpmnEngine {
    * @returns {Promise<void>}
    * @memberof BpmnEngine
    */
-  public async stop(persist: boolean = true): Promise<void> {
+  public async stopProcesses(persist: boolean = true): Promise<void> {
     if (persist === true) {
-      await this.persist();
+      await this.persistProcess();
     }
     const processes = await this.loadedProcessList();
     for (const process of processes) {
