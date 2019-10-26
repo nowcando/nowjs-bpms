@@ -1,3 +1,11 @@
+### 0.10.0 (2019-10-26)
+
+##### Bug Fixes
+
+*  naming issue ([b2d18193](https://github.com/nowcando/nowjs-bpms/commit/b2d1819360e56cf1f4aa8c25a68f4973016a105d))
+*  Bpmn processList method renamed ([80123c72](https://github.com/nowcando/nowjs-bpms/commit/80123c72838340d26eefffd7b3cb2f122958f4db))
+*  BpmnDefinition registry duplicate ([7e1ab70a](https://github.com/nowcando/nowjs-bpms/commit/7e1ab70a9267708436ad3f8aa25776de36c35bae))
+
 ### 0.9.0 (2019-10-24)
 
 ##### Bug Fixes
