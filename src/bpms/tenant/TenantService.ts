@@ -1,6 +1,6 @@
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "../BpmsEngine";
-import { TenantMemoryRepository, TenantRepository } from "./TenantRepository";
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '../BpmsEngine';
+import { TenantMemoryRepository, TenantRepository } from './TenantRepository';
 
 export interface Tenant {
     id: string;
@@ -16,7 +16,7 @@ export class TenantService<T extends Tenant = Tenant> {
     private id: string = uuidv1();
     private options: TenantServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: TenantServiceOptions) {
-        this.options = options || { name: "TenantService" + this.id };
+        this.options = options || { name: 'TenantService' + this.id };
         this.taskRepository = this.options.tenantRepository || (new TenantMemoryRepository<T>() as any);
     }
 

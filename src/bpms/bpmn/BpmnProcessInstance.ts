@@ -3,18 +3,18 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import * as bm from "bpmn-moddle";
-import { EventEmitter } from "events";
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmnEngine } from "./BpmnEngine";
-import { BpmnProcessPersistedData } from "./BpmnProcessRepository";
-import BusinessRuleTask from "./elements/BusinessRuleTask";
-import { BusinessRuleTaskExtension } from "./extensions/BusinessRuleTaskExtension";
-import { HumanInvolvementExtension } from "./extensions/HumanInvolvementExtension";
-import { NowJsExtension } from "./extensions/NowJsExtension";
-import { ServiceTaskExtension } from "./extensions/ServiceTaskExtension";
+import * as bm from 'bpmn-moddle';
+import { EventEmitter } from 'events';
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmnEngine } from './BpmnEngine';
+import { BpmnProcessPersistedData } from './BpmnProcessRepository';
+import BusinessRuleTask from './elements/BusinessRuleTask';
+import { BusinessRuleTaskExtension } from './extensions/BusinessRuleTaskExtension';
+import { HumanInvolvementExtension } from './extensions/HumanInvolvementExtension';
+import { NowJsExtension } from './extensions/NowJsExtension';
+import { ServiceTaskExtension } from './extensions/ServiceTaskExtension';
 
-const { Engine } = require("bpmn-engine");
+const { Engine } = require('bpmn-engine');
 
 export interface BpmnLogger {
     debug(...args: any[]): void;
@@ -24,7 +24,7 @@ export interface BpmnLogger {
 
 export interface BpmnExecution {
     definitions: BpmnProcessExecutionDefinition[];
-    state: "idle" | "running";
+    state: 'idle' | 'running';
 
     stopped: boolean;
     execute(executeOptions?: any): BpmnProcessExeuctionApi;
@@ -239,7 +239,7 @@ export interface BpmnExecutionEventMessageApi {
     createMessage(overrideContent?: any): BpmnExecutionEventMessageApi;
 }
 export interface BpmnProcessExecutionDefinition extends EventEmitter {
-    state: "pending" | "running" | "completed";
+    state: 'pending' | 'running' | 'completed';
     run: (callback?: any) => void;
     resume: (callback?: any) => void;
 
@@ -268,7 +268,7 @@ export interface BpmnProcessExecutionDefinition extends EventEmitter {
     waitFor(name: string, fn: Function): void;
 }
 export interface BpmnProcessExecutionDefinitionState {
-    state: "pending" | "running" | "completed";
+    state: 'pending' | 'running' | 'completed';
     processes: {
         [processId: string]: {
             variables: any;
@@ -279,7 +279,7 @@ export interface BpmnProcessExecutionDefinitionState {
 }
 export interface BpmnProcessExecutionState {
     name: string;
-    state: "idle" | "running";
+    state: 'idle' | 'running';
     stopped: boolean;
     engineVersion: string;
     environment: BpmnProcessExecutionEnvironment;
@@ -301,7 +301,7 @@ export interface BpmnProcessExeuctionApi {
      * @type {("running"| "idle")}
      * @memberof BpmnProcessExeuctionApi
      */
-    state: "running" | "idle";
+    state: 'running' | 'idle';
     /**
      * is the execution stopped
      *
@@ -362,11 +362,11 @@ export class BpmnProcessInstance extends EventEmitter {
     constructor(bpmnEngine: BpmnEngine, options?: BpmnProcessOptions) {
         super();
         this.bpmnEngine = bpmnEngine;
-        this.options = options || { name: "", source: "" };
+        this.options = options || { name: '', source: '' };
         this.id = this.options.id || this.id;
-        this.options.name = this.options.name || "BpmnProcess-" + this.id;
-        if (typeof this.options.name !== "string") {
-            throw new Error("BpmnProcess name must be string");
+        this.options.name = this.options.name || 'BpmnProcess-' + this.id;
+        if (typeof this.options.name !== 'string') {
+            throw new Error('BpmnProcess name must be string');
         }
         const self = this;
         const internalElements = {
@@ -376,22 +376,22 @@ export class BpmnProcessInstance extends EventEmitter {
         const internalServices = {
             getManagerOfUser(userIdOrName: string) {
                 return function getManagerOfUserService(executionContext, callback) {
-                    callback("mohammad");
+                    callback('mohammad');
                 };
             },
             getCoWorkerOfUser(userIdOrName: string) {
                 return function getCoWorkerOfUserService(executionContext, callback) {
-                    callback("hamid");
+                    callback('hamid');
                 };
             },
             getInitiatorUser() {
                 return function getInitiatorUserService(executionContext, callback) {
-                    callback("ali");
+                    callback('ali');
                 };
             },
             getCurrentUser() {
                 return function getInitiatorUserService(executionContext, callback) {
-                    callback("saeed");
+                    callback('saeed');
                 };
             },
             // tslint:disable-next-line:no-shadowed-variable
@@ -417,7 +417,7 @@ export class BpmnProcessInstance extends EventEmitter {
             ServiceTaskExtension: ServiceTaskExtension(self),
         };
         const internalModdles = {
-            nowjs: require("nowjs-bpmn-moddle/resources/nowjs.json"),
+            nowjs: require('nowjs-bpmn-moddle/resources/nowjs.json'),
             // camunda: require("camunda-bpmn-moddle/resources/camunda.json"),
         };
         this.options.moddleOptions = {
@@ -490,15 +490,15 @@ export class BpmnProcessInstance extends EventEmitter {
     }
 
     public onActivityWait(callback: (activity: BpmnProcessActivity, processApi: any) => void) {
-        this.on("activity.wait", callback);
+        this.on('activity.wait', callback);
     }
 
     public onEnd(callback: (payload?: any) => void) {
-        this.processEngine.once("end", callback);
+        this.processEngine.once('end', callback);
     }
 
     public onError(callback: (error: Error) => void) {
-        this.processEngine.once("error", callback);
+        this.processEngine.once('error', callback);
     }
 
     /**

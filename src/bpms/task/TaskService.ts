@@ -1,6 +1,6 @@
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "../BpmsEngine";
-import { Task, TaskMemoryRepository, TaskQuery, TaskQueryFilter, TaskRepository } from "./TaskRepository";
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '../BpmsEngine';
+import { Task, TaskMemoryRepository, TaskQuery, TaskQueryFilter, TaskRepository } from './TaskRepository';
 
 // export class Task {
 //    private data: TaskData;
@@ -43,7 +43,7 @@ export class TaskService<T extends Task = Task> {
     private id: string = uuidv1();
     private options: TaskServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: TaskServiceOptions) {
-        this.options = options || { name: "TaskService" + this.id };
+        this.options = options || { name: 'TaskService' + this.id };
         this.taskRepository = this.options.taskRepository || (new TaskMemoryRepository<T>() as any);
     }
 

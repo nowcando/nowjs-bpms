@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "..";
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '..';
 
 export interface UIServiceOptions {
     name: string;
@@ -35,7 +35,7 @@ export class UIService {
     private id: string = uuidv1();
     private options: UIServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: UIServiceOptions) {
-        this.options = options || { name: "UIService" + this.id };
+        this.options = options || { name: 'UIService' + this.id };
         //   this.taskRepository =
         //     this.options.tenantRepository || (new DynamicViewMemoryRepository<T>() as any);
     }

@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { EventEmitter } from "events";
-import "jest";
-import { BpmnEngine, BpmnProcessActivity, BpmnProcessOptions, BpmsEngine } from "../../../src";
-import { sampleDecideTema } from "../dmn/sampleDmn";
-import { source1, source2, source3, source4 } from "./sampleSources";
+import { EventEmitter } from 'events';
+import 'jest';
+import { BpmnEngine, BpmnProcessActivity, BpmnProcessOptions, BpmsEngine } from '../../../src';
+import { sampleDecideTema } from '../dmn/sampleDmn';
+import { source1, source2, source3, source4 } from './sampleSources';
 
 beforeAll(() => {});
 beforeEach(() => {});
 afterEach(() => {});
 afterAll(() => {});
 
-describe("BpmnEngine", () => {
-    describe("new", () => {
-        it("should be instantiated BpmnEngine", () => {
-            const actual = new BpmnEngine({ name: "MyEngine" });
+describe('BpmnEngine', () => {
+    describe('new', () => {
+        it('should be instantiated BpmnEngine', () => {
+            const actual = new BpmnEngine({ name: 'MyEngine' });
             expect(actual).toBeDefined();
             expect(actual.Name).toBeDefined();
             expect(actual.Id).toBeDefined();
@@ -37,9 +37,9 @@ describe("BpmnEngine", () => {
             expect(actual.registerDefinitions).toBeDefined();
         });
     });
-    describe("new", () => {
-        it("should be instantiated by createEngine static method", () => {
-            const actual = new BpmnEngine({ name: "MyEngine" });
+    describe('new', () => {
+        it('should be instantiated by createEngine static method', () => {
+            const actual = new BpmnEngine({ name: 'MyEngine' });
             expect(actual).toBeDefined();
             expect(actual.Name).toBeDefined();
             expect(actual.Id).toBeDefined();
@@ -61,16 +61,16 @@ describe("BpmnEngine", () => {
             expect(actual.registerDefinitions).toBeDefined();
         });
     });
-    describe("createEngine", () => {
-        it("should be instantiated by createEngine static method", () => {
-            const actual = BpmnEngine.createEngine({ name: "MyEngine1" });
+    describe('createEngine', () => {
+        it('should be instantiated by createEngine static method', () => {
+            const actual = BpmnEngine.createEngine({ name: 'MyEngine1' });
             expect(actual).toBeDefined();
             expect(actual.Name).toBeDefined();
             expect(actual.Id).toBeDefined();
             expect(actual.createProcess).toBeDefined();
             expect(actual.registerDefinitions).toBeDefined();
         });
-        it("should be instantiated by createEngine static method without options", () => {
+        it('should be instantiated by createEngine static method without options', () => {
             const actual = BpmnEngine.createEngine();
             expect(actual).toBeDefined();
         });
@@ -80,18 +80,18 @@ describe("BpmnEngine", () => {
         //   expect(BpmsEngine.createEngine({ name: "MyEngine1" })).toThrowError();
         // });
     });
-    describe("createProcess", () => {
-        describe("registerDefinitions", () => {
-            it("should be registerDefinitions method return true", async () => {
-                const bpe = BpmnEngine.createEngine({ name: "MyEngine1" });
+    describe('createProcess', () => {
+        describe('registerDefinitions', () => {
+            it('should be registerDefinitions method return true', async () => {
+                const bpe = BpmnEngine.createEngine({ name: 'MyEngine1' });
                 expect(bpe).toBeDefined();
-                const actual1 = await bpe.registerDefinitions("sample1", source1);
-                const actual2 = await bpe.registerDefinitions("sample2", source2);
+                const actual1 = await bpe.registerDefinitions('sample1', source1);
+                const actual2 = await bpe.registerDefinitions('sample2', source2);
                 expect(actual1).toEqual(true);
                 expect(actual2).toEqual(true);
             });
-            it("should be check definition methods", async () => {
-                const bpe = BpmnEngine.createEngine({ name: "MyEngine1" });
+            it('should be check definition methods', async () => {
+                const bpe = BpmnEngine.createEngine({ name: 'MyEngine1' });
                 expect(bpe).toBeDefined();
                 expect(bpe.persistDefinition).toBeDefined();
                 expect(bpe.clearDefinitions).toBeDefined();
@@ -102,11 +102,11 @@ describe("BpmnEngine", () => {
                 expect(bpe.removeDefinition).toBeDefined();
                 expect(bpe.registerDefinitions).toBeDefined();
             });
-            it("check process views", async () => {
-                const bpms = BpmsEngine.createEngine({ name: "MyEngine2" });
+            it('check process views', async () => {
+                const bpms = BpmsEngine.createEngine({ name: 'MyEngine2' });
                 const bpmn = bpms.BpmnEngine;
                 expect(bpmn).toBeDefined();
-                await bpmn.registerDefinitions("Team", source4);
+                await bpmn.registerDefinitions('Team', source4);
                 const v = await bpms.UIService.listViews();
                 expect(v).toBeDefined();
                 const n = await bpms.NavigationService.listNavigations();
@@ -116,9 +116,9 @@ describe("BpmnEngine", () => {
             });
         });
     }),
-        describe("createProcess", () => {
-            it("should be instantiated a BpmnProcess by createProcess method", async () => {
-                const bpe = BpmnEngine.createEngine({ name: "MyEngine1" });
+        describe('createProcess', () => {
+            it('should be instantiated a BpmnProcess by createProcess method', async () => {
+                const bpe = BpmnEngine.createEngine({ name: 'MyEngine1' });
                 expect(bpe).toBeDefined();
                 const actual = await bpe.createProcess();
                 expect(actual).toBeDefined();
@@ -128,15 +128,15 @@ describe("BpmnEngine", () => {
                 expect(actual.State).toBeDefined();
                 expect(actual.Stopped).toBeDefined();
                 expect(actual.Execution).not.toBeDefined();
-                expect(actual.State).toEqual("idle");
+                expect(actual.State).toEqual('idle');
             });
 
-            it("should be instantiated a BpmnProcess by createProcess method and execute", async () => {
-                const bpe = BpmnEngine.createEngine({ name: "MyEngine1" });
+            it('should be instantiated a BpmnProcess by createProcess method and execute', async () => {
+                const bpe = BpmnEngine.createEngine({ name: 'MyEngine1' });
                 expect(bpe).toBeDefined();
                 const id = Math.floor(Math.random() * 10000);
                 const prOpts: BpmnProcessOptions = {
-                    name: "sampleProcess1",
+                    name: 'sampleProcess1',
                     source: source1,
                     variables: { id },
                 };
@@ -147,12 +147,12 @@ describe("BpmnEngine", () => {
                 expect(execution.environment.variables.id).toEqual(id);
             });
 
-            it("should be throw error while createProcess", async () => {
-                const bpe = BpmnEngine.createEngine({ name: "MyEngine1" });
+            it('should be throw error while createProcess', async () => {
+                const bpe = BpmnEngine.createEngine({ name: 'MyEngine1' });
                 expect(bpe).toBeDefined();
                 const id = Math.floor(Math.random() * 10000);
                 const prOpts: BpmnProcessOptions = {
-                    name: ["sampleProcess1"] as any,
+                    name: ['sampleProcess1'] as any,
                     source: source1,
                     variables: { id },
                 };
@@ -160,34 +160,34 @@ describe("BpmnEngine", () => {
             });
         });
 
-    describe("service", () => {
-        it("should be use evaluateDecision service", async () => {
+    describe('service', () => {
+        it('should be use evaluateDecision service', async () => {
             const bpms = BpmsEngine.Default;
             const bpe = bpms.BpmnEngine;
             const dmn = bpms.DmnEngine;
-            await dmn.registerDefinitions("Decide Team", sampleDecideTema);
-            const pr1 = await bpe.createProcess({ name: "proc1", source: source4 });
+            await dmn.registerDefinitions('Decide Team', sampleDecideTema);
+            const pr1 = await bpe.createProcess({ name: 'proc1', source: source4 });
 
-            pr1.on("activity.enter", (elementApi, engineApi) => {
+            pr1.on('activity.enter', (elementApi, engineApi) => {
                 // console.log(
                 //   `${elementApi.type} <${elementApi.id}> of ${engineApi.name} is entered`,
                 // );
             });
 
-            pr1.on("activity.end", async (elementApi: BpmnProcessActivity, instance) => {
+            pr1.on('activity.end', async (elementApi: BpmnProcessActivity, instance) => {
                 // console.log(
                 //   `${elementApi.type} <${elementApi.id}> of ${instance.name} is ended`,
                 // );
             });
 
-            pr1.on("activity.wait", async (elementApi: BpmnProcessActivity, instance) => {
+            pr1.on('activity.wait', async (elementApi: BpmnProcessActivity, instance) => {
                 // console.log(
                 //   `${elementApi.type} <${elementApi.id}> of ${instance.name} is waiting for input`,
                 // );
                 const svc = elementApi.environment.services;
-                if (elementApi.id === "Decide_Team") {
-                    const r = await svc.evaluateDecision("Decide Team", "decide_team_decision", {
-                        input: { color: "red" },
+                if (elementApi.id === 'Decide_Team') {
+                    const r = await svc.evaluateDecision('Decide Team', 'decide_team_decision', {
+                        input: { color: 'red' },
                     });
                     elementApi.signal({ chosenTeam: r });
                 }
@@ -199,19 +199,19 @@ describe("BpmnEngine", () => {
             expect(bpe).toBeDefined();
         });
     });
-    describe("persist", () => {
-        it("should be persist all processes", async () => {
-            const bpe = BpmnEngine.createEngine({ name: "MyEngine1" });
+    describe('persist', () => {
+        it('should be persist all processes', async () => {
+            const bpe = BpmnEngine.createEngine({ name: 'MyEngine1' });
             expect(bpe).toBeDefined();
             const pr1 = await bpe.createProcess({
-                name: "Process1",
+                name: 'Process1',
                 source: source1,
             });
             expect(pr1).toBeDefined();
             const prState1 = await pr1.getState();
             expect(prState1).toBeDefined();
             const pr2 = await bpe.createProcess({
-                name: "Process2",
+                name: 'Process2',
                 source: source2,
             });
             expect(pr2).toBeDefined();
@@ -226,18 +226,18 @@ describe("BpmnEngine", () => {
             expect(pCount).toEqual(2);
         });
 
-        it("should be recover all persisted processes", async () => {
-            const bpe = BpmnEngine.createEngine({ name: "MyEngine1" });
+        it('should be recover all persisted processes', async () => {
+            const bpe = BpmnEngine.createEngine({ name: 'MyEngine1' });
             expect(bpe).toBeDefined();
             const pr1 = await bpe.createProcess({
-                name: "Process1",
+                name: 'Process1',
                 source: source1,
             });
             expect(pr1).toBeDefined();
             const prState1 = await pr1.getState();
             expect(prState1).toBeDefined();
             const pr2 = await bpe.createProcess({
-                name: "Process2",
+                name: 'Process2',
                 source: source2,
             });
             expect(pr2).toBeDefined();
@@ -246,7 +246,7 @@ describe("BpmnEngine", () => {
 
             // process 3
             const pr3 = await bpe.createProcess({
-                name: "Process3",
+                name: 'Process3',
                 source: source3,
             });
             expect(pr3).toBeDefined();
@@ -272,13 +272,13 @@ describe("BpmnEngine", () => {
             const aps1 = ap1.State;
             expect(aps1).toEqual(pr1.State);
             const l1 = new EventEmitter();
-            ap2.once("wait", task => {
+            ap2.once('wait', task => {
                 task.signal({
                     ioSpecification: {
                         dataOutputs: [
                             {
-                                id: "userInput",
-                                value: "Saeed Tabrizi",
+                                id: 'userInput',
+                                value: 'Saeed Tabrizi',
                             },
                         ],
                     },
@@ -293,7 +293,7 @@ describe("BpmnEngine", () => {
             // resume process 3
             const ap3 = al1[2];
             expect(pr3.Id).toEqual(ap3.Id);
-            ap3.once("wait", (task: BpmnProcessActivity) => {
+            ap3.once('wait', (task: BpmnProcessActivity) => {
                 ap3.Logger.warn(`${task.type} : ${task.name}`);
             });
             const n3 = await ap3.resume();
@@ -303,20 +303,20 @@ describe("BpmnEngine", () => {
             // await ap2.stop();
         });
     });
-    describe("listeners", () => {
-        it("start", async () => {
-            const bpms = BpmsEngine.createEngine({ name: "MyEngine1" });
+    describe('listeners', () => {
+        it('start', async () => {
+            const bpms = BpmsEngine.createEngine({ name: 'MyEngine1' });
             const bpe = bpms.BpmnEngine;
             expect(bpe).toBeDefined();
-            await bpms.DmnEngine.registerDefinitions("Decide Team Rules", sampleDecideTema);
+            await bpms.DmnEngine.registerDefinitions('Decide Team Rules', sampleDecideTema);
             const pr1 = await bpe.createProcess({
-                name: "Process1",
+                name: 'Process1',
                 source: source4,
             });
             expect(pr1).toBeDefined();
-            pr1.on("wait", (activity: BpmnProcessActivity, instance) => {
-                activity.environment.variables.color = "red";
-                activity.signal({ color: "red" });
+            pr1.on('wait', (activity: BpmnProcessActivity, instance) => {
+                activity.environment.variables.color = 'red';
+                activity.signal({ color: 'red' });
             });
             // const d = await pr1.getDefinitions();
             const r = await pr1.execute();

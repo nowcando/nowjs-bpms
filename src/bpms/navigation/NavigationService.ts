@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import "nowjs-core";
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "../BpmsEngine";
+import 'nowjs-core';
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '../BpmsEngine';
 
 export interface NavigationServiceOptions {
     name: string;
@@ -32,7 +32,7 @@ export class NavigationService {
     private id: string = uuidv1();
     private options: NavigationServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: NavigationServiceOptions) {
-        this.options = options || { name: "NavigationService" + this.id };
+        this.options = options || { name: 'NavigationService' + this.id };
         //   this.taskRepository =
         //     this.options.tenantRepository || (new NavigationMemoryRepository<T>() as any);
     }

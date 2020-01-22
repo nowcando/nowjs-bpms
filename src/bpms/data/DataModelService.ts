@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { JsonSchemaDefinition, uuidv1 } from "nowjs-core/lib/utils";
-import { ValidationDefinition } from "nowjs-core/lib/validation";
-import { BpmsEngine } from "../BpmsEngine";
-import { DataModelMemoryRepository, DataModelRepository } from "./DataModelRepository";
+import { JsonSchemaDefinition, uuidv1 } from 'nowjs-core/lib/utils';
+import { ValidationDefinition } from 'nowjs-core/lib/validation';
+import { BpmsEngine } from '../BpmsEngine';
+import { DataModelMemoryRepository, DataModelRepository } from './DataModelRepository';
 
 export interface DataModelServiceOptions {
     name: string;
@@ -11,7 +11,7 @@ export interface DataModelServiceOptions {
 // tslint:disable-next-line:no-empty-interface
 export type DataModelSchema = JsonSchemaDefinition;
 export interface DataModelRelation {
-    type: "0..1" | "1..1" | "1..*" | "*..*";
+    type: '0..1' | '1..1' | '1..*' | '*..*';
     sourceKey?: string;
     targetKey?: string;
 }
@@ -38,11 +38,11 @@ export class DataModelService {
     constructor(arg1?: BpmsEngine | DataModelServiceOptions, arg2?: DataModelServiceOptions) {
         if (arg1 instanceof BpmsEngine) {
             this.bpmsEngine = arg1;
-            this.options = arg2 || { name: "DataModelEngine-" + this.id };
+            this.options = arg2 || { name: 'DataModelEngine-' + this.id };
             this.name = this.options.name;
         } else {
             this.bpmsEngine = undefined;
-            this.options = arg1 || { name: "DataModelEngine-" + this.id };
+            this.options = arg1 || { name: 'DataModelEngine-' + this.id };
             this.name = this.options.name;
         }
 

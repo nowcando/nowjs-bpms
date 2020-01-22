@@ -1,6 +1,6 @@
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "../BpmsEngine";
-import { Job, JobMemoryRepository, JobQuery, JobQueryFilter, JobRepository } from "./JobRepository";
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '../BpmsEngine';
+import { Job, JobMemoryRepository, JobQuery, JobQueryFilter, JobRepository } from './JobRepository';
 
 // export class Job {
 //    private data: JobData;
@@ -43,7 +43,7 @@ export class JobService<T extends Job = Job> {
     private id: string = uuidv1();
     private options: JobServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: JobServiceOptions) {
-        this.options = options || { name: "JobService" + this.id };
+        this.options = options || { name: 'JobService' + this.id };
         this.taskRepository = this.options.taskRepository || (new JobMemoryRepository<T>() as any);
     }
 

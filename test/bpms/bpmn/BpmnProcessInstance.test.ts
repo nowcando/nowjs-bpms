@@ -1,39 +1,39 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import "jest";
-import { BpmnProcessInstance } from "../../../src";
-import { source2 } from "./sampleSources";
+import 'jest';
+import { BpmnProcessInstance } from '../../../src';
+import { source2 } from './sampleSources';
 
 beforeAll(() => {});
 beforeEach(() => {});
 afterEach(() => {});
 afterAll(() => {});
 
-describe("BpmnProcess", () => {
-    describe("new", () => {
-        it("should be instantiated BpmnProcess", () => {
+describe('BpmnProcess', () => {
+    describe('new', () => {
+        it('should be instantiated BpmnProcess', () => {
             const actual = new BpmnProcessInstance({} as any);
             expect(actual).toBeDefined();
             expect(actual.Name).toBeDefined();
             expect(actual.Id).toBeDefined();
         });
     });
-    describe("event.once", () => {
-        it("should be call wait", async () => {
+    describe('event.once', () => {
+        it('should be call wait', async () => {
             const actual = new BpmnProcessInstance({} as any, {
-                name: "BpmnProcess2",
+                name: 'BpmnProcess2',
                 source: source2,
             });
             expect(actual).toBeDefined();
             expect(actual.Name).toBeDefined();
             expect(actual.Id).toBeDefined();
-            actual.once("wait", task => {
+            actual.once('wait', task => {
                 task.signal({
                     ioSpecification: {
                         dataOutputs: [
                             {
-                                id: "userInput",
-                                value: "Saeed Tabrizi",
+                                id: 'userInput',
+                                value: 'Saeed Tabrizi',
                             },
                         ],
                     },

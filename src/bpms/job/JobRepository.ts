@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { uuidv1 } from "nowjs-core/lib/utils";
+import { uuidv1 } from 'nowjs-core/lib/utils';
 
 export interface Job {
     id?: string;
@@ -33,7 +33,7 @@ export interface JobQueryFilter {
 }
 
 export interface JobQuerySort {
-    [name: string]: "asc" | "desc";
+    [name: string]: 'asc' | 'desc';
 }
 export interface JobQuery {
     filter?: JobQueryFilter;
@@ -108,7 +108,7 @@ export class JobMemoryRepository<T extends Job = Job> implements JobRepository<T
         return t as any;
     }
     public async findJobs(...taskId: string[]): Promise<T[]> {
-        const t = this.tasks.filter(xx => taskId.includes(xx.id || ""));
+        const t = this.tasks.filter(xx => taskId.includes(xx.id || ''));
         return t as any;
     }
     public async taskCompleted(taskId: string): Promise<T> {

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "../BpmsEngine";
-import { TaskRepository } from "../task/TaskRepository";
-import { HistoryData, HistoryMemoryRepository, HistoryRepository } from "./HistoryRepository";
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '../BpmsEngine';
+import { TaskRepository } from '../task/TaskRepository';
+import { HistoryData, HistoryMemoryRepository, HistoryRepository } from './HistoryRepository';
 
 export interface HistoryServiceOptions {
     historyRepository?: HistoryRepository;
@@ -13,7 +13,7 @@ export class HistoryService<T extends HistoryData = HistoryData> {
     private id: string = uuidv1();
     private options: HistoryServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: HistoryServiceOptions) {
-        this.options = options || { name: "HistoryService" + this.id };
+        this.options = options || { name: 'HistoryService' + this.id };
         this.historyRepository = this.options.historyRepository || (new HistoryMemoryRepository() as any);
     }
 
@@ -42,24 +42,24 @@ export class HistoryService<T extends HistoryData = HistoryData> {
         return this.bpmsEngine;
     }
     public async createEntry(data: T): Promise<T> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     public async removeEntry(entryId: string): Promise<boolean>;
     // tslint:disable:unified-signatures
     public async removeEntry(data: T): Promise<boolean>;
     public async removeEntry(arg1: T | string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     public async findEntry(): Promise<T> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     public async findEntries(): Promise<T[]> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     public async count(): Promise<number> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     public async query(): Promise<T[]> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
 }

@@ -2,12 +2,12 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { BpmnProcessInstance } from "../BpmnProcessInstance";
+import { BpmnProcessInstance } from '../BpmnProcessInstance';
 
 function BusinessRuleTaskService(activity: any) {
     const { type: atype, behaviour, environment } = activity;
     const expression = behaviour.implementation || behaviour.expression;
-    const type = `${atype}:${behaviour.implementation ? "implementation" : "expression"}`;
+    const type = `${atype}:${behaviour.implementation ? 'implementation' : 'expression'}`;
     return {
         type,
         expression,
@@ -15,10 +15,10 @@ function BusinessRuleTaskService(activity: any) {
     };
     function execute(executionMessage: any, callback: any) {
         const serviceFn = environment.resolveExpression(expression, executionMessage);
-        if (typeof serviceFn !== "function") {
+        if (typeof serviceFn !== 'function') {
             return callback(
                 new Error(
-                    `${behaviour.implementation ? "Implementation" : "Expression"}  did not resolve to a function`,
+                    `${behaviour.implementation ? 'Implementation' : 'Expression'}  did not resolve to a function`,
                 ),
             );
         }
@@ -29,14 +29,14 @@ function BusinessRuleTaskService(activity: any) {
 }
 
 export const BusinessRuleTaskExtension = (processInstance: BpmnProcessInstance) => (activity: any) => {
-    if (activity.type.toLowerCase() !== "bpmn:BusinessRuleTask".toLowerCase()) {
+    if (activity.type.toLowerCase() !== 'bpmn:BusinessRuleTask'.toLowerCase()) {
         return;
     }
     if (activity.behaviour.expression || activity.behaviour.implementation) {
         activity.behaviour.Service = BusinessRuleTaskService;
     }
     if (activity.behaviour.resultVariable) {
-        activity.on("end", (api: any) => {
+        activity.on('end', (api: any) => {
             activity.environment.output[activity.behaviour.resultVariable] = api.content.output;
         });
     }

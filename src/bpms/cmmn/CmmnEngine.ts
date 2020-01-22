@@ -1,5 +1,5 @@
-import { uuidv1 } from "nowjs-core/lib/utils/UuidUtils";
-import { BpmsEngine } from "../BpmsEngine";
+import { uuidv1 } from 'nowjs-core/lib/utils/UuidUtils';
+import { BpmsEngine } from '../BpmsEngine';
 
 export interface CmmnEngineOptions {
     name: string;
@@ -20,7 +20,7 @@ export class CmmnEngine {
         return new CmmnEngine(undefined, arg1);
     }
     constructor(private bpmsEngine?: BpmsEngine, options?: CmmnEngineOptions) {
-        this.options = options || { name: "CmmnEngine-" + this.id };
+        this.options = options || { name: 'CmmnEngine-' + this.id };
         this.name = this.options.name;
     }
     public get Id(): string {

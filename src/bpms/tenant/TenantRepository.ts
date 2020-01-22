@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Tenant } from "./TenantService";
+import { Tenant } from './TenantService';
 export interface TenantRepository<T extends Tenant = Tenant> {
     create(tenant: T): Promise<T>;
     list(): Promise<T[]>;
@@ -8,15 +8,15 @@ export interface TenantRepository<T extends Tenant = Tenant> {
 }
 export class TenantMemoryRepository<T extends Tenant = Tenant> implements TenantRepository<T> {
     public async create(tenant: T): Promise<T> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     public async list(): Promise<T[]> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     public async find(tenantId: string): Promise<T> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     public async remove(tenantId: string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
 }

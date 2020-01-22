@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { uuidv1 } from "nowjs-core/lib/utils/UuidUtils";
-import { BpmnEngine, BpmnEngineOptions } from "./bpmn";
-import { CmmnEngine, CmmnEngineOptions } from "./cmmn";
-import { DataModelService, DataModelServiceOptions, DataSourceService } from "./data";
-import { DmnEngine, DmnEngineOptions } from "./dmn";
-import { HistoryService, HistoryServiceOptions } from "./history/HistoryService";
-import { IdentityService, IdentityServiceOptions } from "./identity/IdentityService";
-import { JobService, JobServiceOptions } from "./job/JobService";
-import { NavigationService, NavigationServiceOptions } from "./navigation/NavigationService";
-import { NotificationService } from "./notification/NotificationService";
-import { QueryService, QueryServiceOptions } from "./query/QueryService";
-import { TaskService, TaskServiceOptions } from "./task/TaskService";
-import { TenantService, TenantServiceOptions } from "./tenant/TenantService";
-import { UIService, UIServiceOptions } from "./ui/UIService";
+import { uuidv1 } from 'nowjs-core/lib/utils/UuidUtils';
+import { BpmnEngine, BpmnEngineOptions } from './bpmn';
+import { CmmnEngine, CmmnEngineOptions } from './cmmn';
+import { DataModelService, DataModelServiceOptions, DataSourceService } from './data';
+import { DmnEngine, DmnEngineOptions } from './dmn';
+import { HistoryService, HistoryServiceOptions } from './history/HistoryService';
+import { IdentityService, IdentityServiceOptions } from './identity/IdentityService';
+import { JobService, JobServiceOptions } from './job/JobService';
+import { NavigationService, NavigationServiceOptions } from './navigation/NavigationService';
+import { NotificationService } from './notification/NotificationService';
+import { QueryService, QueryServiceOptions } from './query/QueryService';
+import { TaskService, TaskServiceOptions } from './task/TaskService';
+import { TenantService, TenantServiceOptions } from './tenant/TenantService';
+import { UIService, UIServiceOptions } from './ui/UIService';
 export interface BpmsEngineOptions {
     name: string;
     cache?: boolean;
@@ -61,27 +61,13 @@ export class BpmsEngine {
     private name: string;
     private options: BpmsEngineOptions;
     constructor(options?: BpmsEngineOptions) {
-        this.name = "";
+        this.name = '';
         this.options = { name: this.name };
-        // this.bpmnEngine = null;
-        // this.dmnEngine = null;
-        // this.cmmnEngine = null;
-        // this.datamodelService = null;
-        // this.datasourceService = null;
-        // this.historyService = null;
-        // this.identityService = null;
-        // this.taskService = null;
-        // this.tenantService = null;
-        // this.navigationService = null;
-        // this.uiService = null;
-        // this.notificationService = null;
-        // this.queryService = null;
-        // this.jobService = null;
         this.init(options);
     }
 
     private init(options: BpmsEngineOptions | undefined): void {
-        this.options = options || { name: "BpmsEngine-" + this.id };
+        this.options = options || { name: 'BpmsEngine-' + this.id };
         this.options.cache = this.options.cache ? this.options.cache : true;
         this.name = this.options.name;
         if (this.options.cache) {
@@ -251,7 +237,7 @@ export class BpmsEngine {
 
     public static get Default(): BpmsEngine {
         if (!BpmsEngine.default) {
-            BpmsEngine.default = BpmsEngine.createEngine({ name: "default" });
+            BpmsEngine.default = BpmsEngine.createEngine({ name: 'default' });
         }
         return BpmsEngine.default;
     }

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 /* eslint-disable @typescript-eslint/no-var-requires */
 // tslint:disable-next-line:no-var-requires
-const { decisionTable } = require("@hbtgmbh/dmn-eval-js");
-import { uuidv1 } from "nowjs-core/lib/utils/UuidUtils";
-import { BpmsEngine } from "../BpmsEngine";
+const { decisionTable } = require('@hbtgmbh/dmn-eval-js');
+import { uuidv1 } from 'nowjs-core/lib/utils/UuidUtils';
+import { BpmsEngine } from '../BpmsEngine';
 import {
     DmnDefinitionFindOptions,
     DmnDefinitionListOptions,
@@ -13,7 +13,7 @@ import {
     DmnDefinitionPersistOptions,
     DmnDefinitionRemoveOptions,
     DmnDefinitionRepository,
-} from "./DmnDefinitionRepository";
+} from './DmnDefinitionRepository';
 
 export interface DmnEngineOptions {
     name: string;
@@ -36,7 +36,7 @@ export class DmnEngine {
     }
 
     constructor(private bpmsEngine?: BpmsEngine, options?: DmnEngineOptions) {
-        this.options = options || { name: "DmnEngine-" + this.id };
+        this.options = options || { name: 'DmnEngine-' + this.id };
         this.name = this.options.name;
         this.definitionRepository = this.options.definitionRepository || new DmnDefinitionMemoryRepository();
     }
@@ -63,7 +63,7 @@ export class DmnEngine {
      */
     public async registerDefinitions(name: string, decisions: DmnDefinition | string): Promise<boolean> {
         let d = decisions;
-        if (typeof decisions === "string") {
+        if (typeof decisions === 'string') {
             const s = await this.definitionRepository.find({ name });
             d = await this.parseDmnXml(d as string);
             if (!s) {
@@ -128,7 +128,7 @@ export class DmnEngine {
     ): Promise<R | undefined> {
         const p = new Promise<R>(async (resolve, reject) => {
             try {
-                if (typeof arg2 === "string") {
+                if (typeof arg2 === 'string') {
                     arg2 = await this.getDecisions(arg2 as string);
                 }
                 if (!arg2) {
@@ -191,7 +191,7 @@ export class DmnEngine {
 export interface DmnEvaluationContext {}
 
 export interface DmnDecisionTable {
-    hitPolicy: "FIRST" | "UNIQUE" | "COLLECT" | "RULE ORDER" | "ANY";
+    hitPolicy: 'FIRST' | 'UNIQUE' | 'COLLECT' | 'RULE ORDER' | 'ANY';
     rules: DmnDecisionTableRule[];
     input: string[];
     output: string[];

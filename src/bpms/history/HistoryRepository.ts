@@ -29,18 +29,18 @@ export class HistoryMemoryRepository implements HistoryRepository<HistoryData> {
     public async removeEntry(entryId: string): Promise<boolean>;
     public async removeEntry(data: HistoryData): Promise<boolean>;
     public async removeEntry(arg1: string | HistoryData): Promise<boolean> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     public async findEntry(): Promise<HistoryData> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     public async findEntries(): Promise<HistoryData[]> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     public async count(): Promise<number> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
     public async query(): Promise<HistoryData[]> {
-        throw new Error("Method not implemented.");
+        throw new Error('Method not implemented.');
     }
 }

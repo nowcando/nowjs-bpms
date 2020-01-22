@@ -1,6 +1,6 @@
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "../BpmsEngine";
-import { DataSourceMemoryRepository, DataSourceRepository } from "./DataSourceRepository";
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '../BpmsEngine';
+import { DataSourceMemoryRepository, DataSourceRepository } from './DataSourceRepository';
 
 export interface DataSourceServiceOptions {
     name: string;
@@ -19,7 +19,7 @@ export type DataSourceObjectSchema = DataSourceSchema<Record<string, any>>;
 export interface DataSourceWebApiSchema<T> extends DataSourceSchema<T> {
     url?: string;
     params?: any;
-    method?: "POST" | "GET" | "PUT" | "PATCH" | "DELETE" | "OPTIONS";
+    method?: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS';
 }
 export interface DataSourceRestApiSchema<T> extends DataSourceSchema<T> {
     url?: string;
@@ -42,11 +42,11 @@ export class DataSourceService {
     constructor(arg1?: BpmsEngine | DataSourceServiceOptions, arg2?: DataSourceServiceOptions) {
         if (arg1 instanceof BpmsEngine) {
             this.bpmsEngine = arg1;
-            this.options = arg2 || { name: "DataSourceEngine-" + this.id };
+            this.options = arg2 || { name: 'DataSourceEngine-' + this.id };
             this.name = this.options.name;
         } else {
             this.bpmsEngine = undefined;
-            this.options = arg1 || { name: "DataSourceEngine-" + this.id };
+            this.options = arg1 || { name: 'DataSourceEngine-' + this.id };
             this.name = this.options.name;
         }
 

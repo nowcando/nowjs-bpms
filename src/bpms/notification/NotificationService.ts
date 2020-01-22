@@ -1,5 +1,5 @@
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "..";
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '..';
 
 export interface NotificationServiceOptions {
     name: string;
@@ -10,7 +10,7 @@ export class NotificationService {
     private id: string = uuidv1();
     private options: NotificationServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: NotificationServiceOptions) {
-        this.options = options || { name: "NotificationService" + this.id };
+        this.options = options || { name: 'NotificationService' + this.id };
         //   this.taskRepository =
         //     this.options.tenantRepository || (new DynamicViewMemoryRepository<T>() as any);
     }

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "..";
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '..';
 
 export interface QueryServiceOptions {
     name: string;
@@ -37,7 +37,7 @@ export class QueryService {
     private id: string = uuidv1();
     private options: QueryServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: QueryServiceOptions) {
-        this.options = options || { name: "QueryService" + this.id };
+        this.options = options || { name: 'QueryService' + this.id };
         //   this.taskRepository =
         //     this.options.tenantRepository || (new DynamicViewMemoryRepository<T>() as any);
     }

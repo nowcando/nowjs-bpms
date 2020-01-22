@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { uuidv1 } from "nowjs-core/lib/utils";
+import { uuidv1 } from 'nowjs-core/lib/utils';
 
 export interface Task {
     id?: string;
@@ -33,7 +33,7 @@ export interface TaskQueryFilter {
 }
 
 export interface TaskQuerySort {
-    [name: string]: "asc" | "desc";
+    [name: string]: 'asc' | 'desc';
 }
 export interface TaskQuery {
     filter?: TaskQueryFilter;
@@ -108,7 +108,7 @@ export class TaskMemoryRepository<T extends Task = Task> implements TaskReposito
         return t as any;
     }
     public async findTasks(...taskId: string[]): Promise<T[]> {
-        const t = this.tasks.filter(xx => taskId.includes(xx.id || ""));
+        const t = this.tasks.filter(xx => taskId.includes(xx.id || ''));
         return t as any;
     }
     public async taskCompleted(taskId: string): Promise<T> {

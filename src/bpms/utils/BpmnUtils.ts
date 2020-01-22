@@ -3,17 +3,17 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 // tslint:disable: no-var-requires
-import bpe from "bpmn-elements";
+import bpe from 'bpmn-elements';
 const types = bpe;
-import BpmnModdle from "bpmn-moddle";
-import Debug from "debug";
-import mcs from "moddle-context-serializer";
+import BpmnModdle from 'bpmn-moddle';
+import Debug from 'debug';
+import mcs from 'moddle-context-serializer';
 const { default: Serializer, TypeResolver } = mcs;
 const { Context, Environment } = types;
 // import {Scripts} from "bpmn-elements/JavaScripts";
 const Scripts = () => {
     // tslint:disable-next-line: no-console
-    console.log("Script is loaded");
+    console.log('Script is loaded');
 };
 
 export default {
@@ -24,12 +24,12 @@ export default {
 };
 
 async function context(source, ...args) {
-    const logger = Logger("test-helpers:context");
+    const logger = Logger('test-helpers:context');
 
     const [options, callback] = getOptionsAndCallback(...args);
-    logger.debug("moddle context load");
+    logger.debug('moddle context load');
     const moddleCtx = await moddleContext(source, options.moddleOptions);
-    logger.debug("moddle context complete");
+    logger.debug('moddle context complete');
     const typeResolver = TypeResolver({ ...types, ...options.elements });
     const serializer = Serializer(moddleCtx, typeResolver);
 
@@ -54,7 +54,7 @@ async function context(source, ...args) {
             extensions,
         }),
     );
-    logger.debug("context complete");
+    logger.debug('context complete');
     if (callback) {
         callback(null, ctx);
     }
@@ -87,9 +87,9 @@ function moddleContext(source: Buffer | string, options: any = {}) {
 
 export function Logger(scope) {
     return {
-        debug: Debug("bpmn-elements:" + scope),
-        error: Debug("bpmn-elements:error:" + scope),
-        warn: Debug("bpmn-elements:warn:" + scope),
+        debug: Debug('bpmn-elements:' + scope),
+        error: Debug('bpmn-elements:error:' + scope),
+        warn: Debug('bpmn-elements:warn:' + scope),
     };
 }
 
@@ -117,7 +117,7 @@ function emptyContext(override, options) {
 
 function getOptionsAndCallback(optionsOrCallback?: any, callback?: any, defaultOptions?: any) {
     let options;
-    if (typeof optionsOrCallback === "function") {
+    if (typeof optionsOrCallback === 'function') {
         callback = optionsOrCallback;
         options = defaultOptions;
     } else {

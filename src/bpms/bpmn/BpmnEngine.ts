@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-this-alias */
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "../BpmsEngine";
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '../BpmsEngine';
 import {
     BpmnDefinitionFindOptions,
     BpmnDefinitionListOptions,
@@ -11,10 +11,10 @@ import {
     BpmnDefinitionPersistOptions,
     BpmnDefinitionRemoveOptions,
     BpmnDefinitionRepository,
-} from "./BpmnDefinitionRepository";
-import { BpmnProcessInstance, BpmnProcessOptions } from "./BpmnProcessInstance";
-import { BpmnProcessMemoryRepository, BpmnProcessRepository } from "./BpmnProcessRepository";
-import BusinessRuleTask from "./elements/BusinessRuleTask";
+} from './BpmnDefinitionRepository';
+import { BpmnProcessInstance, BpmnProcessOptions } from './BpmnProcessInstance';
+import { BpmnProcessMemoryRepository, BpmnProcessRepository } from './BpmnProcessRepository';
+import BusinessRuleTask from './elements/BusinessRuleTask';
 export type BpmnSource = string;
 
 export interface BpmnEngineOptions {
@@ -47,11 +47,11 @@ export class BpmnEngine {
     constructor(arg1?: BpmsEngine | BpmnEngineOptions, arg2?: BpmnEngineOptions) {
         if (arg1 instanceof BpmsEngine) {
             this.bpmsEngine = arg1;
-            this.options = arg2 || { name: "BpmnEngine-" + this.id };
+            this.options = arg2 || { name: 'BpmnEngine-' + this.id };
             this.name = this.options.name;
         } else {
             this.bpmsEngine = undefined;
-            this.options = arg1 || { name: "BpmnEngine-" + this.id };
+            this.options = arg1 || { name: 'BpmnEngine-' + this.id };
             this.name = this.options.name;
         }
 
@@ -94,10 +94,10 @@ export class BpmnEngine {
             const options = {
                 name,
                 elements: { BusinessRuleTask },
-                moddleOptions: { nowjs: require("nowjs-bpmn-moddle/resources/nowjs.json") },
+                moddleOptions: { nowjs: require('nowjs-bpmn-moddle/resources/nowjs.json') },
                 extensions: {
                     nowjs(element: any, definition: any): any {
-                        if (element.type.toLowerCase() === "bpmn:Process".toLowerCase()) {
+                        if (element.type.toLowerCase() === 'bpmn:Process'.toLowerCase()) {
                             if (
                                 element.behaviour &&
                                 element.behaviour.extensionElements &&
@@ -118,29 +118,29 @@ export class BpmnEngine {
                                         title: elm.navigationTitle || elm.title || elm.name,
                                         enabled: elm.navigationEnabled,
                                         order: elm.navgationOrder,
-                                        category: elm.category || "System",
+                                        category: elm.category || 'System',
                                         tags: elm.tags,
-                                        defaultView: elm.defaultView || "default",
+                                        defaultView: elm.defaultView || 'default',
                                         allowedViews: elm.allowedViews,
                                         authorization: elm.authorization,
                                     });
                                 }
                                 for (const extn of element.behaviour.extensionElements.values) {
                                     if (
-                                        extn.$type.toLowerCase() === "camunda:dynamicView".toLowerCase() ||
-                                        extn.$type.toLowerCase() === "nowjs:dynamicView".toLowerCase()
+                                        extn.$type.toLowerCase() === 'camunda:dynamicView'.toLowerCase() ||
+                                        extn.$type.toLowerCase() === 'nowjs:dynamicView'.toLowerCase()
                                     ) {
                                         const vscript = extn && extn.script && extn.script.value;
                                         if (self.BpmsEngine && vscript) {
                                             self.BpmsEngine.UIService.registerProcessViews(name, {
-                                                name: extn.name || "default",
+                                                name: extn.name || 'default',
                                                 title: extn.title || extn.navigationTitle || extn.name,
                                                 definitionName: name,
                                                 processName: element.title || element.name,
                                                 processId: element.id,
                                                 definitionId: definition.id,
                                                 id: extn.id,
-                                                key: elm.navigationKey + "/" + extn.name || "default",
+                                                key: elm.navigationKey + '/' + extn.name || 'default',
                                                 enabled: elm.navigationEnabled,
                                                 authorization: extn.authorization,
                                                 author: extn.author,

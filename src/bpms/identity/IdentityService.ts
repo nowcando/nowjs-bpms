@@ -1,6 +1,6 @@
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "../BpmsEngine";
-import { GroupData, IdentityMemoryRepository, IdentityRepository, ProfileData, UserData } from "./IdentityRepository";
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '../BpmsEngine';
+import { GroupData, IdentityMemoryRepository, IdentityRepository, ProfileData, UserData } from './IdentityRepository';
 
 export interface IdentityServiceOptions {
     identityRepository?: IdentityRepository<UserData, GroupData, ProfileData>;
@@ -17,7 +17,7 @@ export class IdentityService<
     private options: IdentityServiceOptions;
     private id: string = uuidv1();
     constructor(private bpmsEngine?: BpmsEngine, options?: IdentityServiceOptions) {
-        this.options = options || { name: "IdentityService" + this.id };
+        this.options = options || { name: 'IdentityService' + this.id };
         this.identityRepository =
             this.options.identityRepository ||
             (new IdentityMemoryRepository<UserData, GroupData, ProfileData>() as any);

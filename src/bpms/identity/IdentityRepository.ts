@@ -35,18 +35,18 @@ export class IdentityMemoryRepository<
     TProfile extends ProfileData = ProfileData
 > implements IdentityRepository<TUser, TGroup, TProfile> {
     private users: UserData[] = [
-        { id: "11", username: "admin" },
-        { id: "12", username: "demo" },
+        { id: '11', username: 'admin' },
+        { id: '12', username: 'demo' },
     ];
     private userProfiles: ProfileData[] = [
-        { id: "15", userId: "11", firstname: "admin", lastname: "admin" },
-        { id: "16", userId: "12", firstname: "demo", lastname: "demo" },
+        { id: '15', userId: '11', firstname: 'admin', lastname: 'admin' },
+        { id: '16', userId: '12', firstname: 'demo', lastname: 'demo' },
     ];
-    private userGroups: { [name: string]: string[] } = { admin: ["Admins"] };
+    private userGroups: { [name: string]: string[] } = { admin: ['Admins'] };
     private groups: GroupData[] = [
-        { id: "16", name: "Admins" },
-        { id: "17", name: "Demo" },
-        { id: "18", name: "Reports" },
+        { id: '16', name: 'Admins' },
+        { id: '17', name: 'Demo' },
+        { id: '18', name: 'Reports' },
     ];
     public async getUserById(userId: string): Promise<TUser> {
         const d = this.users.find(xx => xx.id === userId);
