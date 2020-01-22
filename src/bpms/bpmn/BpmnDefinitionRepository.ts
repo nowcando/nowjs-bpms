@@ -1,105 +1,92 @@
 export interface BpmnDefinitionListOptions {
-  name?: string;
+    name?: string;
 }
 
 export interface BpmnDefinitionFindOptions {
-  name?: string;
+    name?: string;
 }
 
 export interface BpmnDefinitionLoadOptions {
-  name: string;
+    name: string;
 }
 export interface BpmnDefinitionRemoveOptions {
-  name: string;
+    name: string;
 }
 export interface BpmnDefinitionPersistOptions {
-  name: string;
+    name: string;
 
-  definitions: any;
+    definitions: any;
 }
 export interface BpmnDefinitionPersistedData {
-  name: string;
-  definitions: any;
+    name: string;
+    definitions: any;
 
-  persistedAt: Date;
+    persistedAt: Date;
 }
 export interface BpmnDefinitionRepository {
-  count(): Promise<number>;
-  list<R extends BpmnDefinitionPersistedData>(
-    options?: BpmnDefinitionListOptions,
-  ): Promise<R[]>;
-  find<R extends BpmnDefinitionPersistedData>(
-    options: BpmnDefinitionFindOptions,
-  ): Promise<R |  null>;
-  load<R extends BpmnDefinitionPersistedData>(
-    options: BpmnDefinitionLoadOptions,
-  ): Promise<R[]>;
-  persist(options: BpmnDefinitionPersistOptions): Promise<boolean>;
-  remove(options: BpmnDefinitionRemoveOptions): Promise<boolean>;
-  clear(): Promise<void>;
+    count(): Promise<number>;
+    list<R extends BpmnDefinitionPersistedData>(options?: BpmnDefinitionListOptions): Promise<R[]>;
+    find<R extends BpmnDefinitionPersistedData>(options: BpmnDefinitionFindOptions): Promise<R | null>;
+    load<R extends BpmnDefinitionPersistedData>(options: BpmnDefinitionLoadOptions): Promise<R[]>;
+    persist(options: BpmnDefinitionPersistOptions): Promise<boolean>;
+    remove(options: BpmnDefinitionRemoveOptions): Promise<boolean>;
+    clear(): Promise<void>;
 }
 
-export class BpmnDefinitionMemoryRepository
-  implements BpmnDefinitionRepository {
-  private store: BpmnDefinitionPersistedData[] = [];
+export class BpmnDefinitionMemoryRepository implements BpmnDefinitionRepository {
+    private store: BpmnDefinitionPersistedData[] = [];
 
-  public async clear(): Promise<void> {
-    this.store = [];
-  }
-  public async remove(options: BpmnDefinitionRemoveOptions): Promise<boolean> {
-    const f = this.store.findIndex((xx) => xx.name === options.name);
-    if (f >= 0) {
-      this.store.splice(f, 1);
-      return true;
+    public async clear(): Promise<void> {
+        this.store = [];
     }
-    return false;
-  }
+    public async remove(options: BpmnDefinitionRemoveOptions): Promise<boolean> {
+        const f = this.store.findIndex(xx => xx.name === options.name);
+        if (f >= 0) {
+            this.store.splice(f, 1);
+            return true;
+        }
+        return false;
+    }
 
-  public async count(): Promise<number> {
-    return Promise.resolve(this.store.length);
-  }
-  public async list<R extends BpmnDefinitionPersistedData>(
-    options?: BpmnDefinitionListOptions | undefined,
-  ): Promise<R[]> {
-    if (options) {
-      const f = this.store.filter((xx) => xx.name === options.name);
-      return f as any;
-    } else {
-      return this.store.slice() as any;
+    public async count(): Promise<number> {
+        return Promise.resolve(this.store.length);
     }
-  }
-  public async find<R extends BpmnDefinitionPersistedData>(
-    options: BpmnDefinitionFindOptions,
-  ): Promise<R | null> {
-    if (options) {
-      const f = this.store.find((xx) => xx.name === options.name);
-      return f as any;
-    } else {
-      return null;
+    public async list<R extends BpmnDefinitionPersistedData>(
+        options?: BpmnDefinitionListOptions | undefined,
+    ): Promise<R[]> {
+        if (options) {
+            const f = this.store.filter(xx => xx.name === options.name);
+            return f as any;
+        } else {
+            return this.store.slice() as any;
+        }
     }
-  }
-  public async load<R extends BpmnDefinitionPersistedData>(
-    options: BpmnDefinitionLoadOptions,
-  ): Promise<R[]> {
-    if (options) {
-      const f = this.store.filter((xx) => xx.name === options.name);
-      return f as any;
-    } else {
-      return this.store.slice() as any;
+    public async find<R extends BpmnDefinitionPersistedData>(options: BpmnDefinitionFindOptions): Promise<R | null> {
+        if (options) {
+            const f = this.store.find(xx => xx.name === options.name);
+            return f as any;
+        } else {
+            return null;
+        }
     }
-  }
-  public async persist(
-    options: BpmnDefinitionPersistOptions,
-  ): Promise<boolean> {
-    const ix = this.store.findIndex((xx) => xx.name === options.name);
-    if (ix) {
-      this.store.splice(ix, 1);
+    public async load<R extends BpmnDefinitionPersistedData>(options: BpmnDefinitionLoadOptions): Promise<R[]> {
+        if (options) {
+            const f = this.store.filter(xx => xx.name === options.name);
+            return f as any;
+        } else {
+            return this.store.slice() as any;
+        }
     }
-    this.store.push({
-      name: options.name,
-      persistedAt: new Date(),
-      definitions: options.definitions,
-    });
-    return true;
-  }
+    public async persist(options: BpmnDefinitionPersistOptions): Promise<boolean> {
+        const ix = this.store.findIndex(xx => xx.name === options.name);
+        if (ix) {
+            this.store.splice(ix, 1);
+        }
+        this.store.push({
+            name: options.name,
+            persistedAt: new Date(),
+            definitions: options.definitions,
+        });
+        return true;
+    }
 }

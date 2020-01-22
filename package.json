@@ -24,8 +24,8 @@
     "test": "jest --runInBand --no-cache --colors --config ./jest.config.js",
     "test:watch": "jest --runInBand --watch --colors --config ./jest.config.js",
     "coverage": " jest --runInBand  --no-cache --colors  --coverage  --config ./jest.config.js ",
-    "lint": "tslint -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-    "lint:fix": "tslint --fix 'src/**/*.ts' 'test/**/*.ts' -t verbose"
+    "lint": "eslint  'src/**/*.ts' 'test/**/*.ts'",
+    "lint:fix": "eslint --fix 'src/**/*.ts' 'test/**/*.ts'"
   },
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -60,13 +60,19 @@
   },
   "dependencies": {
     "@hbtgmbh/dmn-eval-js": "^1.5.0",
+    "@typescript-eslint/eslint-plugin": "^2.17.0",
+    "@typescript-eslint/parser": "^2.17.0",
     "bpmn-elements": "^0.11.0",
     "bpmn-engine": "^8.6.0",
     "bpmn-moddle": "^6.0.1",
     "camunda-bpmn-moddle": "^4.3.0",
     "dmn-moddle": "^6.0.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-prettier": "^3.1.2",
     "nowjs-bpmn-moddle": "^1.13.0",
     "nowjs-core": "^0.36.0",
+    "prettier": "^1.19.1",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
