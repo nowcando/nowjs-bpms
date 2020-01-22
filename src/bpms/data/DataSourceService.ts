@@ -5,7 +5,7 @@ import {
   DataSourceRepository,
 } from "./DataSourceRepository";
 
-export interface DataSourceEngineOptions {
+export interface DataSourceServiceOptions {
   name: string;
   datasourceRepository?: DataSourceRepository;
 }
@@ -33,19 +33,19 @@ export interface DataSourceRestApiSchema<T> extends DataSourceSchema<T> {
 export interface DataSourceDefinition {
     sources: Array<DataSourceSchema<any>>;
 }
-export class DataSourceEngine {
+export class DataSourceService {
   private datasourceCache: { [name: string]: any } = {};
   private id: string = uuidv1();
   private name: string;
   private datasourceRepository: DataSourceRepository;
-  private options: DataSourceEngineOptions;
+  private options: DataSourceServiceOptions;
   private bpmsEngine: BpmsEngine | undefined;
 
-  constructor(options?: DataSourceEngineOptions);
-  constructor(bpmsEngine?: BpmsEngine, options?: DataSourceEngineOptions);
+  constructor(options?: DataSourceServiceOptions);
+  constructor(bpmsEngine?: BpmsEngine, options?: DataSourceServiceOptions);
   constructor(
-    arg1?: BpmsEngine | DataSourceEngineOptions,
-    arg2?: DataSourceEngineOptions,
+    arg1?: BpmsEngine | DataSourceServiceOptions,
+    arg2?: DataSourceServiceOptions,
   ) {
     if (arg1 instanceof BpmsEngine) {
       this.bpmsEngine = arg1;
@@ -76,19 +76,19 @@ export class DataSourceEngine {
     return this.datasourceRepository;
   }
 
-  public static createEngine(options?: DataSourceEngineOptions): DataSourceEngine;
+  public static createEngine(options?: DataSourceServiceOptions): DataSourceService;
   public static createEngine(
     bpmsEngine?: BpmsEngine,
-    options?: DataSourceEngineOptions,
-  ): DataSourceEngine;
+    options?: DataSourceServiceOptions,
+  ): DataSourceService;
   public static createEngine(
-    arg1?: BpmsEngine | DataSourceEngineOptions,
-    arg2?: DataSourceEngineOptions,
-  ): DataSourceEngine {
+    arg1?: BpmsEngine | DataSourceServiceOptions,
+    arg2?: DataSourceServiceOptions,
+  ): DataSourceService {
     if (arg1 instanceof BpmsEngine) {
-      return new DataSourceEngine(arg1, arg2);
+      return new DataSourceService(arg1, arg2);
     }
-    return new DataSourceEngine(undefined, arg1);
+    return new DataSourceService(undefined, arg1);
   }
 
   public async registerDataSource(

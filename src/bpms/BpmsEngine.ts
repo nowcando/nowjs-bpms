@@ -1,12 +1,27 @@
 import { uuidv1 } from "nowjs-core/lib/utils/UuidUtils";
 import { BpmnEngine, BpmnEngineOptions } from "./bpmn";
 import { CmmnEngine, CmmnEngineOptions } from "./cmmn";
-import { DataModelEngine, DataModelEngineOptions, DataSourceEngine } from "./data";
+import {
+  DataModelService,
+  DataModelServiceOptions,
+  DataSourceService
+} from "./data";
 import { DmnEngine, DmnEngineOptions } from "./dmn";
-import { HistoryService, HistoryServiceOptions } from "./history/HistoryService";
-import { IdentityService, IdentityServiceOptions } from "./identity/IdentityService";
-import { NavigationService, NavigationServiceOptions } from "./navigation/NavigationService";
+import {
+  HistoryService,
+  HistoryServiceOptions
+} from "./history/HistoryService";
+import {
+  IdentityService,
+  IdentityServiceOptions
+} from "./identity/IdentityService";
+import { JobService, JobServiceOptions } from "./job/JobService";
+import {
+  NavigationService,
+  NavigationServiceOptions
+} from "./navigation/NavigationService";
 import { NotificationService } from "./notification/NotificationService";
+import { QueryService, QueryServiceOptions } from "./query/QueryService";
 import { TaskService, TaskServiceOptions } from "./task/TaskService";
 import { TenantService, TenantServiceOptions } from "./tenant/TenantService";
 import { UIService, UIServiceOptions } from "./ui/UIService";
@@ -16,15 +31,16 @@ export interface BpmsEngineOptions {
   bpmnEngine?: BpmnEngineOptions;
   dmnEngine?: DmnEngineOptions;
   cmmnEngine?: CmmnEngineOptions;
-  datamodelEngine?: DataModelEngineOptions;
-  datasourceEngine?: DataModelEngineOptions;
+  datamodelEngine?: DataModelServiceOptions;
+  datasourceEngine?: DataModelServiceOptions;
   identityService?: IdentityServiceOptions;
   historyService?: HistoryServiceOptions;
   taskService?: TaskServiceOptions;
   tenantService?: TenantServiceOptions;
   navigationService?: NavigationServiceOptions;
   uiService?: UIServiceOptions;
-
+  jobService?: JobServiceOptions;
+  queryService?: QueryServiceOptions;
   notificationService?: NotificationService;
   meta?: any;
 }
@@ -41,13 +57,15 @@ export class BpmsEngine {
   private bpmnEngine: BpmnEngine | null;
   private dmnEngine: DmnEngine | null;
   private cmmnEngine: CmmnEngine | null;
-  private datamodelEngine: DataModelEngine | null;
-  private datasourceEngine: DataSourceEngine | null;
+  private datamodelService: DataModelService | null;
+  private datasourceService: DataSourceService | null;
   private historyService: HistoryService | null;
   private identityService: IdentityService | null;
   private taskService: TaskService | null;
   private tenantService: TenantService | null;
   private uiService: UIService | null;
+  private queryService: QueryService | null;
+  private jobService: JobService | null;
   private navigationService: NavigationService | null;
   private notificationService: NotificationService | null;
 
@@ -60,8 +78,8 @@ export class BpmsEngine {
     this.bpmnEngine = null;
     this.dmnEngine = null;
     this.cmmnEngine = null;
-    this.datamodelEngine = null;
-    this.datasourceEngine = null;
+    this.datamodelService = null;
+    this.datasourceService = null;
     this.historyService = null;
     this.identityService = null;
     this.taskService = null;
@@ -69,6 +87,8 @@ export class BpmsEngine {
     this.navigationService = null;
     this.uiService = null;
     this.notificationService = null;
+    this.queryService = null;
+    this.jobService = null;
     this.init(options);
   }
 
@@ -81,57 +101,65 @@ export class BpmsEngine {
         BpmsEngine.registry[this.name] = this;
       } else {
         throw new Error(
-          `The BpmsEngine with current name '${this.name}' already exist in cache`,
+          `The BpmsEngine with current name '${this.name}' already exist in cache`
         );
       }
     }
     this.bpmnEngine = BpmnEngine.createEngine(this, {
       name: this.name,
-      ...this.options.bpmnEngine,
+      ...this.options.bpmnEngine
     });
     this.dmnEngine = DmnEngine.createEngine(this, {
       name: this.name,
-      ...this.options.dmnEngine,
+      ...this.options.dmnEngine
     });
     this.cmmnEngine = CmmnEngine.createEngine(this, {
       name: this.name,
-      ...this.options.cmmnEngine,
+      ...this.options.cmmnEngine
     });
-    this.datamodelEngine = DataModelEngine.createEngine(this, {
+    this.datamodelService = DataModelService.createEngine(this, {
       name: this.name,
-      ...this.options.datamodelEngine,
+      ...this.options.datamodelEngine
     });
-    this.datasourceEngine = DataSourceEngine.createEngine(this, {
+    this.datasourceService = DataSourceService.createEngine(this, {
       name: this.name,
-      ...this.options.datasourceEngine,
+      ...this.options.datasourceEngine
     });
     this.tenantService = TenantService.createService(this, {
       name: this.name,
-      ...this.options.tenantService,
+      ...this.options.tenantService
     });
     this.identityService = IdentityService.createService(this, {
       name: this.name,
-      ...this.options.identityService,
+      ...this.options.identityService
     });
     this.historyService = HistoryService.createService(this, {
       name: this.name,
-      ...this.options.historyService,
+      ...this.options.historyService
     });
     this.taskService = TaskService.createService(this, {
       name: this.name,
-      ...this.options.taskService,
+      ...this.options.taskService
     });
     this.uiService = UIService.createService(this, {
       name: this.name,
-      ...this.options.uiService,
+      ...this.options.uiService
+    });
+    this.queryService = QueryService.createService(this, {
+      name: this.name,
+      ...this.options.queryService
+    });
+    this.jobService = JobService.createService(this, {
+      name: this.name,
+      ...this.options.jobService
     });
     this.navigationService = NavigationService.createService(this, {
       name: this.name,
-      ...this.options.navigationService,
+      ...this.options.navigationService
     });
     this.notificationService = NotificationService.createService(this, {
       name: this.name,
-      ...this.options.notificationService,
+      ...this.options.notificationService
     });
   }
 
@@ -141,7 +169,7 @@ export class BpmsEngine {
   }
 
   public static getById(id: string): BpmsEngine | null {
-    const x = Object.entries(BpmsEngine.registry).find((xx) => xx[1].Id === id);
+    const x = Object.entries(BpmsEngine.registry).find(xx => xx[1].Id === id);
     if (x) {
       return x[1];
     } else {
@@ -152,7 +180,7 @@ export class BpmsEngine {
     return BpmsEngine.registry[name];
   }
   public static list(): BpmsEngine[] {
-    return Object.entries(BpmsEngine.registry).map((xx) => xx[1]);
+    return Object.entries(BpmsEngine.registry).map(xx => xx[1]);
   }
   public static reset(): void {
     BpmsEngine.registry = {};
@@ -172,7 +200,7 @@ export class BpmsEngine {
       options.name = this.options.name;
     }
     this.init(options || this.options);
-    return ;
+    return;
   }
 
   public get Options(): BpmnEngineOptions {
@@ -197,13 +225,12 @@ export class BpmsEngine {
     return this.cmmnEngine as any;
   }
 
-
-  public get DataModelEngine(): DataModelEngine {
-    return this.datamodelEngine as any;
+  public get DataModelService(): DataModelService {
+    return this.datamodelService as any;
   }
 
-  public get DataSourceEngine(): DataSourceEngine {
-    return this.datasourceEngine as any;
+  public get DataSourceService(): DataSourceService {
+    return this.datasourceService as any;
   }
 
   public get NavigationService(): NavigationService {
@@ -211,6 +238,13 @@ export class BpmsEngine {
   }
   public get UIService(): UIService {
     return this.uiService as any;
+  }
+
+  public get JobService(): QueryService {
+    return this.jobService as any;
+  }
+  public get QueryService(): QueryService {
+    return this.queryService as any;
   }
 
   public get NotificationService(): NotificationService {

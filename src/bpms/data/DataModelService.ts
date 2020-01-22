@@ -6,7 +6,7 @@ import {
   DataModelRepository,
 } from "./DataModelRepository";
 
-export interface DataModelEngineOptions {
+export interface DataModelServiceOptions {
   name: string;
   datamodelPersistency?: DataModelRepository;
 }
@@ -28,19 +28,19 @@ export interface DataModelDefinition {
     models: DataModelSchemaDefinition;
     relations?: DataModelRelationDefinition;
 }
-export class DataModelEngine {
+export class DataModelService {
   private dataModelCache: { [name: string]: any } = {};
   private id: string = uuidv1();
   private name: string;
   private datamodelRepository: DataModelRepository;
-  private options: DataModelEngineOptions;
+  private options: DataModelServiceOptions;
   private bpmsEngine: BpmsEngine | undefined;
 
-  constructor(options?: DataModelEngineOptions);
-  constructor(bpmsEngine?: BpmsEngine, options?: DataModelEngineOptions);
+  constructor(options?: DataModelServiceOptions);
+  constructor(bpmsEngine?: BpmsEngine, options?: DataModelServiceOptions);
   constructor(
-    arg1?: BpmsEngine | DataModelEngineOptions,
-    arg2?: DataModelEngineOptions,
+    arg1?: BpmsEngine | DataModelServiceOptions,
+    arg2?: DataModelServiceOptions,
   ) {
     if (arg1 instanceof BpmsEngine) {
       this.bpmsEngine = arg1;
@@ -71,19 +71,19 @@ export class DataModelEngine {
     return this.datamodelRepository;
   }
 
-  public static createEngine(options?: DataModelEngineOptions): DataModelEngine;
+  public static createEngine(options?: DataModelServiceOptions): DataModelService;
   public static createEngine(
     bpmsEngine?: BpmsEngine,
-    options?: DataModelEngineOptions,
-  ): DataModelEngine;
+    options?: DataModelServiceOptions,
+  ): DataModelService;
   public static createEngine(
-    arg1?: BpmsEngine | DataModelEngineOptions,
-    arg2?: DataModelEngineOptions,
-  ): DataModelEngine {
+    arg1?: BpmsEngine | DataModelServiceOptions,
+    arg2?: DataModelServiceOptions,
+  ): DataModelService {
     if (arg1 instanceof BpmsEngine) {
-      return new DataModelEngine(arg1, arg2);
+      return new DataModelService(arg1, arg2);
     }
-    return new DataModelEngine(undefined, arg1);
+    return new DataModelService(undefined, arg1);
   }
 
   public async registerDataModel(
