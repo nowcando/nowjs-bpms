@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import { QueryOptions, QueryResult, ScalarOptions, BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
+import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export interface HistoryData {

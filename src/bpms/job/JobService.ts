@@ -1,7 +1,7 @@
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
-import { JobModel, JobMemoryRepository, JobRepository } from './JobRepository';
-import { QueryOptions, QueryResult, ScalarOptions, IdExpression, FilterExpression } from '../data/Repository';
+import { JobMemoryRepository, JobRepository } from './JobRepository';
+import { IdExpression, FilterExpression } from '../data/Repository';
 
 // export class Job {
 //    private data: JobData;

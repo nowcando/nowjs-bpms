@@ -1,6 +1,6 @@
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
-import { TaskMemoryRepository, TaskRepository, TaskModel } from './TaskRepository';
+import { TaskMemoryRepository, TaskRepository } from './TaskRepository';
 import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from '../data/Repository';
 
 // export class Task {
