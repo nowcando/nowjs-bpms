@@ -4,7 +4,7 @@ import { BpmsEngine } from '../BpmsEngine';
 import { TenantMemoryRepository, TenantRepository } from './TenantRepository';
 import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from '../data/Repository';
 
-export interface Tenant {
+export interface BpmsTenant {
     id: string;
     name: string;
 }
@@ -13,7 +13,7 @@ export interface TenantServiceOptions {
     tenantRepository?: TenantRepository;
     name: string;
 }
-export class TenantService<T extends Tenant = Tenant> {
+export class TenantService<T extends BpmsTenant = BpmsTenant> {
     private tenantRepository: TenantRepository<T>;
     private id: string = uuidv1();
     private options: TenantServiceOptions;
@@ -44,17 +44,17 @@ export class TenantService<T extends Tenant = Tenant> {
     public get BpmsEngine(): BpmsEngine | undefined {
         return this.bpmsEngine;
     }
-    public async create(task: T): Promise<T> {
-        return this.tenantRepository.create(task);
+    public async create(entity: T): Promise<T> {
+        return this.tenantRepository.create(entity);
     }
-    public async remove(taskId: string): Promise<boolean> {
-        return this.tenantRepository.delete(taskId);
+    public async remove(entityId: string): Promise<boolean> {
+        return this.tenantRepository.delete(entityId);
     }
 
-    public async find(taskId: string): Promise<T | null> {
-        return this.tenantRepository.find(taskId);
+    public async find(entityId: string): Promise<T | null> {
+        return this.tenantRepository.find(entityId);
     }
-    public async findAll<R = T>(filter: FilterExpression): Promise<R[]> {
+    public async list<R = T>(filter: FilterExpression): Promise<R[]> {
         return this.tenantRepository.findAll(filter);
     }
     public async count(filter: FilterExpression): Promise<number> {

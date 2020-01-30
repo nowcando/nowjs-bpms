@@ -2,7 +2,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
-import { QueryOptions, QueryResult, ScalarOptions } from '../data/Repository';
+import {
+    QueryOptions,
+    QueryResult,
+    ScalarOptions,
+    BpmsBaseMemoryRepository,
+    FilterExpression,
+} from '../data/Repository';
 
 export interface UIServiceOptions {
     name: string;
@@ -10,9 +16,9 @@ export interface UIServiceOptions {
 
 export interface ProcessViewData {
     definitionName: string;
-    view: ProcessView;
+    view: BpmsProcessView;
 }
-export interface ProcessView {
+export interface BpmsProcessView {
     definitionName: string;
     processName: string;
     processId: string;
@@ -32,14 +38,17 @@ export interface ProcessView {
     body: string;
 }
 
-export class UIService {
-    private views: any[] = [];
+export class UIService<T extends ProcessViewData = ProcessViewData> {
+    private viewRepository: BpmsBaseMemoryRepository<T>;
     private id: string = uuidv1();
     private options: UIServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: UIServiceOptions) {
         this.options = options || { name: 'UIService' + this.id };
-        //   this.taskRepository =
-        //     this.options.tenantRepository || (new DynamicViewMemoryRepository<T>() as any);
+        this.viewRepository = new BpmsBaseMemoryRepository({
+            storageName: 'View',
+            keyPropertyname: 'id',
+            properties: {},
+        });
     }
 
     public static createService(options?: UIServiceOptions): UIService;
@@ -62,15 +71,30 @@ export class UIService {
         return this.bpmsEngine;
     }
 
-    public async registerProcessViews(definitionName: string, view: any): Promise<ProcessViewData> {
+    public async create(definitionName: string, view: any): Promise<T> {
         const d = { definitionName, view };
-        this.views.push(d);
-        return d;
+        return this.viewRepository.create(d);
     }
-    public async findView(processName: string, viewName: string): Promise<ProcessViewData> {
-        return this.views.find(xx => xx.processName === processName && xx.name === viewName);
+    public async findView(processName: string, viewName: string): Promise<T | null> {
+        return this.viewRepository.find({ processName, viewName });
     }
-    public async listViews(): Promise<ProcessViewData[]> {
-        return this.views;
+    public async remove(entityId: string): Promise<boolean> {
+        return this.viewRepository.delete(entityId);
+    }
+
+    public async find(entityId: string): Promise<T | null> {
+        return this.viewRepository.find(entityId);
+    }
+    public async list<R = T>(filter?: FilterExpression): Promise<R[]> {
+        return this.viewRepository.findAll(filter);
+    }
+    public async count(filter: FilterExpression): Promise<number> {
+        return this.viewRepository.count('id', filter);
+    }
+    public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {
+        return this.viewRepository.query(options);
+    }
+    public async scalar(options: ScalarOptions): Promise<number> {
+        return this.viewRepository.scalar(options);
     }
 }

@@ -35,7 +35,7 @@ import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from '../d
 //    public get Categories(): string {}
 // }
 
-export interface Task {
+export interface BpmsTask {
     id?: string;
     title?: string;
     descriptipns?: string;
@@ -66,7 +66,7 @@ export interface TaskServiceOptions {
     taskRepository?: TaskRepository;
     name: string;
 }
-export class TaskService<T extends Task = Task> {
+export class TaskService<T extends BpmsTask = BpmsTask> {
     private taskRepository: TaskRepository<T>;
     private id: string = uuidv1();
     private options: TaskServiceOptions;
@@ -91,9 +91,6 @@ export class TaskService<T extends Task = Task> {
     public get Name(): string {
         return this.options.name;
     }
-    public get TaskRepository(): TaskRepository<T> {
-        return this.taskRepository;
-    }
     public get BpmsEngine(): BpmsEngine | undefined {
         return this.bpmsEngine;
     }
@@ -107,17 +104,17 @@ export class TaskService<T extends Task = Task> {
     public async find(taskId: string): Promise<T | null> {
         return this.taskRepository.find(taskId);
     }
-    public async findAll<R = T>(filter: FilterExpression): Promise<R[]> {
+    public async list<R = T>(filter?: FilterExpression): Promise<R[]> {
         return this.taskRepository.findAll(filter);
     }
-    public async count(filter: FilterExpression): Promise<number> {
+    public async count(filter?: FilterExpression): Promise<number> {
         return this.taskRepository.count('id', filter);
     }
     public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {
-        return this.TaskRepository.query(options);
+        return this.taskRepository.query(options);
     }
     public async scalar(options: ScalarOptions): Promise<number> {
-        return this.TaskRepository.scalar(options);
+        return this.taskRepository.scalar(options);
     }
 
     public async updateTaskDueDate(taskId: string, dueDate: Date | undefined): Promise<T> {

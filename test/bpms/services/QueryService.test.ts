@@ -36,25 +36,25 @@ describe('Query Service', () => {
         const actual = BpmsEngine.createEngine({ name: 'MyEngineQueryService3' });
         expect(actual).toBeDefined();
         const bpe = actual.BpmnEngine;
-        const pr1 = await bpe.registerDefinitions('Process1', source1);
+        const pr1 = await bpe.createDefinitions('Process1', source1);
         expect(pr1).toBeDefined();
-        const pr2 = await bpe.registerDefinitions('Process2', source2);
+        const pr2 = await bpe.createDefinitions('Process2', source2);
         expect(pr2).toBeDefined();
         // actual.BpmnEngine.registerDefinitions()
         expect(actual.QueryService.count).toBeDefined();
         const actual2 = await actual.QueryService.count('bpmnDefinition');
         expect(actual2).toBeDefined();
-        expect(actual2).toEqual(2);
+        expect(actual2.results.bpmnDefinition).toEqual(2);
     });
     it('checks count', async () => {
         const actual = BpmsEngine.createEngine({ name: 'MyEngineQueryService4' });
         expect(actual).toBeDefined();
         const bpe = actual.BpmnEngine;
-        const pr1 = await bpe.registerDefinitions('Process1', source1);
+        const pr1 = await bpe.createDefinitions('Process1', source1);
         expect(pr1).toBeDefined();
-        const pr2 = await bpe.registerDefinitions('Process2', source2);
+        const pr2 = await bpe.createDefinitions('Process2', source2);
         expect(pr2).toBeDefined();
-        const pr3 = await bpe.registerDefinitions('Process3', source3);
+        const pr3 = await bpe.createDefinitions('Process3', source3);
         expect(pr3).toBeDefined();
         for (let i = 0; i < 5; i++) {
             await bpe.createProcess({ name: 'Process1' });
@@ -65,17 +65,18 @@ describe('Query Service', () => {
         expect(actual.QueryService.count).toBeDefined();
         const actual2 = await actual.QueryService.count('loadedProcess');
         expect(actual2).toBeDefined();
-        expect(actual2).toEqual(15);
+        expect(actual2.results).toBeDefined();
+        expect(actual2.results.loadedProcess).toEqual(15);
     });
     it('checks query', async () => {
         const actual = BpmsEngine.createEngine({ name: 'MyEngineQueryService5' });
         expect(actual).toBeDefined();
         const bpe = actual.BpmnEngine;
-        const pr1 = await bpe.registerDefinitions('Process1', source1);
+        const pr1 = await bpe.createDefinitions('Process1', source1);
         expect(pr1).toBeDefined();
-        const pr2 = await bpe.registerDefinitions('Process2', source2);
+        const pr2 = await bpe.createDefinitions('Process2', source2);
         expect(pr2).toBeDefined();
-        const pr3 = await bpe.registerDefinitions('Process3', source3);
+        const pr3 = await bpe.createDefinitions('Process3', source3);
         expect(pr3).toBeDefined();
         for (let i = 0; i < 5; i++) {
             await bpe.createProcess({ name: 'Process1' });
@@ -84,9 +85,11 @@ describe('Query Service', () => {
         }
         // actual.BpmnEngine.registerDefinitions()
         expect(actual.QueryService.count).toBeDefined();
-        const actual2 = await actual.QueryService.query('loadedProcess', { filter: { Name: 'Process1' } });
+        const actual2 = await actual.QueryService.query<any>('loadedProcess', { filter: { Name: 'Process1' } });
         expect(actual2).toBeDefined();
         expect(actual2.results).toBeDefined();
-        expect(actual2.results[0].data.length).toEqual(5);
+        expect(actual2.results.loadedProcess).toBeDefined();
+        expect(actual2.results.loadedProcess.data).toBeDefined();
+        expect(actual2.results.loadedProcess.data.length).toEqual(5);
     });
 });

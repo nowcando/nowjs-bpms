@@ -1,7 +1,7 @@
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
 import { JobMemoryRepository, JobRepository } from './JobRepository';
-import { IdExpression, FilterExpression } from '../data/Repository';
+import { IdExpression, FilterExpression, QueryOptions, QueryResult, ScalarOptions } from '../data/Repository';
 
 // export class Job {
 //    private data: JobData;
@@ -106,8 +106,18 @@ export class JobService<T extends BpmsJob = BpmsJob> {
         return this.jobRepository.find(jobId);
     }
 
-    public async findJobs(filter: FilterExpression): Promise<T[]> {
+    public async list(filter?: FilterExpression): Promise<T[]> {
         return this.jobRepository.findAll(filter);
+    }
+
+    public async count(filter?: FilterExpression): Promise<number> {
+        return this.jobRepository.count('id', filter);
+    }
+    public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {
+        return this.jobRepository.query(options);
+    }
+    public async scalar(options: ScalarOptions): Promise<number> {
+        return this.jobRepository.scalar(options);
     }
 
     public async updateJobDueDate(jobId: string, dueDate: Date | undefined): Promise<T> {
@@ -128,8 +138,5 @@ export class JobService<T extends BpmsJob = BpmsJob> {
     }
     public async jobSeen(jobId: string): Promise<T> {
         return this.jobRepository.update(jobId, { seen: true });
-    }
-    public async count(filter?: FilterExpression): Promise<number> {
-        return this.jobRepository.count('id', filter);
     }
 }

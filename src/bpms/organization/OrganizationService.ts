@@ -7,16 +7,16 @@ import {
 } from './OrganizationEmployeePositionRepository';
 import { OrganizationEmployeeRepository, OrganizationEmployeeMemoryRepository } from './OrganizationEmployeeRepository';
 import { IdExpression, FilterExpression } from '../data/Repository';
-export interface OrganizationEmployee {
+export interface BpmsOrganizationEmployee {
     id: string;
     name: string;
 }
-export interface OrganizationPosition {
+export interface BpmsOrganizationPosition {
     id: string;
     name: string;
     parentId?: string;
 }
-export interface OrganizationEmployeePosition {
+export interface BpmsOrganizationEmployeePosition {
     id: string;
     positionId: string;
     employeeId: string;
@@ -67,27 +67,27 @@ export class OrganizationService {
         return this.bpmsEngine;
     }
 
-    public async getOrganizationPosition(positionId: IdExpression): Promise<OrganizationPosition | null> {
+    public async getOrganizationPosition(positionId: IdExpression): Promise<BpmsOrganizationPosition | null> {
         return this.organizationPositionRepository.find(positionId);
     }
     public async getOrganizationEmployeePosition(
         employeeId: IdExpression,
         positionId: IdExpression,
-    ): Promise<OrganizationEmployeePosition | null> {
+    ): Promise<BpmsOrganizationEmployeePosition | null> {
         return this.organizationEmployeePositionRepository.find({ employeeId, positionId });
     }
-    public async getOrganizationEmployee(employeeId: IdExpression): Promise<OrganizationEmployee | null> {
+    public async getOrganizationEmployee(employeeId: IdExpression): Promise<BpmsOrganizationEmployee | null> {
         return this.organizationEmployeeRepository.find(employeeId);
     }
-    public async getOrganizationEmployees(filter?: FilterExpression): Promise<OrganizationEmployee[] | null> {
+    public async getOrganizationEmployees(filter?: FilterExpression): Promise<BpmsOrganizationEmployee[] | null> {
         return this.organizationEmployeeRepository.findAll(filter);
     }
-    public async getOrganizationPositions(filter?: FilterExpression): Promise<OrganizationPosition[] | null> {
+    public async getOrganizationPositions(filter?: FilterExpression): Promise<BpmsOrganizationPosition[] | null> {
         return this.organizationPositionRepository.findAll(filter);
     }
     public async getOrganizationEmployeePositions(
         filter?: FilterExpression,
-    ): Promise<OrganizationEmployeePosition[] | null> {
+    ): Promise<BpmsOrganizationEmployeePosition[] | null> {
         return this.organizationEmployeePositionRepository.findAll(filter);
     }
 }

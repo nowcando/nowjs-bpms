@@ -27,7 +27,7 @@ export interface ScalarOptions {
 }
 
 export interface QueryResultSet<R> {
-    results: QueryResult<R>[];
+    results: Record<string, R>;
 }
 
 export interface QueryResult<R> {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
-import { QueryOptions, QueryResult, ScalarOptions } from '../data/Repository';
+import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from '../data/Repository';
 import { NotificationRepository, NotificationMemoryRepository } from './NotificationRepository';
 
 export interface NotificationServiceOptions {
@@ -51,15 +51,26 @@ export class NotificationService<T extends BpmsNotification = BpmsNotification> 
         return this.bpmsEngine;
     }
 
-    public async registerNotification(notifiation: T): Promise<any> {
-        const d = { ...notifiation };
-        this.notificationRepository.create(d);
-        return d;
+    public async create(entity: T): Promise<T> {
+        return this.notificationRepository.create(entity);
     }
-    public async find(processName: string, viewName: string): Promise<any> {
-        return this.notificationRepository.find(xx => xx.name === viewName);
+    public async remove(entityId: string): Promise<boolean> {
+        return this.notificationRepository.delete(entityId);
     }
-    public async list(): Promise<any[]> {
-        return this.notificationRepository.findAll();
+
+    public async find(entityId: string): Promise<T | null> {
+        return this.notificationRepository.find(entityId);
+    }
+    public async list<R = T>(filter?: FilterExpression): Promise<R[]> {
+        return this.notificationRepository.findAll(filter);
+    }
+    public async count(filter?: FilterExpression): Promise<number> {
+        return this.notificationRepository.count('id', filter);
+    }
+    public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {
+        return this.notificationRepository.query(options);
+    }
+    public async scalar(options: ScalarOptions): Promise<number> {
+        return this.notificationRepository.scalar(options);
     }
 }

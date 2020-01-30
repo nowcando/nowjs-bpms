@@ -8,7 +8,6 @@ import { BpmnProcessInstance, BpmnProcessOptions, BpmnProcess } from './BpmnProc
 import { BpmnProcessMemoryRepository, BpmnProcessRepository } from './BpmnProcessRepository';
 import BusinessRuleTask from './elements/BusinessRuleTask';
 import { IdExpression, FilterExpression, BpmsBaseMemoryRepository } from '../data/Repository';
-import { promises } from 'dns';
 export type BpmnSource = string;
 
 export interface BpmnEngineOptions {
@@ -31,6 +30,10 @@ export interface BpmnEnginePersistOptions {
 
 export interface BpmnDefinition {
     id: string;
+    name: string;
+    definitions: any;
+
+    createdAt?: Date;
 }
 
 // export interface BpmnProcess {
@@ -105,100 +108,10 @@ export class BpmnEngine {
         return new BpmnEngine(undefined, arg1);
     }
 
-    public async registerDefinitions(name: string, source: BpmnSource): Promise<boolean> {
+    public async createDefinitions(name: string, source: BpmnSource): Promise<boolean> {
         const self = this;
         const f = await this.bpmnDefinitionRepository.find({ name });
         if (!f) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const options = {
-                name,
-                elements: { BusinessRuleTask },
-                moddleOptions: { nowjs: require('nowjs-bpmn-moddle/resources/nowjs.json') },
-                extensions: {
-                    nowjs(element: any, definition: any): any {
-                        if (element.type.toLowerCase() === 'bpmn:Process'.toLowerCase()) {
-                            if (
-                                element.behaviour &&
-                                element.behaviour.extensionElements &&
-                                element.behaviour.extensionElements.values
-                            ) {
-                                const elm = element.behaviour;
-                                if (self.BpmsEngine && elm.navigationEnabled && elm.navigationKey) {
-                                    self.BpmsEngine.NavigationService.registerNavigations({
-                                        definitionName: name,
-                                        processName: element.title || element.name,
-                                        processId: element.id,
-                                        definitionId: definition.id,
-                                        id: element.id,
-                                        type: element.type,
-                                        key: elm.navigationKey,
-                                        icon: elm.navigationIcon,
-                                        target: elm.navigationTarget,
-                                        title: elm.navigationTitle || elm.title || elm.name,
-                                        enabled: elm.navigationEnabled,
-                                        order: elm.navgationOrder,
-                                        category: elm.category || 'System',
-                                        tags: elm.tags,
-                                        defaultView: elm.defaultView || 'Default',
-                                        allowedViews: elm.allowedViews,
-                                        authorization: elm.authorization,
-                                    });
-                                }
-                                for (const extn of element.behaviour.extensionElements.values) {
-                                    if (
-                                        extn.$type.toLowerCase() === 'camunda:dynamicView'.toLowerCase() ||
-                                        extn.$type.toLowerCase() === 'nowjs:dynamicView'.toLowerCase()
-                                    ) {
-                                        const vscript = extn && extn.script && extn.script.value;
-                                        if (self.BpmsEngine && vscript) {
-                                            self.BpmsEngine.UIService.registerProcessViews(name, {
-                                                name: extn.name || 'default',
-                                                title: extn.title || extn.navigationTitle || extn.name,
-                                                definitionName: name,
-                                                processName: element.title || element.name,
-                                                processId: element.id,
-                                                definitionId: definition.id,
-                                                id: extn.id,
-                                                key: elm.navigationKey + '/' + extn.name || 'default',
-                                                enabled: elm.navigationEnabled,
-                                                authorization: extn.authorization,
-                                                author: extn.author,
-                                                icon: extn.icon || elm.navigationIcon,
-                                                target: elm.navigationTarget,
-                                                order: extn.displayOrder,
-                                                category: extn.category,
-                                                tags: extn.tags,
-                                                body: vscript,
-                                            });
-                                        }
-                                        // if (self.BpmsEngine && extn.navigationEnabled && extn.navigationKey) {
-                                        //   self.BpmsEngine.NavigationService.registerNavigations({
-                                        //     definitionName: name,
-                                        //     processName: element.title || element.name,
-                                        //     processId: element.id,
-                                        //     definitionId: definition.id,
-                                        //     id: extn.id,
-                                        //     type: element.type,
-                                        //     key: extn.navigationKey,
-                                        //     icon: elm.navigationIcon,
-                                        //     target: elm.navigationTarget,
-                                        //     title:  extn.navigationTitle || extn.title || extn.name,
-                                        //     enabled: extn.navigationEnabled,
-                                        //     authorization: extn.authorization,
-                                        //   });
-                                        // }
-                                    }
-                                }
-                            }
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    },
-                },
-            };
-            // const ctx = await BpmnUtils.context(source, options);
-
             await this.bpmnDefinitionRepository.create({ definitions: source, name });
         }
         return Promise.resolve(true);
@@ -212,6 +125,12 @@ export class BpmnEngine {
     public async findDefinition<R extends BpmnDefinition = BpmnDefinition>(filter: FilterExpression): Promise<R | null>;
     public async findDefinition<R extends BpmnDefinition = BpmnDefinition>(expression: any): Promise<R | null> {
         return this.bpmnDefinitionRepository.find<R>(expression);
+    }
+
+    public async findProcess<R extends BpmnProcess = BpmnProcess>(id: IdExpression): Promise<R | null>;
+    public async findProcess<R extends BpmnProcess = BpmnProcess>(filter: FilterExpression): Promise<R | null>;
+    public async findProcess<R extends BpmnProcess = BpmnProcess>(expression: any): Promise<R | null> {
+        return this.processRepository.find<R>(expression);
     }
 
     public async loadDefinitions<R extends BpmnDefinition = BpmnDefinition>(
@@ -233,12 +152,6 @@ export class BpmnEngine {
     public async clearDefinitions(): Promise<void> {
         await this.bpmnDefinitionRepository.deleteAll();
         return;
-    }
-
-    public async persistDefinition(options: BpmnDefinitionPersistOptions): Promise<boolean> {
-        const id = options.id;
-        const entity = options.bpmnProcess;
-        return this.bpmnDefinitionRepository.update(id, entity);
     }
 
     public async createProcess(options?: BpmnProcessOptions): Promise<BpmnProcessInstance> {
