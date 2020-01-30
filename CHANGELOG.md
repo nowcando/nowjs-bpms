@@ -1,3 +1,9 @@
+### 0.15.0 (2020-01-30)
+
+##### Bug Fixes
+
+*  query in services [#17](https://github.com/nowcando/nowjs-bpms/pull/17) ([1dc40cab](https://github.com/nowcando/nowjs-bpms/commit/1dc40cab19ff88f2617c42c4df5713fac5917a43))
+
 ### 0.14.0 (2020-01-30)
 
 ##### New Features
