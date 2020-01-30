@@ -1,5 +1,5 @@
 // tslint:disable-next-line:variable-name
-export const sample_Decide_Team = `<?xml version="1.0" encoding="UTF-8"?>
+export const sampleDecideTema = `<?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" id="definitions_1786tcz" name="definitions" namespace="http://camunda.org/schema/1.0/dmn" exporter="dmn-js (https://demo.bpmn.io/dmn)" exporterVersion="7.0.0">
   <decision id="decide_team_decision" name="Decide Team">
     <decisionTable id="decisionTable_0dmkkjp" hitPolicy="COLLECT">

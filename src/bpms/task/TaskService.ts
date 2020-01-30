@@ -1,12 +1,7 @@
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "../BpmsEngine";
-import {
-  Task,
-  TaskMemoryRepository,
-  TaskQuery,
-  TaskQueryFilter,
-  TaskRepository,
-} from "./TaskRepository";
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '../BpmsEngine';
+import { TaskMemoryRepository, TaskRepository } from './TaskRepository';
+import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from '../data/Repository';
 
 // export class Task {
 //    private data: TaskData;
@@ -40,93 +35,113 @@ import {
 //    public get Categories(): string {}
 // }
 
+export interface Task {
+    id?: string;
+    title?: string;
+    descriptipns?: string;
+    name?: string;
+    assignee?: string;
+    priority?: string;
+    refTenantId?: string;
+    refProcessInstanceId?: string;
+    refProcessId?: string;
+    refProcessExecutionId?: string;
+    refActivityId?: string;
+    createdAt?: Date;
+    seenAt?: Date;
+    updatedAt?: Date;
+    completedAt?: Date;
+    dueDate?: Date;
+    followUpDate?: Date;
+    tags?: string;
+    categories?: string;
+
+    completed?: boolean;
+    seen?: boolean;
+
+    views?: string;
+}
+
 export interface TaskServiceOptions {
-  taskRepository?: TaskRepository;
-  name: string;
+    taskRepository?: TaskRepository;
+    name: string;
 }
 export class TaskService<T extends Task = Task> {
-  private taskRepository: TaskRepository<T>;
-  private id: string =  uuidv1();
-  private options: TaskServiceOptions;
-  constructor(private bpmsEngine?: BpmsEngine, options?: TaskServiceOptions) {
-    this.options = options || {name: "TaskService" + this.id};
-    this.taskRepository =
-      this.options.taskRepository || (new TaskMemoryRepository<T>() as any);
-  }
-
-  public static createService(options?: TaskServiceOptions): TaskService;
-  public static createService(
-    bpmsEngine?: BpmsEngine,
-    options?: TaskServiceOptions,
-  ): TaskService;
-  public static createService(
-    arg1?: BpmsEngine | TaskServiceOptions,
-    arg2?: TaskServiceOptions,
-  ): TaskService {
-    if (arg1 instanceof BpmsEngine) {
-      return new TaskService(arg1, arg2);
+    private taskRepository: TaskRepository<T>;
+    private id: string = uuidv1();
+    private options: TaskServiceOptions;
+    constructor(private bpmsEngine?: BpmsEngine, options?: TaskServiceOptions) {
+        this.options = options || { name: 'TaskService' + this.id };
+        this.taskRepository = this.options.taskRepository || new TaskMemoryRepository();
     }
-    return new TaskService(undefined, arg1);
-  }
 
-  public get Id(): string {
-    return this.id;
-  }
+    public static createService(options?: TaskServiceOptions): TaskService;
+    public static createService(bpmsEngine?: BpmsEngine, options?: TaskServiceOptions): TaskService;
+    public static createService(arg1?: BpmsEngine | TaskServiceOptions, arg2?: TaskServiceOptions): TaskService {
+        if (arg1 instanceof BpmsEngine) {
+            return new TaskService(arg1, arg2);
+        }
+        return new TaskService(undefined, arg1);
+    }
 
-  public get Name(): string {
-    return this.options.name;
-  }
-  public get TaskRepository(): TaskRepository<T> {
-    return this.taskRepository;
-  }
-  public get BpmsEngine(): BpmsEngine | undefined {
-    return this.bpmsEngine;
-  }
-  public async createTask(task: T): Promise<T> {
-    return this.taskRepository.createTask(task);
-  }
-  public async removeTask(taskId: string): Promise<boolean> {
-    return this.taskRepository.removeTask(taskId);
-  }
+    public get Id(): string {
+        return this.id;
+    }
 
-  public async findTask(taskId: string): Promise<T> {
-    return this.taskRepository.findTask(taskId);
-  }
+    public get Name(): string {
+        return this.options.name;
+    }
+    public get TaskRepository(): TaskRepository<T> {
+        return this.taskRepository;
+    }
+    public get BpmsEngine(): BpmsEngine | undefined {
+        return this.bpmsEngine;
+    }
+    public async create(task: T): Promise<T> {
+        return this.taskRepository.create(task);
+    }
+    public async remove(taskId: string): Promise<boolean> {
+        return this.taskRepository.delete(taskId);
+    }
 
-  public async updateTaskDueDate(
-    taskId: string,
-    dueDate: Date | undefined,
-  ): Promise<T> {
-    return this.taskRepository.updateTaskDueDate(taskId, dueDate);
-  }
-  public async updateTaskFollowUpDate(
-    taskId: string,
-    followUpDate: Date | undefined,
-  ): Promise<T> {
-    return this.taskRepository.updateTaskFollowUpDate(taskId, followUpDate);
-  }
-  public async updateTaskTags(taskId: string, tags: string | undefined): Promise<T> {
-    return this.taskRepository.updateTaskTags(taskId, tags);
-  }
-  public async updateTaskCategories(
-    taskId: string,
-    categories: string | undefined,
-  ): Promise<T> {
-    return this.taskRepository.updateTaskCategories(taskId, categories);
-  }
-  public async findTasks(...taskId: string[]): Promise<T[]> {
-    return this.taskRepository.findTasks(...taskId);
-  }
-  public async taskCompleted(taskId: string): Promise<T> {
-    return this.taskRepository.taskCompleted(taskId);
-  }
-  public async taskSeen(taskId: string): Promise<T> {
-    return this.taskRepository.taskSeen(taskId);
-  }
-  public async countTasks(options?: TaskQueryFilter): Promise<number> {
-    return this.taskRepository.countTasks(options);
-  }
-  public async queryTasks(options?: TaskQuery): Promise<T[]> {
-    return this.taskRepository.queryTasks(options);
-  }
+    public async find(taskId: string): Promise<T | null> {
+        return this.taskRepository.find(taskId);
+    }
+    public async findAll<R = T>(filter: FilterExpression): Promise<R[]> {
+        return this.taskRepository.findAll(filter);
+    }
+    public async count(filter: FilterExpression): Promise<number> {
+        return this.taskRepository.count('id', filter);
+    }
+    public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {
+        return this.TaskRepository.query(options);
+    }
+    public async scalar(options: ScalarOptions): Promise<number> {
+        return this.TaskRepository.scalar(options);
+    }
+
+    public async updateTaskDueDate(taskId: string, dueDate: Date | undefined): Promise<T> {
+        const d = { dueDate };
+        return this.taskRepository.update(taskId, d);
+    }
+    public async updateTaskFollowUpDate(taskId: string, followUpDate: Date | undefined): Promise<T> {
+        const d = { followUpDate };
+        return this.taskRepository.update(taskId, d);
+    }
+    public async updateTaskTags(taskId: string, tags: string | undefined): Promise<T> {
+        const d = { tags };
+        return this.taskRepository.update(taskId, d);
+    }
+    public async updateTaskCategories(taskId: string, categories: string | undefined): Promise<T> {
+        const d = { categories };
+        return this.taskRepository.update(taskId, d);
+    }
+    public async taskCompleted(taskId: string): Promise<T> {
+        const d = { completed: true, completedAt: new Date() };
+        return this.taskRepository.update(taskId, d);
+    }
+    public async taskSeen(taskId: string): Promise<T> {
+        const d = { seen: true, seenAt: new Date() };
+        return this.taskRepository.update(taskId, d);
+    }
 }

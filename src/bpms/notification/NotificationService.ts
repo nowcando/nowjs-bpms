@@ -1,63 +1,65 @@
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "..";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '../BpmsEngine';
+import { QueryOptions, QueryResult, ScalarOptions } from '../data/Repository';
+import { NotificationRepository, NotificationMemoryRepository } from './NotificationRepository';
 
 export interface NotificationServiceOptions {
-  name: string;
+    notificationRepository?: NotificationRepository;
+    name: string;
 }
 
-export class NotificationService {
+export interface BpmsNotification {
+    id: string;
+    message: string;
 
-  private notifiations: any[] = [];
-  private id: string = uuidv1();
-  private options: NotificationServiceOptions;
-  constructor(
-    private bpmsEngine?: BpmsEngine,
-    options?: NotificationServiceOptions,
-  ) {
-    this.options = options || { name: "NotificationService" + this.id };
-    //   this.taskRepository =
-    //     this.options.tenantRepository || (new DynamicViewMemoryRepository<T>() as any);
-  }
+    to: string;
+    delivered: boolean;
+    seen: boolean;
+}
 
-  public static createService(
-    options?: NotificationServiceOptions,
-  ): NotificationService;
-  public static createService(
-    bpmsEngine?: BpmsEngine,
-    options?: NotificationServiceOptions,
-  ): NotificationService;
-  public static createService(
-    arg1?: BpmsEngine | NotificationServiceOptions,
-    arg2?: NotificationServiceOptions,
-  ): NotificationService {
-    if (arg1 instanceof BpmsEngine) {
-      return new NotificationService(arg1, arg2);
+export class NotificationService<T extends BpmsNotification = BpmsNotification> {
+    private notificationRepository!: NotificationRepository<T>;
+    private id: string = uuidv1();
+    private options: NotificationServiceOptions;
+    constructor(private bpmsEngine?: BpmsEngine, options?: NotificationServiceOptions) {
+        this.options = options || { name: 'NotificationService' + this.id };
+        this.notificationRepository =
+            this.options.notificationRepository || (new NotificationMemoryRepository() as any);
     }
-    return new NotificationService(undefined, arg1);
-  }
 
-  public get Id(): string {
-    return this.id;
-  }
+    public static createService(options?: NotificationServiceOptions): NotificationService;
+    public static createService(bpmsEngine?: BpmsEngine, options?: NotificationServiceOptions): NotificationService;
+    public static createService(
+        arg1?: BpmsEngine | NotificationServiceOptions,
+        arg2?: NotificationServiceOptions,
+    ): NotificationService {
+        if (arg1 instanceof BpmsEngine) {
+            return new NotificationService(arg1, arg2);
+        }
+        return new NotificationService(undefined, arg1);
+    }
 
-  public get Name(): string {
-    return this.options.name;
-  }
-  public get BpmsEngine(): BpmsEngine | undefined {
-    return this.bpmsEngine;
-  }
+    public get Id(): string {
+        return this.id;
+    }
 
-  public async registerNotification(processName: string, view: any): Promise<any> {
-    const d = {processName, view};
-    this.notifiations.push(d);
-    return d;
-  }
-  public async findNotification(processName: string, viewName: string): Promise<any> {
-    return this.notifiations.find((xx) => xx.name === viewName);
-  }
-  public async listNotifications(): Promise<any[]> {
-    return this.notifiations;
-  }
+    public get Name(): string {
+        return this.options.name;
+    }
+    public get BpmsEngine(): BpmsEngine | undefined {
+        return this.bpmsEngine;
+    }
 
-
+    public async registerNotification(notifiation: T): Promise<any> {
+        const d = { ...notifiation };
+        this.notificationRepository.create(d);
+        return d;
+    }
+    public async find(processName: string, viewName: string): Promise<any> {
+        return this.notificationRepository.find(xx => xx.name === viewName);
+    }
+    public async list(): Promise<any[]> {
+        return this.notificationRepository.findAll();
+    }
 }

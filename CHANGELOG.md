@@ -1,3 +1,29 @@
+### 0.14.0 (2020-01-30)
+
+##### New Features
+
+*  implement Query Service ([8a322f23](https://github.com/nowcando/nowjs-bpms/commit/8a322f2306623b30ea6390331f318de5e2f8f3ea))
+*  job and query service added ([977e526b](https://github.com/nowcando/nowjs-bpms/commit/977e526bf97e9cfcc1ccd5dbf47746997447c5cc))
+
+##### Bug Fixes
+
+*  lint problems ([40751dae](https://github.com/nowcando/nowjs-bpms/commit/40751daee533d757982b57ee44deffed73e700da))
+*  lint problems ([f8ad16b8](https://github.com/nowcando/nowjs-bpms/commit/f8ad16b8032155e7ff0d9bc5074fbdc9975cc4d5))
+*  lint problems ([decf5d82](https://github.com/nowcando/nowjs-bpms/commit/decf5d820a684698a8f61f96af7a839bf566b3cb))
+*  optional argument in DmnEngine list method . ([1c15ef64](https://github.com/nowcando/nowjs-bpms/commit/1c15ef64ab70cdd8fae69513b8df93f27eddd064))
+
+### 0.13.0 (2019-10-26)
+
+##### Bug Fixes
+
+*  add list to DmnEngine . ([b7ff69c2](https://github.com/nowcando/nowjs-bpms/commit/b7ff69c27d33cac6cbae67a7aa24978fc95f7d50))
+
+### 0.12.0 (2019-10-26)
+
+##### Tests
+
+*  add some expect in test method ([84d0d19b](https://github.com/nowcando/nowjs-bpms/commit/84d0d19b6518d002e644b6f1ddd7725204562de0))
+
 ### 0.11.0 (2019-10-26)
 
 ##### Tests

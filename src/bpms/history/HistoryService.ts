@@ -1,69 +1,75 @@
-import { uuidv1 } from "nowjs-core/lib/utils";
-import { BpmsEngine } from "../BpmsEngine";
-import { TaskRepository } from "../task/TaskRepository";
-import { HistoryData, HistoryMemoryRepository, HistoryRepository } from "./HistoryRepository";
-
+/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { uuidv1 } from 'nowjs-core/lib/utils';
+import { BpmsEngine } from '../BpmsEngine';
+import { TaskRepository } from '../task/TaskRepository';
+import { HistoryData, HistoryMemoryRepository, HistoryRepository } from './HistoryRepository';
+import { QueryOptions, QueryResult, ScalarOptions, IdExpression, FilterExpression } from '../data/Repository';
 
 export interface HistoryServiceOptions {
     historyRepository?: HistoryRepository;
     name: string;
 }
-export class HistoryService<T extends HistoryData = HistoryData> {
 
+export interface BpmsHistoryEntity {
+    id?: string;
+    createdAt?: string;
+    source?: string;
+    tenantId: string;
+    userId: string;
+
+    type?: string;
+}
+export class HistoryService<T extends BpmsHistoryEntity = BpmsHistoryEntity> {
     private historyRepository: HistoryRepository<T>;
- private id: string =  uuidv1();
-  private options: HistoryServiceOptions;
-  constructor(private bpmsEngine?: BpmsEngine, options?: HistoryServiceOptions) {
-      this.options =  options || {name: "HistoryService" + this.id};
-      this.historyRepository = this.options.historyRepository ||  (new HistoryMemoryRepository() as any);
-  }
+    private id: string = uuidv1();
+    private options: HistoryServiceOptions;
+    constructor(private bpmsEngine?: BpmsEngine, options?: HistoryServiceOptions) {
+        this.options = options || { name: 'HistoryService' + this.id };
+        this.historyRepository = this.options.historyRepository || (new HistoryMemoryRepository() as any);
+    }
 
-  public static createService(options?: HistoryServiceOptions): HistoryService;
-  public static createService(
-    bpmsEngine?: BpmsEngine,
-    options?: HistoryServiceOptions,
-  ): HistoryService;
-  public static createService(
-    arg1?: BpmsEngine | HistoryServiceOptions,
-    arg2?: HistoryServiceOptions,
-  ): HistoryService {
-    if (arg1 instanceof BpmsEngine) {
-      return new HistoryService(arg1, arg2);
+    public static createService(options?: HistoryServiceOptions): HistoryService;
+    public static createService(bpmsEngine?: BpmsEngine, options?: HistoryServiceOptions): HistoryService;
+    public static createService(
+        arg1?: BpmsEngine | HistoryServiceOptions,
+        arg2?: HistoryServiceOptions,
+    ): HistoryService {
+        if (arg1 instanceof BpmsEngine) {
+            return new HistoryService(arg1, arg2);
+        }
+        return new HistoryService(undefined, arg1);
     }
-    return new HistoryService(undefined, arg1);
-  }
-  public get HistoryRepository(): HistoryRepository<T> {
-    return this.historyRepository;
-  }
-  public get Id(): string {
-    return this.id;
-  }
+    public get HistoryRepository(): HistoryRepository<T> {
+        return this.historyRepository;
+    }
+    public get Id(): string {
+        return this.id;
+    }
 
-  public get Name(): string {
-    return this.options.name;
-  }
-  public get BpmsEngine(): BpmsEngine | undefined {
-    return this.bpmsEngine;
-  }
-    public async createEntry(data: T): Promise<T> {
-        throw new Error("Method not implemented.");
+    public get Name(): string {
+        return this.options.name;
     }
-    public async removeEntry(entryId: string): Promise<boolean>;
-    // tslint:disable:unified-signatures
-    public async removeEntry(data: T): Promise<boolean>;
-    public async removeEntry(arg1: T| string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    public get BpmsEngine(): BpmsEngine | undefined {
+        return this.bpmsEngine;
     }
-    public async findEntry(): Promise<T> {
-        throw new Error("Method not implemented.");
+    public async create(entity: T): Promise<T> {
+        return this.historyRepository.create(entity);
     }
-    public async findEntries(): Promise<T[]> {
-        throw new Error("Method not implemented.");
+
+    public async remove(id: IdExpression): Promise<boolean> {
+        return this.historyRepository.delete(id);
     }
-    public async count(): Promise<number> {
-        throw new Error("Method not implemented.");
+
+    public async find(id: IdExpression): Promise<T | null>;
+    public async find(filter: FilterExpression): Promise<T | null>;
+    public async find(expression: IdExpression | FilterExpression): Promise<T | null> {
+       return this.historyRepository.find(expression);
     }
-    public async query(): Promise<T[]> {
-        throw new Error("Method not implemented.");
+    public async findAll(filter?: FilterExpression): Promise<T[]> {
+        return this.historyRepository.findAll(filter);
+    }
+    public async count(filter?: FilterExpression): Promise<number> {
+        return this.historyRepository.count('id',filter);
     }
 }

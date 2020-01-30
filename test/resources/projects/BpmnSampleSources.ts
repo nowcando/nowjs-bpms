@@ -34,7 +34,7 @@ export const source2 = `
     <sequenceFlow id="flow2" sourceRef="userTask" targetRef="theEnd" />
   </process>
 </definitions>`;
-export  const source3 = `<?xml version="1.0" encoding="UTF-8"?>
+export const source3 = `<?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:nowjs="http://schema.nowcando.com/schema/bpmn/nowjs" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="4.0.0">
   <collaboration id="Collaboration_1sq9x60">
     <participant id="Participant_0460sze" name="ثبت کالا" processRef="Process_1" />
