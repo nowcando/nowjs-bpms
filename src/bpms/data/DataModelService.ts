@@ -3,6 +3,7 @@ import { JsonSchemaDefinition, uuidv1 } from 'nowjs-core/lib/utils';
 import { ValidationDefinition } from 'nowjs-core/lib/validation';
 import { BpmsEngine } from '../BpmsEngine';
 import { DataModelMemoryRepository, DataModelRepository } from './DataModelRepository';
+import { QueryOptions, QueryResult, ScalarOptions } from './Repository';
 
 export interface DataModelServiceOptions {
     name: string;
@@ -77,7 +78,7 @@ export class DataModelService {
     }
 
     public async registerDataModel(name: string, definition: DataModelDefinition): Promise<boolean> {
-        this.datamodelRepository.persist({ definitions: definition, name });
+        this.datamodelRepository.create({ definitions: definition, name });
         return Promise.resolve(true);
     }
 }

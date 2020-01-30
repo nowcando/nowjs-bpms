@@ -2,7 +2,6 @@
 import { uuidv1 } from 'nowjs-core/lib/utils/UuidUtils';
 import { BpmnEngine, BpmnEngineOptions } from './bpmn';
 import { CmmnEngine, CmmnEngineOptions } from './cmmn';
-import { DataModelService, DataModelServiceOptions, DataSourceService } from './data';
 import { DmnEngine, DmnEngineOptions } from './dmn';
 import { HistoryService, HistoryServiceOptions } from './history/HistoryService';
 import { IdentityService, IdentityServiceOptions } from './identity/IdentityService';
@@ -13,14 +12,16 @@ import { QueryService, QueryServiceOptions } from './query/QueryService';
 import { TaskService, TaskServiceOptions } from './task/TaskService';
 import { TenantService, TenantServiceOptions } from './tenant/TenantService';
 import { UIService, UIServiceOptions } from './ui/UIService';
+import { DataModelServiceOptions, DataModelService } from './data/DataModelService';
+import { DataSourceServiceOptions, DataSourceService } from './data/DataSourceService';
 export interface BpmsEngineOptions {
     name: string;
     cache?: boolean;
     bpmnEngine?: BpmnEngineOptions;
     dmnEngine?: DmnEngineOptions;
     cmmnEngine?: CmmnEngineOptions;
-    datamodelEngine?: DataModelServiceOptions;
-    datasourceEngine?: DataModelServiceOptions;
+    datamodelService?: DataModelServiceOptions;
+    datasourceService?: DataSourceServiceOptions;
     identityService?: IdentityServiceOptions;
     historyService?: HistoryServiceOptions;
     taskService?: TaskServiceOptions;
@@ -91,11 +92,11 @@ export class BpmsEngine {
         });
         this.datamodelService = DataModelService.createEngine(this, {
             name: this.name,
-            ...this.options.datamodelEngine,
+            ...this.options.datamodelService,
         });
         this.datasourceService = DataSourceService.createEngine(this, {
             name: this.name,
-            ...this.options.datasourceEngine,
+            ...this.options.datasourceService,
         });
         this.tenantService = TenantService.createService(this, {
             name: this.name,
@@ -117,10 +118,6 @@ export class BpmsEngine {
             name: this.name,
             ...this.options.uiService,
         });
-        this.queryService = QueryService.createService(this, {
-            name: this.name,
-            ...this.options.queryService,
-        });
         this.jobService = JobService.createService(this, {
             name: this.name,
             ...this.options.jobService,
@@ -132,6 +129,11 @@ export class BpmsEngine {
         this.notificationService = NotificationService.createService(this, {
             name: this.name,
             ...this.options.notificationService,
+        });
+        // Query service must be last for populating repositories
+        this.queryService = QueryService.createService(this, {
+            name: this.name,
+            ...this.options.queryService,
         });
     }
 

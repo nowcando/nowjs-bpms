@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
 import { TenantMemoryRepository, TenantRepository } from './TenantRepository';
+import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from '../data/Repository';
 
 export interface Tenant {
     id: string;
@@ -12,12 +14,12 @@ export interface TenantServiceOptions {
     name: string;
 }
 export class TenantService<T extends Tenant = Tenant> {
-    private taskRepository: TenantRepository<T>;
+    private tenantRepository: TenantRepository<T>;
     private id: string = uuidv1();
     private options: TenantServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: TenantServiceOptions) {
         this.options = options || { name: 'TenantService' + this.id };
-        this.taskRepository = this.options.tenantRepository || (new TenantMemoryRepository<T>() as any);
+        this.tenantRepository = this.options.tenantRepository || new TenantMemoryRepository();
     }
 
     public static createService(options?: TenantServiceOptions): TenantService;
@@ -36,22 +38,32 @@ export class TenantService<T extends Tenant = Tenant> {
     public get Name(): string {
         return this.options.name;
     }
-    public get TaskRepository(): TenantRepository<T> {
-        return this.taskRepository;
+    public get TenantRepository(): TenantRepository<T> {
+        return this.tenantRepository;
     }
     public get BpmsEngine(): BpmsEngine | undefined {
         return this.bpmsEngine;
     }
-    public async create(tenant: T): Promise<T> {
-        return this.taskRepository.create(tenant);
+    public async create(task: T): Promise<T> {
+        return this.tenantRepository.create(task);
     }
-    public async list(): Promise<T[]> {
-        return this.taskRepository.list();
+    public async remove(taskId: string): Promise<boolean> {
+        return this.tenantRepository.delete(taskId);
     }
-    public async find(tenantId: string): Promise<T> {
-        return this.taskRepository.find(tenantId);
+
+    public async find(taskId: string): Promise<T | null> {
+        return this.tenantRepository.find(taskId);
     }
-    public async remove(tenantId: string): Promise<boolean> {
-        return this.taskRepository.remove(tenantId);
+    public async findAll<R = T>(filter: FilterExpression): Promise<R[]> {
+        return this.tenantRepository.findAll(filter);
+    }
+    public async count(filter: FilterExpression): Promise<number> {
+        return this.tenantRepository.count('id', filter);
+    }
+    public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {
+        return this.tenantRepository.query(options);
+    }
+    public async scalar(options: ScalarOptions): Promise<number> {
+        return this.tenantRepository.scalar(options);
     }
 }

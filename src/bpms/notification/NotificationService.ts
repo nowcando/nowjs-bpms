@@ -1,18 +1,31 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { uuidv1 } from 'nowjs-core/lib/utils';
-import { BpmsEngine } from '..';
+import { BpmsEngine } from '../BpmsEngine';
+import { QueryOptions, QueryResult, ScalarOptions } from '../data/Repository';
+import { NotificationRepository, NotificationMemoryRepository } from './NotificationRepository';
 
 export interface NotificationServiceOptions {
+    notificationRepository?: NotificationRepository;
     name: string;
 }
 
-export class NotificationService {
-    private notifiations: any[] = [];
+export interface BpmsNotification {
+    id: string;
+    message: string;
+
+    to: string;
+    delivered: boolean;
+    seen: boolean;
+}
+
+export class NotificationService<T extends BpmsNotification = BpmsNotification> {
+    private notificationRepository!: NotificationRepository<T>;
     private id: string = uuidv1();
     private options: NotificationServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: NotificationServiceOptions) {
         this.options = options || { name: 'NotificationService' + this.id };
-        //   this.taskRepository =
-        //     this.options.tenantRepository || (new DynamicViewMemoryRepository<T>() as any);
+        this.notificationRepository =
+            this.options.notificationRepository || (new NotificationMemoryRepository() as any);
     }
 
     public static createService(options?: NotificationServiceOptions): NotificationService;
@@ -38,15 +51,15 @@ export class NotificationService {
         return this.bpmsEngine;
     }
 
-    public async registerNotification(processName: string, view: any): Promise<any> {
-        const d = { processName, view };
-        this.notifiations.push(d);
+    public async registerNotification(notifiation: T): Promise<any> {
+        const d = { ...notifiation };
+        this.notificationRepository.create(d);
         return d;
     }
-    public async findNotification(processName: string, viewName: string): Promise<any> {
-        return this.notifiations.find(xx => xx.name === viewName);
+    public async find(processName: string, viewName: string): Promise<any> {
+        return this.notificationRepository.find(xx => xx.name === viewName);
     }
-    public async listNotifications(): Promise<any[]> {
-        return this.notifiations;
+    public async list(): Promise<any[]> {
+        return this.notificationRepository.findAll();
     }
 }

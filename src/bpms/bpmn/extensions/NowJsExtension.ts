@@ -83,7 +83,7 @@ export const NowJsExtension = (processInstance: BpmnProcessInstance) => (
             activity.on('wait', async (api: BpmnProcessActivity) => {
                 const bpms = processInstance.BpmnEngine.BpmsEngine;
                 if (bpms) {
-                    const t = await bpms.TaskService.createTask({
+                    const t = await bpms.TaskService.create({
                         name: api.name,
                         refProcessInstanceId: processInstance.Id,
                         refProcessId: api.environment.variables.content.id,

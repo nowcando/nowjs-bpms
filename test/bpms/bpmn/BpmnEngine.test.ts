@@ -5,7 +5,7 @@ import { EventEmitter } from 'events';
 import 'jest';
 import { BpmnEngine, BpmnProcessActivity, BpmnProcessOptions, BpmsEngine } from '../../../src';
 import { sampleDecideTema } from '../dmn/sampleDmn';
-import { source1, source2, source3, source4 } from './sampleSources';
+import { source1, source2, source3, source4 } from '../../resources/projects/BpmnSampleSources';
 
 beforeAll(() => {});
 beforeEach(() => {});
@@ -25,8 +25,6 @@ describe('BpmnEngine', () => {
             expect(actual.recoverProcesses).toBeDefined();
             expect(actual.stopProcesses).toBeDefined();
             expect(actual.loadedProcessList).toBeDefined();
-            expect(actual.getProcessesByName).toBeDefined();
-            expect(actual.getProcessById).toBeDefined();
             expect(actual.persistDefinition).toBeDefined();
             expect(actual.clearDefinitions).toBeDefined();
             expect(actual.listDefinitions).toBeDefined();
@@ -49,8 +47,6 @@ describe('BpmnEngine', () => {
             expect(actual.recoverProcesses).toBeDefined();
             expect(actual.stopProcesses).toBeDefined();
             expect(actual.loadedProcessList).toBeDefined();
-            expect(actual.getProcessesByName).toBeDefined();
-            expect(actual.getProcessById).toBeDefined();
             expect(actual.persistDefinition).toBeDefined();
             expect(actual.clearDefinitions).toBeDefined();
             expect(actual.listDefinitions).toBeDefined();
@@ -221,7 +217,7 @@ describe('BpmnEngine', () => {
             const presult1 = await bpe.persistProcess();
             expect(presult1).toBeDefined();
             expect(presult1).toBeTruthy();
-            const pCount = await bpe.registeredProcessCount();
+            const pCount = await bpe.persistedProcessCount();
             expect(pCount).toBeDefined();
             expect(pCount).toEqual(2);
         });
@@ -252,12 +248,13 @@ describe('BpmnEngine', () => {
             expect(pr3).toBeDefined();
             const prState3 = await pr3.getState();
             expect(prState3).toBeDefined();
-
+            const lc1 = await bpe.loadedProcessCount();
+            expect(lc1).toEqual(3);
             // stop
             await bpe.stopProcesses(true);
             const l = await bpe.loadedProcessList();
             expect(l.length).toBe(0);
-            const c = await bpe.registeredProcessCount();
+            const c = await bpe.persistedProcessCount();
             expect(c).toBe(3);
 
             // recover persisted
@@ -265,6 +262,7 @@ describe('BpmnEngine', () => {
             expect(r).toBe(true);
             const al1 = await bpe.loadedProcessList();
             const ap1 = al1[0];
+            expect(pr1).toBeDefined();
             expect(pr1.Id).toEqual(ap1.Id);
             expect(pr1.Name).toEqual(ap1.Name);
             const ap2 = al1[1];

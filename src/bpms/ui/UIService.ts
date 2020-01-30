@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { uuidv1 } from 'nowjs-core/lib/utils';
-import { BpmsEngine } from '..';
+import { BpmsEngine } from '../BpmsEngine';
+import { QueryOptions, QueryResult, ScalarOptions } from '../data/Repository';
 
 export interface UIServiceOptions {
     name: string;

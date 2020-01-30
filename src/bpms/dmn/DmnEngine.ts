@@ -1,30 +1,51 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-empty-interface */
 /* eslint-disable @typescript-eslint/no-var-requires */
 // tslint:disable-next-line:no-var-requires
 const { decisionTable } = require('@hbtgmbh/dmn-eval-js');
 import { uuidv1 } from 'nowjs-core/lib/utils/UuidUtils';
 import { BpmsEngine } from '../BpmsEngine';
-import {
-    DmnDefinitionFindOptions,
-    DmnDefinitionListOptions,
-    DmnDefinitionLoadOptions,
-    DmnDefinitionMemoryRepository,
-    DmnDefinitionPersistedData,
-    DmnDefinitionPersistOptions,
-    DmnDefinitionRemoveOptions,
-    DmnDefinitionRepository,
-} from './DmnDefinitionRepository';
+import { DmnDefinitionMemoryRepository, DmnDefinitionRepository } from './DmnDefinitionRepository';
+import { QueryOptions, QueryResult, ScalarOptions, FilterExpression, IdExpression } from '../data/Repository';
 
+// tslint:disable-next-line:no-empty-interface
+export interface DmnEvaluationContext {}
+
+export interface DmnDecisionTable {
+    hitPolicy: 'FIRST' | 'UNIQUE' | 'COLLECT' | 'RULE ORDER' | 'ANY';
+    rules: DmnDecisionTableRule[];
+    input: string[];
+    output: string[];
+
+    inputExpressions?: any[];
+
+    parsedInputExpressions?: any[];
+    outputNames?: string[];
+}
+
+export interface DmnDecisionTableRule {
+    inputValues?: any[];
+    outputValues?: any[];
+}
+// tslint:disable: no-empty-interface
+export interface DmnDecision {
+    decisionTable: DmnDecisionTable;
+    requiredDecisions: any[];
+}
+export interface DmnDefinition {
+    [name: string]: DmnDecision;
+}
+export interface DmnEvaluateResult {}
 export interface DmnEngineOptions {
     name: string;
-    definitionRepository?: DmnDefinitionRepository;
+    dmnDefinitionRepository?: DmnDefinitionRepository;
 }
 export class DmnEngine {
     private definitionCache: { [name: string]: any } = {};
     private id: string = uuidv1();
     private name: string;
     private options: DmnEngineOptions;
-    private definitionRepository: DmnDefinitionRepository;
+    private dmnDefinitionRepository: DmnDefinitionRepository;
 
     public static createEngine(options?: DmnEngineOptions): DmnEngine;
     public static createEngine(bpmsEngine?: BpmsEngine, options?: DmnEngineOptions): DmnEngine;
@@ -38,7 +59,7 @@ export class DmnEngine {
     constructor(private bpmsEngine?: BpmsEngine, options?: DmnEngineOptions) {
         this.options = options || { name: 'DmnEngine-' + this.id };
         this.name = this.options.name;
-        this.definitionRepository = this.options.definitionRepository || new DmnDefinitionMemoryRepository();
+        this.dmnDefinitionRepository = this.options.dmnDefinitionRepository || new DmnDefinitionMemoryRepository();
     }
 
     public get Id(): string {
@@ -64,10 +85,10 @@ export class DmnEngine {
     public async registerDefinitions(name: string, decisions: DmnDefinition | string): Promise<boolean> {
         let d = decisions;
         if (typeof decisions === 'string') {
-            const s = await this.definitionRepository.find({ name });
+            const s = await this.dmnDefinitionRepository.find({ name });
             d = await this.parseDmnXml(d as string);
             if (!s) {
-                this.definitionRepository.persist({ name, definitions: decisions });
+                this.dmnDefinitionRepository.create({ name, definitions: decisions });
             }
         }
         this.definitionCache[name] = d;
@@ -161,57 +182,32 @@ export class DmnEngine {
     }
 
     public async clear(): Promise<void> {
-        return this.definitionRepository.clear();
+        this.dmnDefinitionRepository.deleteAll();
+        return;
     }
 
     public async count(): Promise<number> {
-        return this.definitionRepository.count();
+        return this.dmnDefinitionRepository.count();
     }
-    public async find<R extends DmnDefinitionPersistedData>(options: DmnDefinitionFindOptions): Promise<R | undefined> {
-        return this.definitionRepository.find(options);
+    public async find<R extends DmnDefinition = DmnDefinition>(filter: IdExpression): Promise<R | null>;
+    public async find<R extends DmnDefinition = DmnDefinition>(filter: FilterExpression): Promise<R | null>;
+    public async find<R extends DmnDefinition = DmnDefinition>(expression: any): Promise<R | null> {
+        return this.dmnDefinitionRepository.find<R>(expression);
     }
-    public async load<R extends DmnDefinitionPersistedData>(options: DmnDefinitionLoadOptions): Promise<R[]> {
-        return this.definitionRepository.load(options);
-    }
-
-    public async list<R extends DmnDefinitionPersistedData>(options?: DmnDefinitionListOptions): Promise<R[]> {
-        return this.definitionRepository.list(options);
+    public async load<R extends DmnDefinition = DmnDefinition>(filter?: FilterExpression): Promise<R[]> {
+        return this.dmnDefinitionRepository.findAll(filter);
     }
 
-    public async persist(options: DmnDefinitionPersistOptions): Promise<boolean> {
-        return this.definitionRepository.persist(options);
+    public async list<R extends DmnDefinition = DmnDefinition>(filter?: FilterExpression): Promise<R[]> {
+        return this.dmnDefinitionRepository.findAll(filter);
     }
 
-    public async remove(options: DmnDefinitionRemoveOptions): Promise<boolean> {
-        return this.definitionRepository.remove(options);
+    public async persist<R extends DmnDefinition = DmnDefinition>(entity: R): Promise<boolean> {
+        const r = await this.dmnDefinitionRepository.update('entity.id', entity);
+        return r !== null;
+    }
+
+    public async remove(id: IdExpression): Promise<boolean> {
+        return this.dmnDefinitionRepository.delete(id);
     }
 }
-
-// tslint:disable-next-line:no-empty-interface
-export interface DmnEvaluationContext {}
-
-export interface DmnDecisionTable {
-    hitPolicy: 'FIRST' | 'UNIQUE' | 'COLLECT' | 'RULE ORDER' | 'ANY';
-    rules: DmnDecisionTableRule[];
-    input: string[];
-    output: string[];
-
-    inputExpressions?: any[];
-
-    parsedInputExpressions?: any[];
-    outputNames?: string[];
-}
-
-export interface DmnDecisionTableRule {
-    inputValues?: any[];
-    outputValues?: any[];
-}
-// tslint:disable: no-empty-interface
-export interface DmnDecision {
-    decisionTable: DmnDecisionTable;
-    requiredDecisions: any[];
-}
-export interface DmnDefinition {
-    [name: string]: DmnDecision;
-}
-export interface DmnEvaluateResult {}

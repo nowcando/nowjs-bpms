@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
 import { DataSourceMemoryRepository, DataSourceRepository } from './DataSourceRepository';
+import { QueryOptions, QueryResult, ScalarOptions } from './Repository';
 
 export interface DataSourceServiceOptions {
     name: string;
@@ -81,7 +83,7 @@ export class DataSourceService {
     }
 
     public async registerDataSource(name: string, definition: DataSourceDefinition): Promise<boolean> {
-        this.datasourceRepository.persist({ definitions: definition, name });
+        this.datasourceRepository.create({ definitions: definition, name });
         return Promise.resolve(true);
     }
 }

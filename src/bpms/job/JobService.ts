@@ -1,6 +1,7 @@
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
-import { Job, JobMemoryRepository, JobQuery, JobQueryFilter, JobRepository } from './JobRepository';
+import { JobModel, JobMemoryRepository, JobRepository } from './JobRepository';
+import { QueryOptions, QueryResult, ScalarOptions, IdExpression, FilterExpression } from '../data/Repository';
 
 // export class Job {
 //    private data: JobData;
@@ -33,18 +34,43 @@ import { Job, JobMemoryRepository, JobQuery, JobQueryFilter, JobRepository } fro
 //    public get Tags(): string {}
 //    public get Categories(): string {}
 // }
+export interface BpmsJob {
+    id?: string;
+    title?: string;
+    descriptipns?: string;
+    name?: string;
+    assignee?: string;
+    priority?: string;
+    refTenantId?: string;
+    refProcessInstanceId?: string;
+    refProcessId?: string;
+    refProcessExecutionId?: string;
+    refActivityId?: string;
+    createdAt?: Date;
+    seenAt?: Date;
+    updatedAt?: Date;
+    completedAt?: Date;
+    dueDate?: Date;
+    followUpDate?: Date;
+    tags?: string;
+    categories?: string;
 
+    completed?: boolean;
+    seen?: boolean;
+
+    views?: string;
+}
 export interface JobServiceOptions {
-    taskRepository?: JobRepository;
+    jobRepository?: JobRepository;
     name: string;
 }
-export class JobService<T extends Job = Job> {
-    private taskRepository: JobRepository<T>;
+export class JobService<T extends BpmsJob = BpmsJob> {
+    private jobRepository: JobRepository<T>;
     private id: string = uuidv1();
     private options: JobServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: JobServiceOptions) {
         this.options = options || { name: 'JobService' + this.id };
-        this.taskRepository = this.options.taskRepository || (new JobMemoryRepository<T>() as any);
+        this.jobRepository = this.options.jobRepository || (new JobMemoryRepository() as any);
     }
 
     public static createService(options?: JobServiceOptions): JobService;
@@ -64,47 +90,46 @@ export class JobService<T extends Job = Job> {
         return this.options.name;
     }
     public get JobRepository(): JobRepository<T> {
-        return this.taskRepository;
+        return this.jobRepository;
     }
     public get BpmsEngine(): BpmsEngine | undefined {
         return this.bpmsEngine;
     }
-    public async createJob(task: T): Promise<T> {
-        return this.taskRepository.createJob(task);
+    public async create(job: T): Promise<T> {
+        return this.jobRepository.create(job);
     }
-    public async removeJob(taskId: string): Promise<boolean> {
-        return this.taskRepository.removeJob(taskId);
-    }
-
-    public async findJob(taskId: string): Promise<T> {
-        return this.taskRepository.findJob(taskId);
+    public async remove(jobId: IdExpression): Promise<boolean> {
+        return this.jobRepository.delete(jobId);
     }
 
-    public async updateJobDueDate(taskId: string, dueDate: Date | undefined): Promise<T> {
-        return this.taskRepository.updateJobDueDate(taskId, dueDate);
+    public async find(jobId: IdExpression): Promise<T | null> {
+        return this.jobRepository.find(jobId);
     }
-    public async updateJobFollowUpDate(taskId: string, followUpDate: Date | undefined): Promise<T> {
-        return this.taskRepository.updateJobFollowUpDate(taskId, followUpDate);
+
+    public async findJobs(filter: FilterExpression): Promise<T[]> {
+        return this.jobRepository.findAll(filter);
     }
-    public async updateJobTags(taskId: string, tags: string | undefined): Promise<T> {
-        return this.taskRepository.updateJobTags(taskId, tags);
+
+    public async updateJobDueDate(jobId: string, dueDate: Date | undefined): Promise<T> {
+        return this.jobRepository.update(jobId, { dueDate });
     }
-    public async updateJobCategories(taskId: string, categories: string | undefined): Promise<T> {
-        return this.taskRepository.updateJobCategories(taskId, categories);
+    public async updateJobFollowUpDate(jobId: string, followUpDate: Date | undefined): Promise<T> {
+        return this.jobRepository.update(jobId, { followUpDate });
     }
-    public async findJobs(...taskId: string[]): Promise<T[]> {
-        return this.taskRepository.findJobs(...taskId);
+    public async updateJobTags(jobId: string, tags: string | undefined): Promise<T> {
+        return this.jobRepository.update(jobId, { tags });
     }
-    public async taskCompleted(taskId: string): Promise<T> {
-        return this.taskRepository.taskCompleted(taskId);
+    public async updateJobCategories(jobId: string, categories: string | undefined): Promise<T> {
+        return this.jobRepository.update(jobId, { categories });
     }
-    public async taskSeen(taskId: string): Promise<T> {
-        return this.taskRepository.taskSeen(taskId);
+
+    public async jobCompleted(jobId: string): Promise<T> {
+        return this.jobRepository.update(jobId, { complete: true });
     }
-    public async countJobs(options?: JobQueryFilter): Promise<number> {
-        return this.taskRepository.countJobs(options);
+    public async jobSeen(jobId: string): Promise<T> {
+        return this.jobRepository.update(jobId, { seen: true });
     }
-    public async queryJobs(options?: JobQuery): Promise<T[]> {
-        return this.taskRepository.queryJobs(options);
+    public async count(filter?: FilterExpression): Promise<number> {
+        return this.jobRepository.count('id', filter);
     }
 }

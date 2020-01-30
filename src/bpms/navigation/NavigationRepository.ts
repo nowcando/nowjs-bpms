@@ -2,34 +2,27 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
 
-export interface TaskModel {
-    id?: string;
-    title?: string;
-    descriptipns?: string;
-    name?: string;
-    assignee?: string;
-    priority?: string;
-    refTenantId?: string;
-    refProcessInstanceId?: string;
-    refProcessId?: string;
-    refProcessExecutionId?: string;
-    refActivityId?: string;
-    createdAt?: Date;
-    seenAt?: Date;
-    updatedAt?: Date;
-    completedAt?: Date;
-    dueDate?: Date;
-    followUpDate?: Date;
-    tags?: string;
-    categories?: string;
-
-    completed?: boolean;
-    seen?: boolean;
-
-    views?: string;
+export interface NavigationModel {
+    definitionName: string;
+    processName: string;
+    processId: string;
+    definitionId: string;
+    id: string;
+    type: string;
+    key: string;
+    icon: string;
+    target: string;
+    title: string;
+    enabled: string;
+    order: string;
+    category: string;
+    tags: string;
+    defaultView: string;
+    allowedViews: string;
+    authorization: string;
 }
 
-export interface TaskRepository<T extends TaskModel = TaskModel> extends BpmsRepository<T> {
+export interface NavigationRepository<T extends NavigationModel = NavigationModel> extends BpmsRepository<T> {
     // createTask(task: T): Promise<T>;
     // removeTask(taskId: string): Promise<boolean>;
     // findTask(taskId: string): Promise<T>;
@@ -44,10 +37,11 @@ export interface TaskRepository<T extends TaskModel = TaskModel> extends BpmsRep
     // queryTasks(options?: TaskQuery): Promise<T[]>;
 }
 
-export class TaskMemoryRepository extends BpmsBaseMemoryRepository<TaskModel> implements TaskRepository<TaskModel> {
+export class NavigationMemoryRepository extends BpmsBaseMemoryRepository<NavigationModel>
+    implements NavigationRepository<NavigationModel> {
     constructor() {
         super({
-            storageName: 'Task',
+            storageName: 'Navigation',
             properties: {
                 id: { type: 'string' },
                 name: { type: 'string' },

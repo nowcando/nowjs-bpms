@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import 'nowjs-core';
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
+import { QueryOptions, QueryResult, ScalarOptions } from '../data/Repository';
 
 export interface NavigationServiceOptions {
     name: string;
 }
 
-export interface NavigationData {
+export interface Navigation {
     definitionName: string;
     processName: string;
     processId: string;
@@ -28,7 +30,7 @@ export interface NavigationData {
 }
 
 export class NavigationService {
-    private navigations: NavigationData[] = [];
+    private navigations: Navigation[] = [];
     private id: string = uuidv1();
     private options: NavigationServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: NavigationServiceOptions) {
@@ -60,11 +62,11 @@ export class NavigationService {
         return this.bpmsEngine;
     }
 
-    public async registerNavigations(...navs: NavigationData[]) {
+    public async registerNavigations(...navs: Navigation[]) {
         this.navigations.push(...navs);
         return;
     }
-    public async listNavigations(): Promise<NavigationData[]> {
+    public async listNavigations(): Promise<Navigation[]> {
         return this.navigations.slice();
     }
     public async listViewNavigations() {

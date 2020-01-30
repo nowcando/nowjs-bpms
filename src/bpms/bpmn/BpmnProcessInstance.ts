@@ -7,12 +7,12 @@ import * as bm from 'bpmn-moddle';
 import { EventEmitter } from 'events';
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmnEngine } from './BpmnEngine';
-import { BpmnProcessPersistedData } from './BpmnProcessRepository';
 import BusinessRuleTask from './elements/BusinessRuleTask';
 import { BusinessRuleTaskExtension } from './extensions/BusinessRuleTaskExtension';
 import { HumanInvolvementExtension } from './extensions/HumanInvolvementExtension';
 import { NowJsExtension } from './extensions/NowJsExtension';
 import { ServiceTaskExtension } from './extensions/ServiceTaskExtension';
+import { BpmnProcessModel } from './BpmnProcessRepository';
 
 const { Engine } = require('bpmn-engine');
 
@@ -519,12 +519,9 @@ export class BpmnProcessInstance extends EventEmitter {
      * @returns {BpmnProcessInstance}
      * @memberof BpmnProcess
      */
-    public recover(
-        savedState: BpmnProcessPersistedData,
-        recoverOptions?: BpmnProcessRecoverOptions,
-    ): BpmnProcessInstance {
+    public recover(savedState: BpmnProcessModel, recoverOptions?: BpmnProcessRecoverOptions): BpmnProcessInstance {
         const self = this;
-        this.processEngine = this.processEngine.recover(JSON.parse(savedState.data), {
+        this.processEngine = this.processEngine.recover(savedState.data, {
             listener: self,
             ...recoverOptions,
         });

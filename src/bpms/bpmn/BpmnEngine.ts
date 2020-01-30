@@ -1,26 +1,20 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
-import {
-    BpmnDefinitionFindOptions,
-    BpmnDefinitionListOptions,
-    BpmnDefinitionLoadOptions,
-    BpmnDefinitionMemoryRepository,
-    BpmnDefinitionPersistedData,
-    BpmnDefinitionPersistOptions,
-    BpmnDefinitionRemoveOptions,
-    BpmnDefinitionRepository,
-} from './BpmnDefinitionRepository';
-import { BpmnProcessInstance, BpmnProcessOptions } from './BpmnProcessInstance';
+import { BpmnDefinitionMemoryRepository, BpmnDefinitionRepository } from './BpmnDefinitionRepository';
+import { BpmnProcessInstance, BpmnProcessOptions, BpmnProcess } from './BpmnProcessInstance';
 import { BpmnProcessMemoryRepository, BpmnProcessRepository } from './BpmnProcessRepository';
 import BusinessRuleTask from './elements/BusinessRuleTask';
+import { IdExpression, FilterExpression, BpmsBaseMemoryRepository } from '../data/Repository';
+import { promises } from 'dns';
 export type BpmnSource = string;
 
 export interface BpmnEngineOptions {
     name: string;
     processRepository?: BpmnProcessRepository;
-    definitionRepository?: BpmnDefinitionRepository;
+    bpmnDefinitionRepository?: BpmnDefinitionRepository;
 }
 
 export interface BpmnEngineRecoverOptions {
@@ -34,12 +28,31 @@ export interface BpmnEnginePersistOptions {
     name?: string | string[];
     resume?: boolean;
 }
+
+export interface BpmnDefinition {
+    id: string;
+}
+
+// export interface BpmnProcess {
+//     id: string;
+//     name: string;
+// }
+
+export interface BpmnDefinitionLoadOptions {
+    filter?: FilterExpression;
+}
+
+export interface BpmnDefinitionPersistOptions {
+    id: string;
+    bpmnProcess: BpmnProcess;
+}
+
 export class BpmnEngine {
-    private loadedProcsses: { [name: string]: BpmnProcessInstance } = {};
+    private loadedProcessRepository: BpmsBaseMemoryRepository<BpmnProcessInstance>; // { [name: string]: BpmnProcessInstance } = {};
     private id: string = uuidv1();
     private name: string;
     private processRepository: BpmnProcessRepository;
-    private definitionRepository: BpmnDefinitionRepository;
+    private bpmnDefinitionRepository: BpmnDefinitionRepository;
     private options: BpmnEngineOptions;
     private bpmsEngine: BpmsEngine | undefined;
     constructor(options?: BpmnEngineOptions);
@@ -54,9 +67,15 @@ export class BpmnEngine {
             this.options = arg1 || { name: 'BpmnEngine-' + this.id };
             this.name = this.options.name;
         }
-
+        this.loadedProcessRepository = new BpmsBaseMemoryRepository({
+            storageName: 'LoadedProcess',
+            properties: {
+                id: { type: 'string' },
+                name: { type: 'string' },
+            },
+        });
         this.processRepository = this.options.processRepository || new BpmnProcessMemoryRepository();
-        this.definitionRepository = this.options.definitionRepository || new BpmnDefinitionMemoryRepository();
+        this.bpmnDefinitionRepository = this.options.bpmnDefinitionRepository || new BpmnDefinitionMemoryRepository();
     }
 
     public get Id(): string {
@@ -88,7 +107,7 @@ export class BpmnEngine {
 
     public async registerDefinitions(name: string, source: BpmnSource): Promise<boolean> {
         const self = this;
-        const f = await this.definitionRepository.find({ name });
+        const f = await this.bpmnDefinitionRepository.find({ name });
         if (!f) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const options = {
@@ -120,7 +139,7 @@ export class BpmnEngine {
                                         order: elm.navgationOrder,
                                         category: elm.category || 'System',
                                         tags: elm.tags,
-                                        defaultView: elm.defaultView || 'default',
+                                        defaultView: elm.defaultView || 'Default',
                                         allowedViews: elm.allowedViews,
                                         authorization: elm.authorization,
                                     });
@@ -180,42 +199,46 @@ export class BpmnEngine {
             };
             // const ctx = await BpmnUtils.context(source, options);
 
-            this.definitionRepository.persist({ definitions: source, name });
+            await this.bpmnDefinitionRepository.create({ definitions: source, name });
         }
         return Promise.resolve(true);
     }
 
     public async countDefinitions(): Promise<number> {
-        return this.definitionRepository.count();
-    }
-    public async findDefinition<R extends BpmnDefinitionPersistedData>(
-        options: BpmnDefinitionFindOptions,
-    ): Promise<R | null> {
-        return this.definitionRepository.find(options);
+        return this.bpmnDefinitionRepository.count();
     }
 
-    public async loadDefinitions<R extends BpmnDefinitionPersistedData>(
+    public async findDefinition<R extends BpmnDefinition = BpmnDefinition>(id: IdExpression): Promise<R | null>;
+    public async findDefinition<R extends BpmnDefinition = BpmnDefinition>(filter: FilterExpression): Promise<R | null>;
+    public async findDefinition<R extends BpmnDefinition = BpmnDefinition>(expression: any): Promise<R | null> {
+        return this.bpmnDefinitionRepository.find<R>(expression);
+    }
+
+    public async loadDefinitions<R extends BpmnDefinition = BpmnDefinition>(
         options: BpmnDefinitionLoadOptions,
     ): Promise<R[]> {
-        return this.definitionRepository.load(options);
+        const filter = options.filter;
+        const d = await this.bpmnDefinitionRepository.findAll<R>(filter);
+        return d;
     }
 
-    public async removeDefinition(options: BpmnDefinitionRemoveOptions): Promise<boolean> {
-        return this.definitionRepository.remove(options);
+    public async removeDefinition(id: IdExpression): Promise<boolean> {
+        return this.bpmnDefinitionRepository.delete(id);
     }
 
-    public async listDefinitions<R extends BpmnDefinitionPersistedData>(
-        options?: BpmnDefinitionListOptions,
-    ): Promise<R[]> {
-        return this.definitionRepository.list(options);
+    public async listDefinitions<R extends BpmnDefinition>(filter?: FilterExpression): Promise<R[]> {
+        return this.bpmnDefinitionRepository.findAll<R>(filter);
     }
 
     public async clearDefinitions(): Promise<void> {
-        return this.definitionRepository.clear();
+        await this.bpmnDefinitionRepository.deleteAll();
+        return;
     }
 
     public async persistDefinition(options: BpmnDefinitionPersistOptions): Promise<boolean> {
-        return this.definitionRepository.persist(options);
+        const id = options.id;
+        const entity = options.bpmnProcess;
+        return this.bpmnDefinitionRepository.update(id, entity);
     }
 
     public async createProcess(options?: BpmnProcessOptions): Promise<BpmnProcessInstance> {
@@ -224,7 +247,7 @@ export class BpmnEngine {
             try {
                 // using  registered definition if name already registered .
                 if (options && options.name && !options.source) {
-                    const d = await this.definitionRepository.find({
+                    const d = await this.bpmnDefinitionRepository.find({
                         name: options.name,
                     });
                     if (d) {
@@ -232,9 +255,11 @@ export class BpmnEngine {
                     }
                 }
                 const proc = new BpmnProcessInstance(self, options);
-                this.loadedProcsses[proc.Id] = proc;
-                proc.onEnd(() => {
-                    delete this.loadedProcsses[proc.Id];
+                await this.loadedProcessRepository.update(proc.Id, proc, true);
+                // this.loadedProcsses[proc.Id] = proc;
+                proc.onEnd(async () => {
+                    await this.loadedProcessRepository.delete(proc.Id);
+                    //  delete this.loadedProcsses[proc.Id];
                 });
                 //  proc.onActivityWait((a, b) => this.onProcessWaitActivity.call(this, proc, a, b));
                 resolve(proc);
@@ -245,34 +270,18 @@ export class BpmnEngine {
         return p;
     }
     public async loadedProcessCount(): Promise<number> {
-        return Promise.resolve(Object.entries(this.loadedProcsses).length);
+        return this.loadedProcessRepository.count();
     }
-    public async registeredProcessCount(): Promise<number> {
+    public async registeredDefinitionCount(): Promise<number> {
+        return this.bpmnDefinitionRepository.count();
+    }
+
+    public async persistedProcessCount(): Promise<number> {
         return this.processRepository.count();
     }
 
     public async loadedProcessList(): Promise<BpmnProcessInstance[]> {
-        return Promise.resolve(Object.entries(this.loadedProcsses).map(xx => xx[1]));
-    }
-
-    public async getProcessesByName(name: string): Promise<BpmnProcessInstance[] | null> {
-        const x = Object.entries(this.loadedProcsses)
-            .filter(xx => xx[1].Name === name)
-            .map(xx => xx[1]);
-        if (x) {
-            return Promise.resolve(x);
-        } else {
-            return Promise.resolve(null);
-        }
-    }
-
-    public async getProcessById(id: string): Promise<BpmnProcessInstance | null> {
-        const x = Object.entries(this.loadedProcsses).find(xx => xx[1].Id === id);
-        if (x) {
-            return Promise.resolve(x[1]);
-        } else {
-            return Promise.resolve(null);
-        }
+        return this.loadedProcessRepository.findAll();
     }
 
     /**
@@ -285,7 +294,7 @@ export class BpmnEngine {
     public async recoverProcesses(options?: BpmnEngineRecoverOptions): Promise<boolean> {
         try {
             if (options) {
-                const plist = await this.processRepository.list({
+                const plist = await this.processRepository.findAll({
                     id: options.id,
                     name: options.name,
                 });
@@ -303,7 +312,7 @@ export class BpmnEngine {
                     }
                 }
             } else {
-                const plist = await this.processRepository.list();
+                const plist = await this.processRepository.findAll();
                 const clist = await this.loadedProcessList();
                 for (const pitem of plist) {
                     if (!clist.some(xx => xx.Id === pitem.id)) {
@@ -332,35 +341,44 @@ export class BpmnEngine {
     public async persistProcess(options?: BpmnEnginePersistOptions): Promise<boolean> {
         try {
             if (options) {
-                const item = Object.entries(this.loadedProcsses).find(
-                    xx => (options.id && options.id === xx[1].Id) || options.name === xx[1].Name,
-                );
+                // xx => (options.id && options.id === xx[1].Id) || options.name === xx[1].Name,
+                const item =
+                    (options.id && (await this.loadedProcessRepository.find({ id: options.id }))) ||
+                    (await this.loadedProcessRepository.find({ name: options.name }));
                 if (item) {
-                    const p = item[1];
+                    const p = item;
                     const d = await p.getState();
-                    const r = await this.processRepository.persist({
-                        id: p.Id,
-                        name: p.Name,
-                        data: d,
-                    });
-                    return Promise.resolve(r);
+                    const r = await this.processRepository.update(
+                        p.Id,
+                        {
+                            id: p.Id,
+                            name: p.Name,
+                            data: d,
+                        },
+                        true,
+                    );
+                    return Promise.resolve(r !== null);
                 }
                 return Promise.resolve(false);
             } else {
-                const items = Object.entries(this.loadedProcsses);
+                const items = await this.loadedProcessRepository.findAll();
                 if (items) {
                     const pr: Array<Promise<any>> = [];
                     for (const item of items) {
-                        const p = item[1];
+                        const p = item;
                         const d = await p.getState();
-                        pr.push(
-                            this.processRepository.persist({
+                        const m = this.processRepository.update(
+                            p.Id,
+                            {
                                 id: p.Id,
                                 name: p.Name,
                                 data: d,
-                            }),
+                            },
+                            true,
                         );
+                        pr.push(m);
                     }
+                    const rs = await Promise.all(pr);
                     return Promise.resolve(true);
                 }
                 return Promise.resolve(false);
@@ -385,7 +403,20 @@ export class BpmnEngine {
         for (const process of processes) {
             process.stop();
         }
-        this.loadedProcsses = {};
+        await this.loadedProcessRepository.deleteAll();
         return Promise.resolve();
     }
+
+    // public async queryDefinition<R>(options: QueryOptions): Promise<QueryResult<R>> {
+    //     return this.definitionRepository.query(options);
+    // }
+    // public async scalarDefinition<R extends number>(options: ScalarOptions): Promise<R> {
+    //     return this.definitionRepository.scalar(options);
+    // }
+    // public async queryProcess<R>(options: QueryOptions): Promise<QueryResult<R>> {
+    //     return this.processRepository.query(options);
+    // }
+    // public async scalarProcess<R extends number>(options: ScalarOptions): Promise<R> {
+    //     return this.processRepository.scalar(options);
+    // }
 }

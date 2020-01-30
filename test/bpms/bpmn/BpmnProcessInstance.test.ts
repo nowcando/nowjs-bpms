@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import 'jest';
 import { BpmnProcessInstance } from '../../../src';
-import { source2 } from './sampleSources';
+import { source2 } from '../../resources/projects/BpmnSampleSources';
 
 beforeAll(() => {});
 beforeEach(() => {});
