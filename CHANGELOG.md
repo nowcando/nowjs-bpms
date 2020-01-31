@@ -1,3 +1,9 @@
+### 0.18.0 (2020-01-31)
+
+##### Bug Fixes
+
+*  task view implementation ([31e5702d](https://github.com/nowcando/nowjs-bpms/commit/31e5702dd8fe8e111a1fc06f162eddf1fd581783))
+
 ### 0.17.0 (2020-01-31)
 
 ##### Bug Fixes
