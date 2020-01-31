@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { uuidv1, deepAssign } from 'nowjs-core/lib/utils';
+import { uuidv1 } from 'nowjs-core/lib/utils';
 
 export interface QueryOptions {
     projection?: string | string[] | object;
@@ -244,6 +244,8 @@ export class BpmsBaseMemoryRepository<T = any> implements BpmsRepository<T> {
         const q = options.filter && this.getFilterExpression(options.filter);
         if (q) {
             r = this.ds.filter(q);
+        } else {
+            r = this.ds.slice();
         }
         const s = options.sortBy && this.getSortExpression(options.sortBy);
         if (s) {
@@ -341,15 +343,101 @@ export class BpmsBaseMemoryRepository<T = any> implements BpmsRepository<T> {
             if (expression.hasOwnProperty(key)) {
                 const lhs = key;
                 const rhs = expression[key];
+                const hasFunc = lhs.startsWith('$');
+                let opType = 'bitwise';
+                let opCode = '===';
+                if (hasFunc) {
+                    switch (lhs) {
+                        case '$ne':
+                            opCode = '!==';
+                            break;
+                        case '$eq':
+                            opCode = '===';
+                            break;
+                        case '$gt':
+                            opCode = '>';
+                            break;
+                        case '$lt':
+                            opCode = '<';
+                            break;
+                        case '$gte':
+                            opCode = '>=';
+                            break;
+                        case '$lte':
+                            opCode = '<=';
+                            break;
+                        case '$in':
+                            opType = 'unary';
+                            opCode = 'in';
+                            break;
+                        case '$nin':
+                            opType = 'unary';
+                            opCode = 'nin';
+                            break;
+                        case '$like':
+                            opType = 'unary';
+                            opCode = 'like';
+                            break;
+                        case '$pattern':
+                            opType = 'unary';
+                            opCode = 'pattern';
+                            break;
+                        case '$exists':
+                            opType = 'unary';
+                            opCode = 'exists';
+                            break;
+                        case '$text':
+                            opType = 'unary';
+                            opCode = 'text';
+                            break;
+                        case '$not':
+                            opCode = '!';
+                            opCode = 'logical';
+                            break;
+                        case '$and':
+                            opCode = '&&';
+                            opType = 'logical';
+                            break;
+                        case '$or':
+                            opCode = '||';
+                            opType = 'logical';
+                            break;
+                        case '$nor':
+                            opCode = '||';
+                            opType = 'logical';
+                            break;
+                        default:
+                            break;
+                    }
+                    // if(lhs === '$in' && Array.isArray(rhs)){
+                    //     rhs.includes()
+                    // }
+                }
                 // TODO: must be completed to work with any opType or opCodes
-                const opType = 'bitwise';
-                const opCode = '===';
+
                 if (rhs !== undefined) {
                     if (opType === 'bitwise') {
                         if (typeof rhs === 'string') {
                             eps.push(`$v.${lhs} ${opCode} '${rhs}'`);
                         } else {
                             eps.push(`$v.${lhs} ${opCode} ${rhs}`);
+                        }
+                    } else if (opType === 'unary') {
+                        switch (opCode) {
+                            case '$in':
+                                const x = JSON.stringify(rhs);
+                                eps.push(`${x}.includes($v.${lhs})`);
+                            case '$nin':
+                                const y = JSON.stringify(rhs);
+                                eps.push(`!${y}.includes($v.${lhs})`);
+                            case '$pattern':
+                                eps.push(`${rhs}.test($v.${lhs})`);
+                            case '$text':
+                                eps.push(`$v.${lhs}.startsWith(${rhs}) || $v.${lhs}.endsWith(${rhs})`);
+                            case '$like':
+                                eps.push(`$v.${lhs}.startsWith(${rhs}) || $v.${lhs}.endsWith(${rhs})`);
+                            default:
+                                break;
                         }
                     }
                 }

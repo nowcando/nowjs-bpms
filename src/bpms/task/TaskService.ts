@@ -44,6 +44,7 @@ export interface BpmsTask {
     priority?: string;
     refTenantId?: string;
     refProcessInstanceId?: string;
+    refProcessInstanceName?: string;
     refProcessId?: string;
     refProcessExecutionId?: string;
     refActivityId?: string;
