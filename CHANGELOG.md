@@ -1,3 +1,9 @@
+### 0.17.0 (2020-01-31)
+
+##### Bug Fixes
+
+*  some bugs in process ([fa8c4267](https://github.com/nowcando/nowjs-bpms/commit/fa8c4267a98f1d0696bbad5c938567c8ca046fd6))
+
 ### 0.16.0 (2020-01-31)
 
 ##### Bug Fixes
