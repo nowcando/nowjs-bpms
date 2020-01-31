@@ -14,13 +14,17 @@ export const NowJsExtension = (processInstance: BpmnProcessInstance) => (
                     extn.$type.toLowerCase() === 'camunda:executionListener'.toLowerCase() ||
                     extn.$type.toLowerCase() === 'nowjs:executionListener'.toLowerCase()
                 ) {
-                    const lscript = extn && extn.script && extn.script.value;
-                    if (lscript) {
-                        try {
-                            const func = new Function('return ' + lscript)();
-                            activity.on(extn.event, func);
-                        } catch (error) {
-                            activity.logger.error(`error in parsing listener function.`);
+                    if (extn.script && extn.script && extn.script.format) {
+                        if (extn.script.format === 'javascript') {
+                            const lscript = extn && extn.script && extn.script.value;
+                            if (lscript) {
+                                try {
+                                    const func = new Function('return ' + lscript)();
+                                    activity.on(extn.event, func);
+                                } catch (error) {
+                                    activity.logger.error(`error in parsing listener function.`);
+                                }
+                            }
                         }
                     }
                 }
@@ -55,7 +59,26 @@ export const NowJsExtension = (processInstance: BpmnProcessInstance) => (
                 extn.$type.toLowerCase() === 'camunda:DynamicView'.toLowerCase() ||
                 extn.$type.toLowerCase() === 'nowjs:DynamicView'.toLowerCase()
             ) {
-                const view = extn && extn.script && extn.script.value;
+                const view = {
+                    name: extn && extn.name,
+                    title: extn && extn.title,
+                    type: extn && extn.type,
+                    target: extn && extn.target,
+                    renderEngine: extn && extn.renderEngine,
+                    renderEngineVersion: extn && extn.renderEngineVersion,
+                    default: extn && extn.default,
+                    enabled: extn && extn.enabled,
+                    category: extn && extn.category,
+                    tags: extn && extn.tags,
+                    displayOrder: extn && extn.displayOrder,
+                    icon: extn && extn.icon,
+                    class: extn && extn.class,
+                    script: extn && extn.script,
+                    template: extn && extn.template,
+                    style: extn && extn.style,
+                    authorization: extn && extn.authorization,
+                    author: extn && extn.author,
+                };
                 const viewType = 'DynamicView';
                 const name = extn.name || 'default';
                 const data = extn.data;
@@ -73,7 +96,9 @@ export const NowJsExtension = (processInstance: BpmnProcessInstance) => (
         }
 
         activity.on('enter', () => {
-            activity.broker.publish('format', 'run.form', { form });
+            if (form) {
+                activity.broker.publish('format', 'run.form', { form });
+            }
         });
 
         if (
@@ -85,6 +110,7 @@ export const NowJsExtension = (processInstance: BpmnProcessInstance) => (
                 if (bpms) {
                     const t = await bpms.TaskService.create({
                         name: api.name,
+                        refProcessInstanceName: processInstance.Name,
                         refProcessInstanceId: processInstance.Id,
                         refProcessId: api.environment.variables.content.id,
                         refProcessExecutionId: api.environment.variables.content.executionId,

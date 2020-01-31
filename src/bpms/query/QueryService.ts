@@ -58,26 +58,39 @@ export class QueryService {
         return this.sources;
     }
 
-    public async count(source: SourceName, filter?: FilterExpression): Promise<number>;
-    public async count(source: SourceName, filter?: FilterExpression): Promise<number[]>;
-    public async count(source: SourceName, filter?: FilterExpression): Promise<number | number[]> {
-        const s = this.getExecutingRepositories(source);
-        const p = s.map(xx => xx.count('id', filter));
+    public async count(source: SourceName, filter?: FilterExpression): Promise<QueryResultSet<number>> {
+        const s: string[] = typeof source === 'string' ? source.split(',') : source;
+        const h = this.getExecutingRepositories(source);
+        const p = h.map(xx => xx.count('id', filter));
         const r = await Promise.all(p);
-        return r.length === 1 ? r[0] : r;
+        const m: any = {};
+        s.forEach((v, i) => {
+            m[v] = r[i];
+        });
+        return { results: m };
     }
 
-    public async query<R>(source: SourceName, options: QueryOptions): Promise<QueryResultSet<R>> {
-        const s = this.getExecutingRepositories(source);
-        const p = s.map(xx => xx.query(options));
+    public async query<R>(source: SourceName, options: QueryOptions): Promise<QueryResultSet<QueryResult<R>>> {
+        const s: string[] = typeof source === 'string' ? source.split(',') : source;
+        const h = this.getExecutingRepositories(source);
+        const p = h.map(xx => xx.query(options));
         const r = await Promise.all(p);
-        return { results: r };
+        const m: any = {};
+        s.forEach((v, i) => {
+            m[v] = r[i];
+        });
+        return { results: m };
     }
-    public async scalar(source: SourceName, options: ScalarOptions): Promise<number[]> {
-        const s = this.getExecutingRepositories(source);
-        const p = s.map(xx => xx.scalar(options));
+    public async scalar(source: SourceName, options: ScalarOptions): Promise<QueryResultSet<number>> {
+        const s: string[] = typeof source === 'string' ? source.split(',') : source;
+        const h = this.getExecutingRepositories(source);
+        const p = h.map(xx => xx.scalar(options));
         const r = await Promise.all(p);
-        return r;
+        const m: any = {};
+        s.forEach((v, i) => {
+            m[v] = r[i];
+        });
+        return { results: m };
     }
 
     private getExecutingRepositories(source: string | string[]): BpmsRepository<any>[] {

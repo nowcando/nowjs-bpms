@@ -3,40 +3,49 @@
 import 'nowjs-core';
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
-import { QueryOptions, QueryResult, ScalarOptions } from '../data/Repository';
+import {
+    QueryOptions,
+    QueryResult,
+    ScalarOptions,
+    BpmsBaseMemoryRepository,
+    FilterExpression,
+} from '../data/Repository';
 
 export interface NavigationServiceOptions {
     name: string;
 }
 
-export interface Navigation {
+export interface BpmsNavigation {
     definitionName: string;
     processName: string;
-    processId: string;
-    definitionId: string;
-    id: string;
-    type: string;
-    key: string;
+    processId?: string;
+    definitionId?: string;
+    id?: string;
+    type?: string;
+    key?: string;
     icon: string;
     target: string;
     title: string;
-    enabled: string;
-    order: string;
-    category: string;
-    tags: string;
-    defaultView: string;
-    allowedViews: string;
-    authorization: string;
+    enabled?: string;
+    order?: string;
+    category?: string;
+    tags?: string;
+    defaultView?: string;
+    allowedViews?: string;
+    authorization?: string;
 }
 
-export class NavigationService {
-    private navigations: Navigation[] = [];
+export class NavigationService<T extends BpmsNavigation = BpmsNavigation> {
+    private navigatonRepository!: BpmsBaseMemoryRepository<T>;
     private id: string = uuidv1();
     private options: NavigationServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: NavigationServiceOptions) {
         this.options = options || { name: 'NavigationService' + this.id };
-        //   this.taskRepository =
-        //     this.options.tenantRepository || (new NavigationMemoryRepository<T>() as any);
+        this.navigatonRepository = new BpmsBaseMemoryRepository({
+            storageName: 'Navigation',
+            keyPropertyname: 'id',
+            properties: {},
+        });
     }
 
     public static createService(options?: NavigationServiceOptions): NavigationService;
@@ -62,17 +71,41 @@ export class NavigationService {
         return this.bpmsEngine;
     }
 
-    public async registerNavigations(...navs: Navigation[]) {
-        this.navigations.push(...navs);
-        return;
+    public async clear(): Promise<void> {
+        return this.navigatonRepository.clear();
     }
-    public async listNavigations(): Promise<Navigation[]> {
-        return this.navigations.slice();
+
+    public async create(definitionName: string, view: any): Promise<T> {
+        const d = { definitionName, view };
+        return this.navigatonRepository.create(d);
+    }
+    public async findView(processName: string, viewName: string): Promise<T | null> {
+        return this.navigatonRepository.find({ processName, viewName });
+    }
+    public async remove(entityId: string): Promise<boolean> {
+        return this.navigatonRepository.delete(entityId);
+    }
+
+    public async find(entityId: string): Promise<T | null> {
+        return this.navigatonRepository.find(entityId);
+    }
+    public async list<R = T>(filter?: FilterExpression): Promise<R[]> {
+        return this.navigatonRepository.findAll(filter);
+    }
+    public async count(filter: FilterExpression): Promise<number> {
+        return this.navigatonRepository.count('id', filter);
+    }
+    public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {
+        return this.navigatonRepository.query(options);
+    }
+    public async scalar(options: ScalarOptions): Promise<number> {
+        return this.navigatonRepository.scalar(options);
     }
     public async listViewNavigations() {
         if (this.BpmsEngine) {
-            const views = await this.BpmsEngine.UIService.listViews();
-            const navViews = this.navigations
+            const views = await this.BpmsEngine.UIService.list();
+            const navs = await this.navigatonRepository.findAll();
+            const navViews = navs
                 .linq()
                 .groupBy(xx => xx.category)
                 .toArray()
@@ -82,7 +115,7 @@ export class NavigationService {
                         items: xx.values.toArray().map(nn => {
                             return {
                                 ...nn,
-                                views: views.filter(vv => vv.view.key.startsWith(nn.key)),
+                                views: views.filter(vv => vv.view.key.startsWith(nn.key || '')),
                             };
                         }),
                     };

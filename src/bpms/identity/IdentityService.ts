@@ -20,22 +20,25 @@ import {
 } from './IdentityResourceRepository';
 import { IdExpression, FilterExpression } from '../data/Repository';
 
-export interface IdentityUser {
+export interface BpmsIdentityUser {
     id: string;
+    name: string;
 }
-export interface IdentityGroup {
+export interface BpmsIdentityGroup {
     id: string;
+    name: string;
 }
-export interface IdentityResource {
+export interface BpmsIdentityResource {
     id: string;
+    name: string;
 }
 
-export interface IdentityUserGroup {
+export interface BpmsIdentityUserGroup {
     userId: string;
     groupId: string;
 }
 
-export interface IdentityUserClaim extends Record<string, string> {
+export interface BpmsIdentityUserClaim extends Record<string, string> {
     // implement
 }
 export interface IdentityServiceOptions {
@@ -83,23 +86,23 @@ export class IdentityService {
     public get BpmsEngine(): BpmsEngine | undefined {
         return this.bpmsEngine;
     }
-    public async getUserById(userId: IdExpression): Promise<IdentityUser | null> {
+    public async getUserById(userId: IdExpression): Promise<BpmsIdentityUser | null> {
         return this.identityUserRepository.find({ id: userId });
     }
-    public async getUserByUsername(username: string): Promise<IdentityUser | null> {
+    public async getUserByUsername(username: string): Promise<BpmsIdentityUser | null> {
         return this.identityUserRepository.find({ username });
     }
-    public async getUsers(filter?: FilterExpression): Promise<IdentityUser[]> {
+    public async getUsers(filter?: FilterExpression): Promise<BpmsIdentityUser[]> {
         return this.identityUserRepository.findAll(filter);
     }
 
-    public async getGroup(groupId: IdExpression): Promise<IdentityGroup | null>;
-    public async getGroup(filter: FilterExpression): Promise<IdentityGroup | null>;
-    public async getGroup(expression: IdExpression | FilterExpression): Promise<IdentityGroup | null> {
+    public async getGroup(groupId: IdExpression): Promise<BpmsIdentityGroup | null>;
+    public async getGroup(filter: FilterExpression): Promise<BpmsIdentityGroup | null>;
+    public async getGroup(expression: IdExpression | FilterExpression): Promise<BpmsIdentityGroup | null> {
         return this.identityGroupRepository.find(expression);
     }
 
-    public async getGroups(filter?: FilterExpression): Promise<IdentityGroup[]> {
+    public async getGroups(filter?: FilterExpression): Promise<BpmsIdentityGroup[]> {
         return this.identityGroupRepository.findAll(filter);
     }
 
@@ -110,7 +113,7 @@ export class IdentityService {
         return this.identityUserGroupRepository.findAll({ userId: userId });
     }
 
-    public async getResources(filter?: FilterExpression): Promise<IdentityResource[]> {
+    public async getResources(filter?: FilterExpression): Promise<BpmsIdentityResource[]> {
         return this.identityResourceRepository.findAll(filter);
     }
 

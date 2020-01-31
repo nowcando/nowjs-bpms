@@ -3,7 +3,7 @@ import { JsonSchemaDefinition, uuidv1 } from 'nowjs-core/lib/utils';
 import { ValidationDefinition } from 'nowjs-core/lib/validation';
 import { BpmsEngine } from '../BpmsEngine';
 import { DataModelMemoryRepository, DataModelRepository } from './DataModelRepository';
-import { QueryOptions, QueryResult, ScalarOptions } from './Repository';
+import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from './Repository';
 
 export interface DataModelServiceOptions {
     name: string;
@@ -26,7 +26,15 @@ export interface DataModelDefinition {
     models: DataModelSchemaDefinition;
     relations?: DataModelRelationDefinition;
 }
-export class DataModelService {
+
+export interface BpmsDataModel {
+    id?: string;
+    name: string;
+    definition: DataModelDefinition;
+    createdAt?: string;
+}
+
+export class DataModelService<T extends BpmsDataModel = BpmsDataModel> {
     private dataModelCache: { [name: string]: any } = {};
     private id: string = uuidv1();
     private name: string;
@@ -61,10 +69,6 @@ export class DataModelService {
         return this.bpmsEngine;
     }
 
-    public get DataModelPersistency(): DataModelRepository {
-        return this.datamodelRepository;
-    }
-
     public static createEngine(options?: DataModelServiceOptions): DataModelService;
     public static createEngine(bpmsEngine?: BpmsEngine, options?: DataModelServiceOptions): DataModelService;
     public static createEngine(
@@ -77,8 +81,30 @@ export class DataModelService {
         return new DataModelService(undefined, arg1);
     }
 
-    public async registerDataModel(name: string, definition: DataModelDefinition): Promise<boolean> {
-        this.datamodelRepository.create({ definitions: definition, name });
-        return Promise.resolve(true);
+    public async create(dataModel: T): Promise<T> {
+        return this.datamodelRepository.create(dataModel);
+    }
+    public async remove(dataModelId: string): Promise<boolean> {
+        return this.datamodelRepository.delete(dataModelId);
+    }
+
+    public async clear(): Promise<void> {
+        return this.datamodelRepository.clear();
+    }
+
+    public async find(dataModelId: string): Promise<T | null> {
+        return this.datamodelRepository.find(dataModelId);
+    }
+    public async list<R = T>(filter?: FilterExpression): Promise<R[]> {
+        return this.datamodelRepository.findAll(filter);
+    }
+    public async count(filter?: FilterExpression): Promise<number> {
+        return this.datamodelRepository.count('id', filter);
+    }
+    public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {
+        return this.datamodelRepository.query(options);
+    }
+    public async scalar(options: ScalarOptions): Promise<number> {
+        return this.datamodelRepository.scalar(options);
     }
 }

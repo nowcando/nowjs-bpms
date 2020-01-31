@@ -2,10 +2,11 @@
 import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
 
 export interface BpmnDefinitionModel {
+    id: string;
     name: string;
     definitions: any;
 
-    persistedAt?: Date;
+    createdAt?: Date;
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface BpmnDefinitionRepository<T extends BpmnDefinitionModel = BpmnDefinitionModel>

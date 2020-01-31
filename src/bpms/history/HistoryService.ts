@@ -69,7 +69,20 @@ export class HistoryService<T extends BpmsHistoryEntity = BpmsHistoryEntity> {
     public async findAll(filter?: FilterExpression): Promise<T[]> {
         return this.historyRepository.findAll(filter);
     }
+
+    public async clear(): Promise<void> {
+        return this.historyRepository.clear();
+    }
+    public async list<R = T>(filter?: FilterExpression): Promise<R[]> {
+        return this.historyRepository.findAll(filter);
+    }
     public async count(filter?: FilterExpression): Promise<number> {
-        return this.historyRepository.count('id',filter);
+        return this.historyRepository.count('id', filter);
+    }
+    public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {
+        return this.historyRepository.query(options);
+    }
+    public async scalar(options: ScalarOptions): Promise<number> {
+        return this.historyRepository.scalar(options);
     }
 }

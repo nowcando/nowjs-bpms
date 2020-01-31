@@ -1,3 +1,27 @@
+### 0.18.0 (2020-01-31)
+
+##### Bug Fixes
+
+*  task view implementation ([31e5702d](https://github.com/nowcando/nowjs-bpms/commit/31e5702dd8fe8e111a1fc06f162eddf1fd581783))
+
+### 0.17.0 (2020-01-31)
+
+##### Bug Fixes
+
+*  some bugs in process ([fa8c4267](https://github.com/nowcando/nowjs-bpms/commit/fa8c4267a98f1d0696bbad5c938567c8ca046fd6))
+
+### 0.16.0 (2020-01-31)
+
+##### Bug Fixes
+
+*  fixture for some bugs . ([8f6bda45](https://github.com/nowcando/nowjs-bpms/commit/8f6bda459953cc0003ae93c5fcebada08a7608c2))
+
+### 0.15.0 (2020-01-30)
+
+##### Bug Fixes
+
+*  query in services [#17](https://github.com/nowcando/nowjs-bpms/pull/17) ([1dc40cab](https://github.com/nowcando/nowjs-bpms/commit/1dc40cab19ff88f2617c42c4df5713fac5917a43))
+
 ### 0.14.0 (2020-01-30)
 
 ##### New Features

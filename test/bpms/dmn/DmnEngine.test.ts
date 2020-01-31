@@ -35,7 +35,7 @@ describe('DmnEngine', () => {
             expect(actual.list).toBeDefined();
             expect(actual.parseDmnXml).toBeDefined();
             expect(actual.persist).toBeDefined();
-            expect(actual.registerDefinitions).toBeDefined();
+            expect(actual.create).toBeDefined();
             expect(actual.remove).toBeDefined();
         });
     });
@@ -47,14 +47,14 @@ describe('DmnEngine', () => {
             expect(actual.Id).toBeDefined();
         });
     });
-    describe('registerDefinitions', () => {
-        it('should be true when call registerDefinitions ', async () => {
+    describe('create', () => {
+        it('should be true when call craete Definitions ', async () => {
             const engine = DmnEngine.createEngine({ name: 'MyEngine1' });
             expect(engine).toBeDefined();
             expect(engine.Name).toBeDefined();
             expect(engine.Id).toBeDefined();
-            const decisions = await engine.parseDmnXml(readDmnFile(path.join(DMN_TEST_PATH, `simple.dmn`)));
-            const actual = await engine.registerDefinitions('MyRules', decisions);
+            const definitions = await engine.parseDmnXml(readDmnFile(path.join(DMN_TEST_PATH, `simple.dmn`)));
+            const actual = await engine.create({ name: 'MyRules', definitions });
             expect(actual).toBeTruthy();
         });
     });
