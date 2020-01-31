@@ -53,6 +53,8 @@ export interface BpmsRepository<T = any> extends BpmsQueryableRepository<T> {
     create<E = T, R = T>(entity: E): Promise<R>;
     update<E = T, R = T>(id: IdExpression, entity: E, upsert?: boolean): Promise<R>;
     updateAll<E = T, R = T>(filter: FilterExpression, entity: E, upsert?: boolean): Promise<R[]>;
+
+    clear(): Promise<void>;
     delete(id: IdExpression): Promise<boolean>;
     delete<E = T>(entity: E): Promise<boolean>;
     deleteAll(filter?: FilterExpression): Promise<number>;
@@ -123,6 +125,9 @@ export class BpmsBaseMemoryRepository<T = any> implements BpmsRepository<T> {
             throw new Error('Storage name in memory repository not defined');
         }
         this.options = Object.deepAssign(this.options, this.defautOptions, options);
+    }
+    public async clear(): Promise<void> {
+        this.ds.length = 0;
     }
     public async create<E = T, R = T>(entity: E): Promise<R> {
         if (entity) {

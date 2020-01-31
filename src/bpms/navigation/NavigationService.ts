@@ -18,30 +18,30 @@ export interface NavigationServiceOptions {
 export interface BpmsNavigation {
     definitionName: string;
     processName: string;
-    processId: string;
-    definitionId: string;
-    id: string;
-    type: string;
-    key: string;
+    processId?: string;
+    definitionId?: string;
+    id?: string;
+    type?: string;
+    key?: string;
     icon: string;
     target: string;
     title: string;
-    enabled: string;
-    order: string;
-    category: string;
-    tags: string;
-    defaultView: string;
-    allowedViews: string;
-    authorization: string;
+    enabled?: string;
+    order?: string;
+    category?: string;
+    tags?: string;
+    defaultView?: string;
+    allowedViews?: string;
+    authorization?: string;
 }
 
 export class NavigationService<T extends BpmsNavigation = BpmsNavigation> {
-    private notificationRepository!: BpmsBaseMemoryRepository<T>;
+    private navigatonRepository!: BpmsBaseMemoryRepository<T>;
     private id: string = uuidv1();
     private options: NavigationServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: NavigationServiceOptions) {
         this.options = options || { name: 'NavigationService' + this.id };
-        this.notificationRepository = new BpmsBaseMemoryRepository({
+        this.navigatonRepository = new BpmsBaseMemoryRepository({
             storageName: 'Navigation',
             keyPropertyname: 'id',
             properties: {},
@@ -71,36 +71,40 @@ export class NavigationService<T extends BpmsNavigation = BpmsNavigation> {
         return this.bpmsEngine;
     }
 
+    public async clear(): Promise<void> {
+        return this.navigatonRepository.clear();
+    }
+
     public async create(definitionName: string, view: any): Promise<T> {
         const d = { definitionName, view };
-        return this.notificationRepository.create(d);
+        return this.navigatonRepository.create(d);
     }
     public async findView(processName: string, viewName: string): Promise<T | null> {
-        return this.notificationRepository.find({ processName, viewName });
+        return this.navigatonRepository.find({ processName, viewName });
     }
     public async remove(entityId: string): Promise<boolean> {
-        return this.notificationRepository.delete(entityId);
+        return this.navigatonRepository.delete(entityId);
     }
 
     public async find(entityId: string): Promise<T | null> {
-        return this.notificationRepository.find(entityId);
+        return this.navigatonRepository.find(entityId);
     }
     public async list<R = T>(filter?: FilterExpression): Promise<R[]> {
-        return this.notificationRepository.findAll(filter);
+        return this.navigatonRepository.findAll(filter);
     }
     public async count(filter: FilterExpression): Promise<number> {
-        return this.notificationRepository.count('id', filter);
+        return this.navigatonRepository.count('id', filter);
     }
     public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {
-        return this.notificationRepository.query(options);
+        return this.navigatonRepository.query(options);
     }
     public async scalar(options: ScalarOptions): Promise<number> {
-        return this.notificationRepository.scalar(options);
+        return this.navigatonRepository.scalar(options);
     }
     public async listViewNavigations() {
         if (this.BpmsEngine) {
             const views = await this.BpmsEngine.UIService.list();
-            const navs = await this.notificationRepository.findAll();
+            const navs = await this.navigatonRepository.findAll();
             const navViews = navs
                 .linq()
                 .groupBy(xx => xx.category)
@@ -111,7 +115,7 @@ export class NavigationService<T extends BpmsNavigation = BpmsNavigation> {
                         items: xx.values.toArray().map(nn => {
                             return {
                                 ...nn,
-                                views: views.filter(vv => vv.view.key.startsWith(nn.key)),
+                                views: views.filter(vv => vv.view.key.startsWith(nn.key || '')),
                             };
                         }),
                     };

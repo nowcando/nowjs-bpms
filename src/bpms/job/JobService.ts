@@ -95,6 +95,9 @@ export class JobService<T extends BpmsJob = BpmsJob> {
     public get BpmsEngine(): BpmsEngine | undefined {
         return this.bpmsEngine;
     }
+    public async clear(): Promise<void> {
+        return this.jobRepository.clear();
+    }
     public async create(job: T): Promise<T> {
         return this.jobRepository.create(job);
     }

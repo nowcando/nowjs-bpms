@@ -71,6 +71,10 @@ export class UIService<T extends ProcessViewData = ProcessViewData> {
         return this.bpmsEngine;
     }
 
+    public async clear(): Promise<void> {
+        return this.viewRepository.clear();
+    }
+
     public async create(definitionName: string, view: any): Promise<T> {
         const d = { definitionName, view };
         return this.viewRepository.create(d);

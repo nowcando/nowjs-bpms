@@ -44,6 +44,9 @@ export class TenantService<T extends BpmsTenant = BpmsTenant> {
     public get BpmsEngine(): BpmsEngine | undefined {
         return this.bpmsEngine;
     }
+    public async clear(): Promise<void> {
+        return this.tenantRepository.clear();
+    }
     public async create(entity: T): Promise<T> {
         return this.tenantRepository.create(entity);
     }

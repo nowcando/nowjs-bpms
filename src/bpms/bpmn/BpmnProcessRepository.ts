@@ -7,6 +7,9 @@ import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
 export interface BpmnProcessModel {
     id: string;
     name: string;
+    state: string;
+    stopped: boolean;
+    createdAt?: Date;
     persistedAt?: Date;
     data: any;
 }

@@ -6,8 +6,14 @@ import { BpmsEngine } from '../BpmsEngine';
 import { BpmnDefinitionMemoryRepository, BpmnDefinitionRepository } from './BpmnDefinitionRepository';
 import { BpmnProcessInstance, BpmnProcessOptions, BpmnProcess } from './BpmnProcessInstance';
 import { BpmnProcessMemoryRepository, BpmnProcessRepository } from './BpmnProcessRepository';
-import BusinessRuleTask from './elements/BusinessRuleTask';
-import { IdExpression, FilterExpression, BpmsBaseMemoryRepository } from '../data/Repository';
+import {
+    IdExpression,
+    FilterExpression,
+    BpmsBaseMemoryRepository,
+    QueryOptions,
+    ScalarOptions,
+    QueryResult,
+} from '../data/Repository';
 export type BpmnSource = string;
 
 export interface BpmnEngineOptions {
@@ -23,23 +29,28 @@ export interface BpmnEngineRecoverOptions {
 }
 
 export interface BpmnEnginePersistOptions {
-    id?: string | string[];
-    name?: string | string[];
+    filter?: FilterExpression;
     resume?: boolean;
 }
 
-export interface BpmnDefinition {
-    id: string;
+export interface BpmsBpmnDefinition {
+    id?: string;
     name: string;
     definitions: any;
 
     createdAt?: Date;
 }
 
-// export interface BpmnProcess {
-//     id: string;
-//     name: string;
-// }
+export interface BpmsProcess {
+    id?: string;
+    name: string;
+    state: string;
+    stopped: boolean;
+    createdAt?: Date;
+    persistedAt?: Date;
+    data: any;
+    isLoaded?: boolean;
+}
 
 export interface BpmnDefinitionLoadOptions {
     filter?: FilterExpression;
@@ -121,19 +132,26 @@ export class BpmnEngine {
         return this.bpmnDefinitionRepository.count();
     }
 
-    public async findDefinition<R extends BpmnDefinition = BpmnDefinition>(id: IdExpression): Promise<R | null>;
-    public async findDefinition<R extends BpmnDefinition = BpmnDefinition>(filter: FilterExpression): Promise<R | null>;
-    public async findDefinition<R extends BpmnDefinition = BpmnDefinition>(expression: any): Promise<R | null> {
+    public async findDefinition<R extends BpmsBpmnDefinition = BpmsBpmnDefinition>(id: IdExpression): Promise<R | null>;
+    public async findDefinition<R extends BpmsBpmnDefinition = BpmsBpmnDefinition>(
+        filter: FilterExpression,
+    ): Promise<R | null>;
+    public async findDefinition<R extends BpmsBpmnDefinition = BpmsBpmnDefinition>(expression: any): Promise<R | null> {
         return this.bpmnDefinitionRepository.find<R>(expression);
     }
 
-    public async findProcess<R extends BpmnProcess = BpmnProcess>(id: IdExpression): Promise<R | null>;
-    public async findProcess<R extends BpmnProcess = BpmnProcess>(filter: FilterExpression): Promise<R | null>;
-    public async findProcess<R extends BpmnProcess = BpmnProcess>(expression: any): Promise<R | null> {
-        return this.processRepository.find<R>(expression);
+    public async findProcess<R extends BpmsProcess = BpmsProcess>(id: IdExpression): Promise<R | null>;
+    public async findProcess<R extends BpmsProcess = BpmsProcess>(filter: FilterExpression): Promise<R | null>;
+    public async findProcess<R extends BpmsProcess = BpmsProcess>(expression: any): Promise<R | null> {
+        const f = await this.processRepository.find<R>(expression);
+        if (f && f.id) {
+            const d = await this.loadedProcessRepository.find(f.id);
+            f.isLoaded = d ? true : false;
+        }
+        return f;
     }
 
-    public async loadDefinitions<R extends BpmnDefinition = BpmnDefinition>(
+    public async loadDefinitions<R extends BpmsBpmnDefinition = BpmsBpmnDefinition>(
         options: BpmnDefinitionLoadOptions,
     ): Promise<R[]> {
         const filter = options.filter;
@@ -145,13 +163,22 @@ export class BpmnEngine {
         return this.bpmnDefinitionRepository.delete(id);
     }
 
-    public async listDefinitions<R extends BpmnDefinition>(filter?: FilterExpression): Promise<R[]> {
+    public async listDefinitions<R extends BpmsBpmnDefinition>(filter?: FilterExpression): Promise<R[]> {
         return this.bpmnDefinitionRepository.findAll<R>(filter);
     }
 
     public async clearDefinitions(): Promise<void> {
         await this.bpmnDefinitionRepository.deleteAll();
         return;
+    }
+
+    public async listProcess<R extends BpmsProcess>(filter?: FilterExpression): Promise<R[]> {
+        const l = await this.processRepository.findAll<R>(filter);
+        for (const item of l) {
+            const d = item.id && (await this.loadedProcessRepository.find(item.id));
+            item.isLoaded = d ? true : false;
+        }
+        return l;
     }
 
     public async createProcess(options?: BpmnProcessOptions): Promise<BpmnProcessInstance> {
@@ -169,12 +196,9 @@ export class BpmnEngine {
                 }
                 const proc = new BpmnProcessInstance(self, options);
                 await this.loadedProcessRepository.update(proc.Id, proc, true);
-                // this.loadedProcsses[proc.Id] = proc;
                 proc.onEnd(async () => {
                     await this.loadedProcessRepository.delete(proc.Id);
-                    //  delete this.loadedProcsses[proc.Id];
                 });
-                //  proc.onActivityWait((a, b) => this.onProcessWaitActivity.call(this, proc, a, b));
                 resolve(proc);
             } catch (error) {
                 reject(error);
@@ -185,7 +209,7 @@ export class BpmnEngine {
     public async loadedProcessCount(): Promise<number> {
         return this.loadedProcessRepository.count();
     }
-    public async registeredDefinitionCount(): Promise<number> {
+    public async persistedDefinitionCount(): Promise<number> {
         return this.bpmnDefinitionRepository.count();
     }
 
@@ -193,8 +217,8 @@ export class BpmnEngine {
         return this.processRepository.count();
     }
 
-    public async loadedProcessList(): Promise<BpmnProcessInstance[]> {
-        return this.loadedProcessRepository.findAll();
+    public async listLoadedProcess(filter?: FilterExpression): Promise<BpmnProcessInstance[]> {
+        return this.loadedProcessRepository.findAll(filter);
     }
 
     /**
@@ -211,7 +235,7 @@ export class BpmnEngine {
                     id: options.id,
                     name: options.name,
                 });
-                const clist = await this.loadedProcessList();
+                const clist = await this.listLoadedProcess();
                 for (const pitem of plist) {
                     if (!clist.some(xx => xx.Id === pitem.id)) {
                         const p = await this.createProcess({
@@ -226,7 +250,7 @@ export class BpmnEngine {
                 }
             } else {
                 const plist = await this.processRepository.findAll();
-                const clist = await this.loadedProcessList();
+                const clist = await this.listLoadedProcess();
                 for (const pitem of plist) {
                     if (!clist.some(xx => xx.Id === pitem.id)) {
                         const p = await this.createProcess({
@@ -254,10 +278,7 @@ export class BpmnEngine {
     public async persistProcess(options?: BpmnEnginePersistOptions): Promise<boolean> {
         try {
             if (options) {
-                // xx => (options.id && options.id === xx[1].Id) || options.name === xx[1].Name,
-                const item =
-                    (options.id && (await this.loadedProcessRepository.find({ id: options.id }))) ||
-                    (await this.loadedProcessRepository.find({ name: options.name }));
+                const item = options.filter && (await this.loadedProcessRepository.find(options.filter));
                 if (item) {
                     const p = item;
                     const d = await p.getState();
@@ -266,6 +287,9 @@ export class BpmnEngine {
                         {
                             id: p.Id,
                             name: p.Name,
+                            state: p.State,
+                            stopped: p.Stopped,
+                            persistedAt: new Date(),
                             data: d,
                         },
                         true,
@@ -285,6 +309,9 @@ export class BpmnEngine {
                             {
                                 id: p.Id,
                                 name: p.Name,
+                                state: p.State,
+                                stopped: p.Stopped,
+                                persistedAt: new Date(),
                                 data: d,
                             },
                             true,
@@ -308,11 +335,11 @@ export class BpmnEngine {
      * @returns {Promise<void>}
      * @memberof BpmnEngine
      */
-    public async stopProcesses(persist = true): Promise<void> {
+    public async stopProcesses(persist = true, filter?: FilterExpression): Promise<void> {
         if (persist === true) {
             await this.persistProcess();
         }
-        const processes = await this.loadedProcessList();
+        const processes = await this.listLoadedProcess(filter);
         for (const process of processes) {
             process.stop();
         }
@@ -320,16 +347,16 @@ export class BpmnEngine {
         return Promise.resolve();
     }
 
-    // public async queryDefinition<R>(options: QueryOptions): Promise<QueryResult<R>> {
-    //     return this.definitionRepository.query(options);
-    // }
-    // public async scalarDefinition<R extends number>(options: ScalarOptions): Promise<R> {
-    //     return this.definitionRepository.scalar(options);
-    // }
-    // public async queryProcess<R>(options: QueryOptions): Promise<QueryResult<R>> {
-    //     return this.processRepository.query(options);
-    // }
-    // public async scalarProcess<R extends number>(options: ScalarOptions): Promise<R> {
-    //     return this.processRepository.scalar(options);
-    // }
+    public async queryDefinition<R>(options: QueryOptions): Promise<QueryResult<R>> {
+        return this.bpmnDefinitionRepository.query(options);
+    }
+    public async scalarDefinition(options: ScalarOptions): Promise<number> {
+        return this.bpmnDefinitionRepository.scalar(options);
+    }
+    public async queryProcess<R>(options: QueryOptions): Promise<QueryResult<R>> {
+        return this.processRepository.query(options);
+    }
+    public async scalarProcess(options: ScalarOptions): Promise<number> {
+        return this.processRepository.scalar(options);
+    }
 }

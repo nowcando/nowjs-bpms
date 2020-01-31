@@ -50,6 +50,9 @@ export class NotificationService<T extends BpmsNotification = BpmsNotification> 
     public get BpmsEngine(): BpmsEngine | undefined {
         return this.bpmsEngine;
     }
+    public async clear(): Promise<void> {
+        return this.notificationRepository.clear();
+    }
 
     public async create(entity: T): Promise<T> {
         return this.notificationRepository.create(entity);

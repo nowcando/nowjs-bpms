@@ -2,7 +2,7 @@
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
 import { DataSourceMemoryRepository, DataSourceRepository } from './DataSourceRepository';
-import { QueryOptions, QueryResult, ScalarOptions } from './Repository';
+import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from './Repository';
 
 export interface DataSourceServiceOptions {
     name: string;
@@ -31,7 +31,14 @@ export interface DataSourceRestApiSchema<T> extends DataSourceSchema<T> {
 export interface DataSourceDefinition {
     sources: Array<DataSourceSchema<any>>;
 }
-export class DataSourceService {
+
+export interface BpmsDataSource {
+    id: string;
+    name: string;
+    definition: DataSourceDefinition;
+    createdAt?: Date;
+}
+export class DataSourceService<T extends BpmsDataSource = BpmsDataSource> {
     private datasourceCache: { [name: string]: any } = {};
     private id: string = uuidv1();
     private name: string;
@@ -82,8 +89,35 @@ export class DataSourceService {
         return new DataSourceService(undefined, arg1);
     }
 
-    public async registerDataSource(name: string, definition: DataSourceDefinition): Promise<boolean> {
-        this.datasourceRepository.create({ definitions: definition, name });
-        return Promise.resolve(true);
+    // public async create(name: string, definition: DataSourceDefinition): Promise<boolean> {
+    //     this.datasourceRepository.create({ definitions: definition, name });
+    //     return Promise.resolve(true);
+    // }
+
+    public async create(dataSource: T): Promise<T> {
+        return this.datasourceRepository.create(dataSource);
+    }
+    public async remove(dataSourceId: string): Promise<boolean> {
+        return this.datasourceRepository.delete(dataSourceId);
+    }
+
+    public async clear(): Promise<void> {
+        return this.datasourceRepository.clear();
+    }
+
+    public async find(dataSourceId: string): Promise<T | null> {
+        return this.datasourceRepository.find(dataSourceId);
+    }
+    public async list<R = T>(filter?: FilterExpression): Promise<R[]> {
+        return this.datasourceRepository.findAll(filter);
+    }
+    public async count(filter?: FilterExpression): Promise<number> {
+        return this.datasourceRepository.count('id', filter);
+    }
+    public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {
+        return this.datasourceRepository.query(options);
+    }
+    public async scalar(options: ScalarOptions): Promise<number> {
+        return this.datasourceRepository.scalar(options);
     }
 }

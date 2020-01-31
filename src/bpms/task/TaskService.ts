@@ -94,6 +94,10 @@ export class TaskService<T extends BpmsTask = BpmsTask> {
     public get BpmsEngine(): BpmsEngine | undefined {
         return this.bpmsEngine;
     }
+
+    public async clear(): Promise<void> {
+        return this.taskRepository.clear();
+    }
     public async create(task: T): Promise<T> {
         return this.taskRepository.create(task);
     }

@@ -40,6 +40,12 @@ export interface DmnEngineOptions {
     name: string;
     dmnDefinitionRepository?: DmnDefinitionRepository;
 }
+export interface BpmsDmnDefinition {
+    id?: string;
+    name: string;
+    definitions: DmnDefinition | string;
+    createdAt?: Date;
+}
 export class DmnEngine {
     private definitionCache: { [name: string]: any } = {};
     private id: string = uuidv1();
@@ -78,20 +84,20 @@ export class DmnEngine {
      * register Dmn Definitions
      *
      * @param {string} name definiion name
-     * @param {DmnDecision[]} decisions decisions
+     * @param {DmnDecision[]} definitions decisions
      * @returns {Promise<boolean>} return true
      * @memberof DmnEngine
      */
-    public async registerDefinitions(name: string, decisions: DmnDefinition | string): Promise<boolean> {
-        let d = decisions;
-        if (typeof decisions === 'string') {
-            const s = await this.dmnDefinitionRepository.find({ name });
+    public async create(entity: BpmsDmnDefinition): Promise<boolean> {
+        let d = entity.definitions;
+        if (typeof entity.definitions === 'string') {
+            const s = await this.dmnDefinitionRepository.find({ name: entity.name });
             d = await this.parseDmnXml(d as string);
             if (!s) {
-                this.dmnDefinitionRepository.create({ name, definitions: decisions });
+                this.dmnDefinitionRepository.create(entity);
             }
         }
-        this.definitionCache[name] = d;
+        this.definitionCache[entity.name] = d;
         return Promise.resolve(true);
     }
 
@@ -182,32 +188,42 @@ export class DmnEngine {
     }
 
     public async clear(): Promise<void> {
-        this.dmnDefinitionRepository.deleteAll();
-        return;
+        return this.dmnDefinitionRepository.clear();
     }
 
     public async count(): Promise<number> {
         return this.dmnDefinitionRepository.count();
     }
-    public async find<R extends DmnDefinition = DmnDefinition>(filter: IdExpression): Promise<R | null>;
-    public async find<R extends DmnDefinition = DmnDefinition>(filter: FilterExpression): Promise<R | null>;
-    public async find<R extends DmnDefinition = DmnDefinition>(expression: any): Promise<R | null> {
+    public async find<R extends BpmsDmnDefinition = BpmsDmnDefinition>(filter: IdExpression): Promise<R | null>;
+    public async find<R extends BpmsDmnDefinition = BpmsDmnDefinition>(filter: FilterExpression): Promise<R | null>;
+    public async find<R extends BpmsDmnDefinition = BpmsDmnDefinition>(expression: any): Promise<R | null> {
         return this.dmnDefinitionRepository.find<R>(expression);
     }
-    public async load<R extends DmnDefinition = DmnDefinition>(filter?: FilterExpression): Promise<R[]> {
+    public async load<R extends BpmsDmnDefinition = BpmsDmnDefinition>(filter?: FilterExpression): Promise<R[]> {
         return this.dmnDefinitionRepository.findAll(filter);
     }
 
-    public async list<R extends DmnDefinition = DmnDefinition>(filter?: FilterExpression): Promise<R[]> {
+    public async list<R extends BpmsDmnDefinition = BpmsDmnDefinition>(filter?: FilterExpression): Promise<R[]> {
         return this.dmnDefinitionRepository.findAll(filter);
     }
 
-    public async persist<R extends DmnDefinition = DmnDefinition>(entity: R): Promise<boolean> {
-        const r = await this.dmnDefinitionRepository.update('entity.id', entity);
-        return r !== null;
+    public async persist<R extends BpmsDmnDefinition = BpmsDmnDefinition>(entity: R): Promise<boolean> {
+        if (entity && entity.id) {
+            const r = await this.dmnDefinitionRepository.update(entity.id, entity);
+            return r !== null;
+        } else {
+            return false;
+        }
     }
 
     public async remove(id: IdExpression): Promise<boolean> {
         return this.dmnDefinitionRepository.delete(id);
+    }
+
+    public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {
+        return this.dmnDefinitionRepository.query(options);
+    }
+    public async scalar(options: ScalarOptions): Promise<number> {
+        return this.dmnDefinitionRepository.scalar(options);
     }
 }
