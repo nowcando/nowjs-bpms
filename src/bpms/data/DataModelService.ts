@@ -28,7 +28,7 @@ export interface DataModelDefinition {
 }
 
 export interface BpmsDataModel {
-    id: string;
+    id?: string;
     name: string;
     definition: DataModelDefinition;
     createdAt?: string;
@@ -67,10 +67,6 @@ export class DataModelService<T extends BpmsDataModel = BpmsDataModel> {
 
     public get BpmsEngine(): BpmsEngine | undefined {
         return this.bpmsEngine;
-    }
-
-    public get DataModelPersistency(): DataModelRepository {
-        return this.datamodelRepository;
     }
 
     public static createEngine(options?: DataModelServiceOptions): DataModelService;

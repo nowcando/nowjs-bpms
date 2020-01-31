@@ -33,7 +33,7 @@ export interface DataSourceDefinition {
 }
 
 export interface BpmsDataSource {
-    id: string;
+    id?: string;
     name: string;
     definition: DataSourceDefinition;
     createdAt?: Date;
@@ -71,10 +71,6 @@ export class DataSourceService<T extends BpmsDataSource = BpmsDataSource> {
 
     public get BpmsEngine(): BpmsEngine | undefined {
         return this.bpmsEngine;
-    }
-
-    public get DataSourcePersistency(): DataSourceRepository {
-        return this.datasourceRepository;
     }
 
     public static createEngine(options?: DataSourceServiceOptions): DataSourceService;
