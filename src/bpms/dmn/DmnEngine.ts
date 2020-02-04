@@ -88,17 +88,16 @@ export class DmnEngine {
      * @returns {Promise<boolean>} return true
      * @memberof DmnEngine
      */
-    public async create(entity: BpmsDmnDefinition): Promise<boolean> {
+    public async create(entity: BpmsDmnDefinition): Promise<BpmsDmnDefinition> {
         let d = entity.definitions;
-        if (typeof entity.definitions === 'string') {
-            const s = await this.dmnDefinitionRepository.find({ name: entity.name });
-            d = await this.parseDmnXml(d as string);
-            if (!s) {
-                this.dmnDefinitionRepository.create(entity);
-            }
+        const s = await this.dmnDefinitionRepository.find({ name: entity.name });
+        d = typeof entity.definitions === 'string' ? await this.parseDmnXml(d as string) : d;
+        if (!s) {
+            const r = await this.dmnDefinitionRepository.create(entity);
+            this.definitionCache[entity.name] = d;
+            return r;
         }
-        this.definitionCache[entity.name] = d;
-        return Promise.resolve(true);
+        throw new Error('The dmn definition already exists');
     }
 
     /**
