@@ -1,5 +1,15 @@
 ### 0.20.0 (2020-02-04)
 
+##### New Features
+
+*  update method for dmn and bpmn definition added ([b77b246b](https://github.com/nowcando/nowjs-bpms/commit/b77b246b5811c9cb19d981b2d38fe13139b10401))
+
+##### Bug Fixes
+
+*  bpmn , dmn update id ([8b6c7030](https://github.com/nowcando/nowjs-bpms/commit/8b6c7030e3301fd978480e49d0157f9cbc91564d))
+
+### 0.20.0 (2020-02-04)
+
 ### 0.19.0 (2020-02-04)
 
 ##### Bug Fixes
