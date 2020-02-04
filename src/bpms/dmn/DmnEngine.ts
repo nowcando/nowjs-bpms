@@ -89,6 +89,9 @@ export class DmnEngine {
      * @memberof DmnEngine
      */
     public async create(entity: BpmsDmnDefinition): Promise<BpmsDmnDefinition> {
+        if (!entity) {
+            throw new Error(`The BPMN definition entity ${entity} required`);
+        }
         let d = entity.definitions;
         const s = await this.dmnDefinitionRepository.find({ name: entity.name });
         d = typeof entity.definitions === 'string' ? await this.parseDmnXml(d as string) : d;
@@ -98,6 +101,22 @@ export class DmnEngine {
             return r;
         }
         throw new Error('The dmn definition already exists');
+    }
+
+    public async update(entity: BpmsDmnDefinition): Promise<BpmsDmnDefinition> {
+        if (!entity) {
+            throw new Error(`The BPMN definition entity ${entity} required`);
+        }
+        let d = entity.definitions;
+        const id = entity.id;
+        const s = await this.dmnDefinitionRepository.find({ id: entity.id });
+        d = typeof entity.definitions === 'string' ? await this.parseDmnXml(d as string) : d;
+        if (s && id) {
+            const r = await this.dmnDefinitionRepository.update(id, { ...s, ...entity, id });
+            this.definitionCache[entity.name] = d;
+            return r;
+        }
+        throw new Error(`The DMN definition id '${id}' not exists`);
     }
 
     /**
