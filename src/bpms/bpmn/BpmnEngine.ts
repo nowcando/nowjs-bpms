@@ -125,13 +125,14 @@ export class BpmnEngine {
         return new BpmnEngine(undefined, arg1);
     }
 
-    public async createDefinitions(name: string, source: BpmnSource): Promise<boolean> {
+    public async createDefinitions(name: string, source: BpmnSource): Promise<BpmsBpmnDefinition> {
         const self = this;
         const f = await this.bpmnDefinitionRepository.find({ name });
         if (!f) {
-            await this.bpmnDefinitionRepository.create({ definitions: source, name });
+            const r = await this.bpmnDefinitionRepository.create({ definitions: source, name });
+            return r;
         }
-        return Promise.resolve(true);
+        throw new Error('The bpmn definition already exists');
     }
 
     public async countDefinitions(): Promise<number> {

@@ -76,13 +76,13 @@ describe('BpmnEngine', () => {
     });
     describe('Bpmn Definition', () => {
         describe('createDefinitions', () => {
-            it('should be createDefinitions method return true', async () => {
+            it('should be createDefinitions method return BpmsBmnDefinition', async () => {
                 const bpe = BpmnEngine.createEngine({ name: 'MyEngine1' });
                 expect(bpe).toBeDefined();
                 const actual1 = await bpe.createDefinitions('sample1', source1);
                 const actual2 = await bpe.createDefinitions('sample2', source2);
-                expect(actual1).toEqual(true);
-                expect(actual2).toEqual(true);
+                expect(actual1).toBeDefined();
+                expect(actual2).toBeDefined();
             });
             it('should be check definition methods', async () => {
                 const bpe = BpmnEngine.createEngine({ name: 'MyEngine1' });
