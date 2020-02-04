@@ -112,7 +112,7 @@ export class DmnEngine {
         const s = await this.dmnDefinitionRepository.find({ id: entity.id });
         d = typeof entity.definitions === 'string' ? await this.parseDmnXml(d as string) : d;
         if (s && id) {
-            const r = await this.dmnDefinitionRepository.update(id, entity);
+            const r = await this.dmnDefinitionRepository.update(id, { ...s, ...entity, id });
             this.definitionCache[entity.name] = d;
             return r;
         }

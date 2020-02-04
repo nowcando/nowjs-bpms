@@ -151,7 +151,7 @@ export class BpmnEngine {
         }
         const f = await this.bpmnDefinitionRepository.find({ id });
         if (f) {
-            const r = await this.bpmnDefinitionRepository.update(id, { ...f, definitions: source });
+            const r = await this.bpmnDefinitionRepository.update(id, { ...f, definitions: source, id });
             return r;
         }
         throw new Error(`The BPMN definition id ${id} not exists`);
