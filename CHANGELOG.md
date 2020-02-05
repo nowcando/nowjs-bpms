@@ -1,3 +1,9 @@
+### 0.21.0 (2020-02-05)
+
+##### New Features
+
+*  add definition id parameter ([c2309239](https://github.com/nowcando/nowjs-bpms/commit/c23092397c015c8432e9ff67d6cb4843e2c6000b))
+
 ### 0.20.0 (2020-02-04)
 
 ##### New Features
