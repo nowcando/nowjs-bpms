@@ -2,6 +2,13 @@
 
 ##### New Features
 
+*  some service added for user and organization control ([9ac50977](https://github.com/nowcando/nowjs-bpms/commit/9ac5097729e642a576658c2e8736a2fd9d2dcaf4))
+*  add definition id parameter ([c2309239](https://github.com/nowcando/nowjs-bpms/commit/c23092397c015c8432e9ff67d6cb4843e2c6000b))
+
+### 0.21.0 (2020-02-05)
+
+##### New Features
+
 *  add definition id parameter ([c2309239](https://github.com/nowcando/nowjs-bpms/commit/c23092397c015c8432e9ff67d6cb4843e2c6000b))
 
 ### 0.20.0 (2020-02-04)
