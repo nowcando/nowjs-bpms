@@ -123,6 +123,7 @@ describe('BpmnEngine', () => {
                 expect(actual.Stopped).toBeDefined();
                 expect(actual.Execution).not.toBeDefined();
                 expect(actual.State).toEqual('idle');
+                expect(actual.DefinitionId).not.toBeDefined();
             });
 
             it('should be instantiated a BpmnProcess by createProcess method and execute', async () => {

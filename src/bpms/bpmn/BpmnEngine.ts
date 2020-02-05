@@ -225,6 +225,7 @@ export class BpmnEngine {
                               name: options.name,
                           });
                     if (d) {
+                        options.definitionId = d.id;
                         options.source = d.definitions;
                     }
                 }
@@ -326,7 +327,7 @@ export class BpmnEngine {
                             name: p.Name,
                             state: p.State,
                             stopped: p.Stopped,
-                            definition: p.DefinitionId,
+                            definitionId: p.DefinitionId,
                             persistedAt: new Date(),
                             data: d,
                         },
@@ -350,7 +351,7 @@ export class BpmnEngine {
                                 name: p.Name,
                                 state: p.State,
                                 stopped: p.Stopped,
-                                definition: p.DefinitionId,
+                                definitionId: p.DefinitionId,
                                 persistedAt: new Date(),
                                 data: d,
                             },
