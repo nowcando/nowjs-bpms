@@ -230,6 +230,7 @@ export class BpmnEngine {
                 }
                 const proc = new BpmnProcessInstance(self, options);
                 await this.loadedProcessRepository.update(proc.Id, proc, true);
+                await this.persistProcess({ filter: { id: proc.Id } });
                 proc.onEnd(async () => {
                     await this.loadedProcessRepository.delete(proc.Id);
                 });
