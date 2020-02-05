@@ -1,5 +1,11 @@
 ### 0.22.0 (2020-02-05)
 
+##### Bug Fixes
+
+*  persist after create process . ([461ec032](https://github.com/nowcando/nowjs-bpms/commit/461ec032d64d313c13da1ebe904648a7d5fba821))
+
+### 0.22.0 (2020-02-05)
+
 ### 0.21.0 (2020-02-05)
 
 ##### New Features
