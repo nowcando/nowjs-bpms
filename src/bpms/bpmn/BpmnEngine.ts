@@ -49,6 +49,7 @@ export interface BpmsBpmnDefinition {
 
 export interface BpmsProcess {
     id?: string;
+    definitionId?: string;
     name: string;
     state: string;
     stopped: boolean;
@@ -216,9 +217,13 @@ export class BpmnEngine {
             try {
                 // using  registered definition if name already registered .
                 if (options && options.name && !options.source) {
-                    const d = await this.bpmnDefinitionRepository.find({
-                        name: options.name,
-                    });
+                    const d = options.definitionId
+                        ? await this.bpmnDefinitionRepository.find({
+                              id: options.definitionId,
+                          })
+                        : await this.bpmnDefinitionRepository.find({
+                              name: options.name,
+                          });
                     if (d) {
                         options.source = d.definitions;
                     }
@@ -269,6 +274,7 @@ export class BpmnEngine {
                     if (!clist.some(xx => xx.Id === pitem.id)) {
                         const p = await this.createProcess({
                             name: pitem.name,
+                            definitionId: pitem.definitionId,
                             id: pitem.id,
                         });
                         p.recover(pitem);
@@ -284,6 +290,7 @@ export class BpmnEngine {
                     if (!clist.some(xx => xx.Id === pitem.id)) {
                         const p = await this.createProcess({
                             name: pitem.name,
+                            definitionId: pitem.definitionId,
                             id: pitem.id,
                         });
                         p.recover(pitem, { listener: p });
@@ -318,6 +325,7 @@ export class BpmnEngine {
                             name: p.Name,
                             state: p.State,
                             stopped: p.Stopped,
+                            definition: p.DefinitionId,
                             persistedAt: new Date(),
                             data: d,
                         },
@@ -341,6 +349,7 @@ export class BpmnEngine {
                                 name: p.Name,
                                 state: p.State,
                                 stopped: p.Stopped,
+                                definition: p.DefinitionId,
                                 persistedAt: new Date(),
                                 data: d,
                             },

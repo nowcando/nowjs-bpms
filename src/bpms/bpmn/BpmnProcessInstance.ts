@@ -41,6 +41,7 @@ export interface BpmnExecution {
 export interface BpmnProcessOptions {
     name?: string;
     id?: string;
+    definitionId?: string;
     source?: string;
     variables?: any;
 
@@ -359,11 +360,13 @@ export class BpmnProcessInstance extends EventEmitter {
     private options?: BpmnProcessOptions;
 
     private id = uuidv1();
+    private definitionId?: string;
     constructor(bpmnEngine: BpmnEngine, options?: BpmnProcessOptions) {
         super();
         this.bpmnEngine = bpmnEngine;
         this.options = options || { name: '', source: '' };
         this.id = this.options.id || this.id;
+        this.definitionId = this.options.definitionId;
         this.options.name = this.options.name || 'BpmnProcess-' + this.id;
         if (typeof this.options.name !== 'string') {
             throw new Error('BpmnProcess name must be string');
@@ -374,6 +377,21 @@ export class BpmnProcessInstance extends EventEmitter {
         };
 
         const internalServices = {
+            getGroups() {
+                return function getGroupsService(executionContext, callback) {
+                    callback('mohammad');
+                };
+            },
+            getUserOfEmployee(employeeIdOrName: string) {
+                return function getManagerOfUserService(executionContext, callback) {
+                    callback('mohammad');
+                };
+            },
+            getEmployeeOfUser(userIdOrName: string) {
+                return function getEmployeeOfUserService(executionContext, callback) {
+                    callback('mohammad');
+                };
+            },
             getManagerOfUser(userIdOrName: string) {
                 return function getManagerOfUserService(executionContext, callback) {
                     callback('mohammad');
@@ -384,14 +402,19 @@ export class BpmnProcessInstance extends EventEmitter {
                     callback('hamid');
                 };
             },
+            getGroupsOfUser(userIdOrName: string) {
+                return function getGroupsOfUserService(executionContext, callback) {
+                    callback('hamid');
+                };
+            },
+            getUsersOfGroup(groupIdOrName: string) {
+                return function getUsersOfGroupService(executionContext, callback) {
+                    callback('hamid');
+                };
+            },
             getInitiatorUser() {
                 return function getInitiatorUserService(executionContext, callback) {
                     callback('ali');
-                };
-            },
-            getCurrentUser() {
-                return function getInitiatorUserService(executionContext, callback) {
-                    callback('saeed');
                 };
             },
             // tslint:disable-next-line:no-shadowed-variable
@@ -437,6 +460,10 @@ export class BpmnProcessInstance extends EventEmitter {
 
     public get Id() {
         return this.id;
+    }
+
+    public get DefinitionId() {
+        return this.definitionId;
     }
 
     public get Logger(): BpmnLogger {
