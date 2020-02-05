@@ -3,6 +3,7 @@
 import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
 export interface OrganizationEmployeeModel {
     id: string;
+    username?: string;
     name: string;
 }
 export interface OrganizationEmployeeRepository<T extends OrganizationEmployeeModel = OrganizationEmployeeModel>

@@ -14,6 +14,7 @@ import { TenantService, TenantServiceOptions } from './tenant/TenantService';
 import { UIService, UIServiceOptions } from './ui/UIService';
 import { DataModelServiceOptions, DataModelService } from './data/DataModelService';
 import { DataSourceServiceOptions, DataSourceService } from './data/DataSourceService';
+import { OrganizationService, OrganizationServiceOptions } from './organization/OrganizationService';
 export interface BpmsEngineOptions {
     name: string;
     cache?: boolean;
@@ -23,6 +24,7 @@ export interface BpmsEngineOptions {
     datamodelService?: DataModelServiceOptions;
     datasourceService?: DataSourceServiceOptions;
     identityService?: IdentityServiceOptions;
+    organizationService?: OrganizationServiceOptions;
     historyService?: HistoryServiceOptions;
     taskService?: TaskServiceOptions;
     tenantService?: TenantServiceOptions;
@@ -50,6 +52,7 @@ export class BpmsEngine {
     private datasourceService!: DataSourceService;
     private historyService!: HistoryService;
     private identityService!: IdentityService;
+    private organizationService!: OrganizationService;
     private taskService!: TaskService;
     private tenantService!: TenantService;
     private uiService!: UIService;
@@ -105,6 +108,10 @@ export class BpmsEngine {
         this.identityService = IdentityService.createService(this, {
             name: this.name,
             ...this.options.identityService,
+        });
+        this.organizationService = OrganizationService.createService(this, {
+            name: this.name,
+            ...this.options.organizationService,
         });
         this.historyService = HistoryService.createService(this, {
             name: this.name,
@@ -231,6 +238,9 @@ export class BpmsEngine {
         return this.taskService as any;
     }
     public get IdentityService(): IdentityService {
+        return this.identityService as any;
+    }
+    public get OrganizationService(): OrganizationService {
         return this.identityService as any;
     }
     public get HistoryService(): HistoryService {

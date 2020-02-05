@@ -379,42 +379,99 @@ export class BpmnProcessInstance extends EventEmitter {
         const internalServices = {
             getGroups() {
                 return function getGroupsService(executionContext, callback) {
-                    callback('mohammad');
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                        ids.getGroups().then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
                 };
             },
             getUserOfEmployee(employeeIdOrName: string) {
                 return function getManagerOfUserService(executionContext, callback) {
-                    callback('mohammad');
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(employeeIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
                 };
             },
             getEmployeeOfUser(userIdOrName: string) {
                 return function getEmployeeOfUserService(executionContext, callback) {
-                    callback('mohammad');
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(userIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
                 };
             },
             getManagerOfUser(userIdOrName: string) {
                 return function getManagerOfUserService(executionContext, callback) {
-                    callback('mohammad');
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(userIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
                 };
             },
             getCoWorkerOfUser(userIdOrName: string) {
                 return function getCoWorkerOfUserService(executionContext, callback) {
-                    callback('hamid');
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(userIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
                 };
             },
             getGroupsOfUser(userIdOrName: string) {
                 return function getGroupsOfUserService(executionContext, callback) {
-                    callback('hamid');
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(userIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
                 };
             },
             getUsersOfGroup(groupIdOrName: string) {
                 return function getUsersOfGroupService(executionContext, callback) {
-                    callback('hamid');
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                        ids.getGroupUsers(groupIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
                 };
             },
             getInitiatorUser() {
                 return function getInitiatorUserService(executionContext, callback) {
-                    callback('ali');
+                    const username = '';
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                        ids.getUserByUsername(username).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
                 };
             },
             // tslint:disable-next-line:no-shadowed-variable
@@ -498,16 +555,7 @@ export class BpmnProcessInstance extends EventEmitter {
         const self = this;
         const p = new Promise<R>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.execute(
-                    { listener: self, ...options },
-                    // (err: any, execution: any) => {
-                    //   if (err) {
-                    //     reject(err);
-                    //   } else {
-                    //     resolve(execution);
-                    //   }
-                    // },
-                );
+                const r = await this.processEngine.execute({ listener: self, ...options });
                 resolve(r);
             } catch (error) {
                 reject(error);
