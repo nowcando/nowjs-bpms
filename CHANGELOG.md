@@ -1,3 +1,16 @@
+### 0.24.0 (2020-02-07)
+
+##### New Features
+
+*  implement view & router ([f5de88a4](https://github.com/nowcando/nowjs-bpms/commit/f5de88a45180718a47fc1a2a738eb0098b93cf26))
+*  route, ui service implemented ([70c71951](https://github.com/nowcando/nowjs-bpms/commit/70c719514dc02b5f3ffd4f3a549fedaaad77eaed))
+
+##### Bug Fixes
+
+*  test of route service ([d17fbdd6](https://github.com/nowcando/nowjs-bpms/commit/d17fbdd61be4df00e99f93e101c9f5d5f5a71e49))
+*  test enabled ([ca9630e5](https://github.com/nowcando/nowjs-bpms/commit/ca9630e5e710d76460ffb6ea49cbfb1458a1af73))
+*  getInitiator service variable ([66dae9c9](https://github.com/nowcando/nowjs-bpms/commit/66dae9c943f532a73791bc1e6035ed2f8490cbde))
+
 ### 0.23.0 (2020-02-05)
 
 ##### Bug Fixes
