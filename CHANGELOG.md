@@ -1,3 +1,10 @@
+### 0.25.0 (2020-02-07)
+
+##### Bug Fixes
+
+*  History Service problem ([747ae72e](https://github.com/nowcando/nowjs-bpms/commit/747ae72ef8afbd96d366323d69c011827fdcd3c4))
+*  bpms history added ([eff280ac](https://github.com/nowcando/nowjs-bpms/commit/eff280acc98e8812f09d4d577890fe5ecdc7010a))
+
 ### 0.24.0 (2020-02-07)
 
 ##### New Features
