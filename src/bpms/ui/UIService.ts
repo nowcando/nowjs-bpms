@@ -46,9 +46,9 @@ export interface BpmsDynamicViewModel {
     createdAt?: Date;
 }
 export interface BpmsDynamicView {
-    processDefinitionId: string;
-    processDefinitionName: string;
-    processDefinitionVersion: string;
+    processDefinitionId?: string;
+    processDefinitionName?: string;
+    processDefinitionVersion?: number;
     processId: string;
     processName: string;
     activityName: string;

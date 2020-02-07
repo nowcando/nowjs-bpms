@@ -39,7 +39,7 @@ export const DynamicViewResolverExtension = (processInstance: BpmnProcessInstanc
                     authorization: extn && extn.authorization,
                     author: extn && extn.author,
                 };
-                bpms.UIService.create(view as any)
+                bpms.UIService.create(view)
                     .then(xx => xx)
                     .catch(e => {});
             }

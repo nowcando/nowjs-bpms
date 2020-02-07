@@ -18,6 +18,8 @@ import { InputOutputExtension } from './extensions/InputOutputExtension';
 import { ExecutionListenerExtension } from './extensions/ExecutionListenerExtension';
 import { UserTaskExtension } from './extensions/UserTaskExtension';
 import { DynamicViewResolverExtension } from './extensions/DynamicViewResolverExtension';
+import { DynamicRouteResolverExtension } from './extensions/DynamicRouteResolverExtension';
+import { ProcessExtension } from './extensions/ProcessExtension';
 
 const { Engine } = require('bpmn-engine');
 
@@ -516,6 +518,7 @@ export class BpmnProcessInstance extends EventEmitter {
 
         const internalExtentions = {
             // NowJsExtension: NowJsExtension(self),
+            ProcessExtension: ProcessExtension(self),
             BusinessRuleTaskExtension: BusinessRuleTaskExtension(self),
             HumanInvolvementExtension: HumanInvolvementExtension(self),
             ServiceTaskExtension: ServiceTaskExtension(self),
@@ -524,6 +527,7 @@ export class BpmnProcessInstance extends EventEmitter {
             InputOutputExtension: InputOutputExtension(self),
             ExecutionListenerExtension: ExecutionListenerExtension(self),
             DynamicViewResolverExtension: DynamicViewResolverExtension(self),
+            DynamicRouteResolverExtension: DynamicRouteResolverExtension(self),
         };
         const internalModdles = {
             nowjs: require('nowjs-bpmn-moddle/resources/nowjs.json'),

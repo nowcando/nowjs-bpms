@@ -1,0 +1,44 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { BpmnProcessInstance } from '../BpmnProcessInstance';
+import { BpmsRoute } from '../../router/RouterService';
+
+export const DynamicRouteResolverExtension = (processInstance: BpmnProcessInstance) => activity => {
+    if (!activity.behaviour.extensionElements || !activity.behaviour.extensionElements.values) return;
+
+    const extendValues = activity.behaviour.extensionElements.values;
+    const bpms = processInstance.BpmnEngine.BpmsEngine;
+    if (bpms) {
+        const io = extendValues.forEach((extn, ix) => {
+            if (extn.$type === 'camunda:DynamicRoute' || extn.$type === 'nowjs:DynamicRoute') {
+                if (extn.route) {
+                    const route: BpmsRoute = {
+                        processDefinitionId: processInstance.DefinitionId,
+                        processDefinitionName: processInstance.DefinitionName,
+                        processDefinitionVersion: processInstance.DefinitionVersion,
+                        processId: activity?.parent?.id,
+                        processName: activity?.parent?.name,
+                        name: extn.name,
+                        route: extn.route,
+                        title: extn.title,
+                        type: extn.type || 'static',
+                        target: extn.target,
+                        enabled: extn.enabled,
+                        category: extn.category,
+                        tags: extn.tags,
+                        displayOrder: extn.displayOrder,
+                        icon: extn.icon,
+                        class: extn.class,
+                        authorization: extn.authorization,
+                        author: extn.author,
+                        canStartByUser: true,
+                    };
+                    bpms.RouterService.create(route)
+                        .then(xx => xx)
+                        .catch(e => {});
+                }
+            }
+        });
+    }
+    return;
+};

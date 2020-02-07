@@ -24,20 +24,23 @@ export interface BpmsRoute {
     processName: string;
     processId?: string;
     id?: string;
-    type?: string;
+    type?: 'static' | 'dynamic';
     key?: string;
     icon: string;
+    class: string;
     target: string;
     title: string;
-    enabled?: string;
-
-    routeType: 'static' | 'dynamic';
-    order?: string;
+    canStartByUser?: boolean;
+    enabled?: boolean;
+    name: string;
+    displayOrder?: string;
     category?: string;
     tags?: string;
     defaultView?: string;
     allowedViews?: string;
     authorization?: string;
+    author?: string;
+    route: string;
 }
 
 export class RouterService<T extends BpmsRoute = BpmsRoute> implements BpmsService {
