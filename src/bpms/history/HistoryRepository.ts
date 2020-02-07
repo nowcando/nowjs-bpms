@@ -5,11 +5,14 @@ import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
 export interface BpmsHistoryModel {
     id?: string;
     createdAt?: string;
-    source?: string;
-    tenantId: string;
-    userId: string;
+    source: string;
+    eventId: number;
+    message: string;
+    data?: Record<string, any>;
+    tenantId?: string;
+    userId?: string;
 
-    type?: string;
+    type: 'info' | 'warn' | 'error' | 'fatal';
 }
 
 export interface HistoryRepository<T extends BpmsHistoryModel = BpmsHistoryModel> extends BpmsRepository<T> {
