@@ -97,6 +97,10 @@ export class RouterService<T extends BpmsRoute = BpmsRoute> implements BpmsServi
     public async list<R = T>(filter?: FilterExpression): Promise<R[]> {
         return this.routerRepository.findAll(filter);
     }
+    public async getRouteList<R = T>(filter?: FilterExpression): Promise<R[]> {
+        const l = this.routerRepository.query({ filter, sortBy: { route: 'asc' } });
+        return this.routerRepository.findAll(filter);
+    }
     public async count(filter: FilterExpression): Promise<number> {
         return this.routerRepository.count('id', filter);
     }

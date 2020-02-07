@@ -427,7 +427,12 @@ export const source4 = `
 `;
 export const source7 = `<?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:nowjs="http://schema.nowcando.com/schema/1.0/bpmn" id="sample-diagram" name="CmsSite" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.3.2" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
-  <bpmn2:process id="Cms-Create-Site" name="Cms Create Site" isExecutable="true" camunda:jobPriority="H" camunda:candidateStarterGroups="OU=Financial | HR,(G=Professionals)" camunda:candidateStarterUsers="OU=Financial | HR,(G=Professionals,U=Saeed|Ahmad|Ali)" camunda:versionTag="1" camunda:historyTimeToLive="500" camunda:taskPriority="H">
+  <bpmn2:process id="Cms-Create-Site" name="Cms Create Site"
+   isExecutable="true" camunda:jobPriority="H"
+   route="/cms/site/" category="Cms" camunda:isStartableInTasklist="true"
+    camunda:candidateStarterGroups="OU=Financial | HR,(G=Professionals)"
+     camunda:candidateStarterUsers="OU=Financial | HR,(G=Professionals,U=Saeed|Ahmad|Ali)" camunda:versionTag="1" camunda:historyTimeToLive="500"
+      camunda:taskPriority="H">
     <bpmn2:startEvent id="StartEvent_1" name="شروع" camunda:initiator="OU=Financial | HR,(G=Professionals,U=Saeed|Ahmad|Ali)">
       <bpmn2:documentation>Start Event Here</bpmn2:documentation>
       <bpmn2:extensionElements>

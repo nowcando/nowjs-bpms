@@ -166,6 +166,8 @@ describe('BpmnEngine', () => {
                 const execution = await pr.execute();
                 expect(execution).toBeDefined();
                 expect(execution.environment.variables.randNum).toEqual(randNum);
+                const routes = await bpe.BpmnEngine.BpmsEngine?.RouterService.getRouteList();
+                expect(routes).toBeDefined();
             });
         });
         describe('persist', () => {
