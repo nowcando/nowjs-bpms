@@ -15,11 +15,14 @@ export interface HistoryServiceOptions {
 export interface BpmsHistoryEntry {
     id?: string;
     createdAt?: string;
-    source?: string;
-    tenantId: string;
-    userId: string;
+    source: string;
+    eventId: number;
+    message: string;
+    data?: Record<string,any>;
+    tenantId?: string;
+    userId?: string;
 
-    type?: string;
+    type: 'info'|'warn'|'error'|'fatal';
 }
 export class HistoryService<T extends BpmsHistoryEntry = BpmsHistoryEntry> implements BpmsService {
     private historyRepository: HistoryRepository<T>;

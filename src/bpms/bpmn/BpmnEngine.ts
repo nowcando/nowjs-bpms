@@ -139,6 +139,15 @@ export class BpmnEngine {
         const f = await this.bpmnDefinitionRepository.find({ name });
         if (!f) {
             const r = await this.bpmnDefinitionRepository.create({ definitions: source, name });
+            this.bpmsEngine?.HistoryService.create({
+                type: 'info',
+                source: this.name,
+                message: `The process definition has been created`,
+                data: {
+                    method: 'createDefinitions',
+                },
+                eventId: 10031,
+            });
             return r;
         }
         throw new Error('The bpmn definition already exists');
@@ -218,7 +227,7 @@ export class BpmnEngine {
         const p = new Promise<BpmnProcessInstance>(async (resolve, reject) => {
             try {
                 // using  registered definition if name already registered .
-                if (options && options.name && !options.source) {
+                if (options && !options.source) {
                     const d = options.definitionId
                         ? await this.bpmnDefinitionRepository.find({
                               id: options.definitionId,
@@ -237,8 +246,28 @@ export class BpmnEngine {
                 const proc = new BpmnProcessInstance(self, options);
                 await this.loadedProcessRepository.update(proc.Id, proc, true);
                 await this.persistProcess({ filter: { id: proc.Id } });
+                this.bpmsEngine?.HistoryService.create({
+                    type: 'info',
+                    source: this.name,
+                    message: `The process has been created`,
+                    data: {
+                        definitionId: options?.definitionId,
+                        processId: proc.Id,
+                        method: 'createProcess',
+                    },
+                    eventId: 10032,
+                });
                 proc.onEnd(async () => {
                     await this.loadedProcessRepository.delete(proc.Id);
+                    this.bpmsEngine?.HistoryService.create({
+                        type: 'info',
+                        source: this.name,
+                        message: `The process has been terminated`,
+                        data: {
+                            processId: proc.Id,
+                        },
+                        eventId: 10033,
+                    });
                 });
                 resolve(proc);
             } catch (error) {
