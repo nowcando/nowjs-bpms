@@ -474,7 +474,7 @@ export class BpmnProcessInstance extends EventEmitter {
             },
             getInitiatorUser() {
                 return function getInitiatorUserService(executionContext, callback) {
-                    const username = '';
+                    const username = executionContext?.environment?.variables?.initiatorUsername;
                     if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
                         const ids = self.BpmnEngine.BpmsEngine.IdentityService;
                         ids.getUserByUsername(username).then(r => {
@@ -485,9 +485,9 @@ export class BpmnProcessInstance extends EventEmitter {
                     }
                 };
             },
-            getUser() {
-                return function getInitiatorUserService(executionContext, callback) {
-                    const username = '';
+            getCurrentUser() {
+                return function getCurrentUserService(executionContext, callback) {
+                    const username = executionContext?.environment?.variables?.user?.username;
                     if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
                         const ids = self.BpmnEngine.BpmsEngine.IdentityService;
                         ids.getUserByUsername(username).then(r => {
