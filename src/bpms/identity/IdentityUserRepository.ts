@@ -19,7 +19,7 @@ export class IdentityUserMemoryRepository extends BpmsBaseMemoryRepository<Ident
     }
     constructor() {
         super({
-            storageName: 'IdentityUser',
+            storageName: 'BpmsIdentityUser',
             properties: {
                 name: { type: 'string' },
             },

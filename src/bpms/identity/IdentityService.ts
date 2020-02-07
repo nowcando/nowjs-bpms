@@ -19,6 +19,7 @@ import {
     IdentityResourceMemoryRepository,
 } from './IdentityResourceRepository';
 import { IdExpression, FilterExpression } from '../data/Repository';
+import { BpmsService } from '../BpmsService';
 
 export interface BpmsIdentityUser {
     id: string;
@@ -50,7 +51,7 @@ export interface IdentityServiceOptions {
     name: string;
 }
 
-export class IdentityService {
+export class IdentityService implements BpmsService {
     private identityUserRepository: IdentityUserRepository<IdentityUserModel>;
     private identityGroupRepository: IdentityGroupRepository<IdentityGroupModel>;
     private identityResourceRepository: IdentityResourceRepository<IdentityResourceModel>;

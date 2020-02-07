@@ -12,7 +12,7 @@ export class TenantMemoryRepository extends BpmsBaseMemoryRepository<TenantModel
     implements TenantRepository<TenantModel> {
     constructor() {
         super({
-            storageName: 'Tenant',
+            storageName: 'BpmsTenant',
             properties: {
                 id: { type: 'string' },
                 name: { type: 'string' },

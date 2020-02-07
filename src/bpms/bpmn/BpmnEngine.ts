@@ -44,6 +44,8 @@ export interface BpmsBpmnDefinition {
     name: string;
     definitions: any;
 
+    version: number;
+
     createdAt?: Date;
 }
 
@@ -222,10 +224,13 @@ export class BpmnEngine {
                               id: options.definitionId,
                           })
                         : await this.bpmnDefinitionRepository.find({
-                              name: options.name,
+                              name: options.definitionName,
+                              version: options.definitionVersion,
                           });
                     if (d) {
                         options.definitionId = d.id;
+                        options.definitionName = d.name;
+                        options.definitionVersion = d.version;
                         options.source = d.definitions;
                     }
                 }
@@ -328,6 +333,8 @@ export class BpmnEngine {
                             state: p.State,
                             stopped: p.Stopped,
                             definitionId: p.DefinitionId,
+                            definitionName: p.DefinitionName,
+                            definitionVersion: p.DefinitionVersion,
                             persistedAt: new Date(),
                             data: d,
                         },
@@ -352,6 +359,8 @@ export class BpmnEngine {
                                 state: p.State,
                                 stopped: p.Stopped,
                                 definitionId: p.DefinitionId,
+                                definitionName: p.DefinitionName,
+                                definitionVersion: p.DefinitionVersion,
                                 persistedAt: new Date(),
                                 data: d,
                             },

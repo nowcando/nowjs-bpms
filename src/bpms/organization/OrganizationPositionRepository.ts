@@ -13,7 +13,7 @@ export class OrganizationPositionMemoryRepository extends BpmsBaseMemoryReposito
     implements OrganizationPositionRepository<OrganizationPositionModel> {
     constructor() {
         super({
-            storageName: 'OrganizationPosition',
+            storageName: 'BpmsOrganizationPosition',
             properties: {
                 name: { type: 'string' },
             },

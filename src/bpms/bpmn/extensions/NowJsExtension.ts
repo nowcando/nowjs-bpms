@@ -14,7 +14,7 @@ export const NowJsExtension = (processInstance: BpmnProcessInstance) => (
                     extn.$type.toLowerCase() === 'camunda:executionListener'.toLowerCase() ||
                     extn.$type.toLowerCase() === 'nowjs:executionListener'.toLowerCase()
                 ) {
-                    if (extn.script && extn.script && extn.script.format) {
+                    if (extn.script && extn.script && extn.script.scriptFormat) {
                         if (extn.script.format === 'javascript') {
                             const lscript = extn && extn.script && extn.script.value;
                             if (lscript) {
@@ -110,13 +110,12 @@ export const NowJsExtension = (processInstance: BpmnProcessInstance) => (
                 if (bpms) {
                     const t = await bpms.TaskService.create({
                         name: api.name,
-                        refProcessInstanceName: processInstance.Name,
-                        refProcessInstanceId: processInstance.Id,
-                        refProcessId: api.environment.variables.content.id,
-                        refProcessExecutionId: api.environment.variables.content.executionId,
-                        refActivityId: api.id,
-                        refTenantId: bpms.Name,
-                        views,
+                        activityId: api.id,
+                        processDefinitionId: processInstance.DefinitionId,
+                        processInstanceName: processInstance.Name,
+                        processInstanceId: processInstance.Id,
+                        processExecutionId: api.environment.variables.content.executionId,
+                        tenantId: bpms.Name,
                     });
                 }
             });

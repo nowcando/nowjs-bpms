@@ -8,6 +8,7 @@ import {
 import { OrganizationEmployeeRepository, OrganizationEmployeeMemoryRepository } from './OrganizationEmployeeRepository';
 import { IdExpression, FilterExpression } from '../data/Repository';
 import { BpmsIdentityUser } from '../identity/IdentityService';
+import { BpmsService } from '../BpmsService';
 export interface BpmsOrganizationEmployee {
     id: string;
     username?: string;
@@ -30,7 +31,7 @@ export interface OrganizationServiceOptions {
     organizationEmployeeRepository?: OrganizationEmployeeRepository;
     name: string;
 }
-export class OrganizationService {
+export class OrganizationService implements BpmsService {
     private organizationPositionRepository: OrganizationPositionRepository;
     private organizationEmployeePositionRepository: OrganizationEmployeePositionRepository;
     private organizationEmployeeRepository: OrganizationEmployeeRepository;

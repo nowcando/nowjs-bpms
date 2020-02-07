@@ -2,7 +2,7 @@
 import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-export interface HistoryData {
+export interface BpmsHistoryModel {
     id?: string;
     createdAt?: string;
     source?: string;
@@ -12,14 +12,14 @@ export interface HistoryData {
     type?: string;
 }
 
-export interface HistoryRepository<T extends HistoryData = HistoryData> extends BpmsRepository<T> {
+export interface HistoryRepository<T extends BpmsHistoryModel = BpmsHistoryModel> extends BpmsRepository<T> {
     // implement
 }
-export class HistoryMemoryRepository extends BpmsBaseMemoryRepository<HistoryData>
-    implements HistoryRepository<HistoryData> {
+export class HistoryMemoryRepository extends BpmsBaseMemoryRepository<BpmsHistoryModel>
+    implements HistoryRepository<BpmsHistoryModel> {
     constructor() {
         super({
-            storageName: 'History',
+            storageName: 'BpmsHistory',
             properties: {
                 name: { type: 'string' },
             },

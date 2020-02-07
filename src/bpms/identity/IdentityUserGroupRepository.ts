@@ -15,7 +15,7 @@ export class IdentityUserGroupMemoryRepository extends BpmsBaseMemoryRepository<
     implements IdentityUserGroupRepository<IdentityUserGroupModel> {
     constructor() {
         super({
-            storageName: 'IdentityUserGroup',
+            storageName: 'BpmsIdentityUserGroup',
             properties: {
                 name: { type: 'string' },
             },

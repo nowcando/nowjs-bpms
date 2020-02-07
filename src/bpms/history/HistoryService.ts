@@ -3,15 +3,16 @@
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
 import { TaskRepository } from '../task/TaskRepository';
-import { HistoryData, HistoryMemoryRepository, HistoryRepository } from './HistoryRepository';
+import { BpmsHistoryModel, HistoryMemoryRepository, HistoryRepository } from './HistoryRepository';
 import { QueryOptions, QueryResult, ScalarOptions, IdExpression, FilterExpression } from '../data/Repository';
+import { BpmsService } from '../BpmsService';
 
 export interface HistoryServiceOptions {
     historyRepository?: HistoryRepository;
     name: string;
 }
 
-export interface BpmsHistoryEntity {
+export interface BpmsHistoryEntry {
     id?: string;
     createdAt?: string;
     source?: string;
@@ -20,7 +21,7 @@ export interface BpmsHistoryEntity {
 
     type?: string;
 }
-export class HistoryService<T extends BpmsHistoryEntity = BpmsHistoryEntity> {
+export class HistoryService<T extends BpmsHistoryEntry = BpmsHistoryEntry> implements BpmsService {
     private historyRepository: HistoryRepository<T>;
     private id: string = uuidv1();
     private options: HistoryServiceOptions;

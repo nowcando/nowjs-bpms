@@ -14,7 +14,7 @@ export class OrganizationEmployeeMemoryRepository extends BpmsBaseMemoryReposito
     implements OrganizationEmployeeRepository<OrganizationEmployeeModel> {
     constructor() {
         super({
-            storageName: 'OrganizationEmployee',
+            storageName: 'BpmsOrganizationEmployee',
             properties: {
                 name: { type: 'string' },
             },

@@ -3,6 +3,7 @@ import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
 import { TenantMemoryRepository, TenantRepository } from './TenantRepository';
 import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from '../data/Repository';
+import { BpmsService } from '../BpmsService';
 
 export interface BpmsTenant {
     id: string;
@@ -13,7 +14,7 @@ export interface TenantServiceOptions {
     tenantRepository?: TenantRepository;
     name: string;
 }
-export class TenantService<T extends BpmsTenant = BpmsTenant> {
+export class TenantService<T extends BpmsTenant = BpmsTenant> implements BpmsService {
     private tenantRepository: TenantRepository<T>;
     private id: string = uuidv1();
     private options: TenantServiceOptions;

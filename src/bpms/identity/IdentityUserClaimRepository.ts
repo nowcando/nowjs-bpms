@@ -15,7 +15,7 @@ export class IdentityUserClaimMemoryRepository extends BpmsBaseMemoryRepository<
     implements IdentityUserClaimRepository<IdentityUserClaimModel> {
     constructor() {
         super({
-            storageName: 'IdentityUserClaim',
+            storageName: 'BpmsIdentityUserClaim',
             properties: {
                 name: { type: 'string' },
             },

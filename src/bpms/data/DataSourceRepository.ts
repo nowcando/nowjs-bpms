@@ -30,7 +30,7 @@ export class DataSourceMemoryRepository extends BpmsBaseMemoryRepository<DataSou
     implements DataSourceRepository<DataSource> {
     constructor() {
         super({
-            storageName: 'DataSource',
+            storageName: 'BpmsDataSource',
             properties: {
                 id: { type: 'string' },
                 name: { type: 'string' },

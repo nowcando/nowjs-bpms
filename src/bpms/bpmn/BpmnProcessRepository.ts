@@ -22,7 +22,7 @@ export class BpmnProcessMemoryRepository extends BpmsBaseMemoryRepository<BpmnPr
     implements BpmnProcessRepository<BpmnProcessModel> {
     constructor() {
         super({
-            storageName: 'BpmnProcess',
+            storageName: 'BpmsProcess',
             properties: {
                 id: { type: 'string' },
                 name: { type: 'string' },

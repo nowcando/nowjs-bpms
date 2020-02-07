@@ -425,3 +425,183 @@ export const source4 = `
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
 `;
+export const source7 = `<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:nowjs="http://schema.nowcando.com/schema/1.0/bpmn" id="sample-diagram" name="CmsSite" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.3.2" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:process id="Cms-Create-Site" name="Cms Create Site" isExecutable="true" camunda:jobPriority="H" camunda:candidateStarterGroups="OU=Financial | HR,(G=Professionals)" camunda:candidateStarterUsers="OU=Financial | HR,(G=Professionals,U=Saeed|Ahmad|Ali)" camunda:versionTag="1" camunda:historyTimeToLive="500" camunda:taskPriority="H">
+    <bpmn2:startEvent id="StartEvent_1" name="شروع" camunda:initiator="OU=Financial | HR,(G=Professionals,U=Saeed|Ahmad|Ali)">
+      <bpmn2:documentation>Start Event Here</bpmn2:documentation>
+      <bpmn2:extensionElements>
+        <nowjs:dynamicView createdAt="Thu Feb 06 2020 01:35:41 GMT+0330 (Iran Standard Time)" icon="" class="" name="view1" title="" type="vue" default="true" category="" tags="" displayOrder="0">
+          <nowjs:script scriptFormat="javascript" />
+          <nowjs:template templateFormat="vue">
+          <![CDATA[<h1>Salam Start</h1>]]>
+          </nowjs:template>
+          <nowjs:style styleFormat="css" />
+        </nowjs:dynamicView>
+      </bpmn2:extensionElements>
+      <bpmn2:outgoing>SequenceFlow_04432uz</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="SequenceFlow_04432uz" sourceRef="StartEvent_1" targetRef="Task_12g9r5v" />
+    <bpmn2:endEvent id="EndEvent_1f41w8d" name="پایان">
+      <bpmn2:incoming>SequenceFlow_1is50v5</bpmn2:incoming>
+      <bpmn2:incoming>SequenceFlow_1n698tu</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:userTask id="Task_12g9r5v" name="ایجاد سایت" camunda:formKey="Cms-Site-Create" camunda:candidateGroups="OU=Financial | HR,(G=Professionals,U=Saeed|Ahmad|Ali)">
+      <bpmn2:extensionElements>
+        <nowjs:dynamicView createdAt="Thu Feb 06 2020 01:37:46 GMT+0330 (Iran Standard Time)" icon="" class="" name="view1" title="" type="vue" default="true" category="" tags="" displayOrder="0">
+          <nowjs:script scriptFormat="javascript" />
+          <nowjs:template templateFormat="vue">
+          <![CDATA[<h2>Salam Task</h2>]]>
+          </nowjs:template>
+          <nowjs:style styleFormat="css" />
+        </nowjs:dynamicView>
+        <camunda:formData>
+          <camunda:formField id="FormField_name" label="نام سایت" type="string" />
+          <camunda:formField id="FormField_descriptions" label="شرح" type="string" />
+          <camunda:formField id="FormField_active" label="فعال" type="boolean" defaultValue="true" />
+          <camunda:formField id="FormField_publishAt" label="Publish At" type="date" defaultValue="\${variables.now}" />
+        </camunda:formData>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="suggestedPublishAt">\${variables.suggestedPublishAt}</camunda:inputParameter>
+          <camunda:outputParameter name="publishAt" />
+        </camunda:inputOutput>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_04432uz</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_0da0v0n</bpmn2:outgoing>
+    </bpmn2:userTask>
+    <bpmn2:exclusiveGateway id="ExclusiveGateway_1g0udlu" name="نیاز به تایید دارد؟">
+      <bpmn2:incoming>SequenceFlow_0da0v0n</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_07djhzg</bpmn2:outgoing>
+      <bpmn2:outgoing>SequenceFlow_16y720e</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="SequenceFlow_0da0v0n" name="بررسی نیاز به تایید" sourceRef="Task_12g9r5v" targetRef="ExclusiveGateway_1g0udlu" />
+    <bpmn2:sequenceFlow id="SequenceFlow_07djhzg" name="بله" sourceRef="ExclusiveGateway_1g0udlu" targetRef="Task_1q7sujy">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" />
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="SequenceFlow_16y720e" name="خیر" sourceRef="ExclusiveGateway_1g0udlu" targetRef="Task_1v6b97v" />
+    <bpmn2:task id="Task_1v6b97v" name="ثبت سایت">
+      <bpmn2:incoming>SequenceFlow_16y720e</bpmn2:incoming>
+      <bpmn2:incoming>SequenceFlow_1ja34r6</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_1is50v5</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:sequenceFlow id="SequenceFlow_1is50v5" sourceRef="Task_1v6b97v" targetRef="EndEvent_1f41w8d" />
+    <bpmn2:exclusiveGateway id="ExclusiveGateway_052y4mp" name="ثبت سایت مورد تایید است؟">
+      <bpmn2:incoming>SequenceFlow_16ad8od</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_1ja34r6</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="SequenceFlow_16ad8od" name="بررسی تایید سایت" sourceRef="Task_1q7sujy" targetRef="ExclusiveGateway_052y4mp" />
+    <bpmn2:sequenceFlow id="SequenceFlow_1ja34r6" name="تایید" sourceRef="ExclusiveGateway_052y4mp" targetRef="Task_1v6b97v" />
+    <bpmn2:sequenceFlow id="SequenceFlow_1kflwlv" name="رد" sourceRef="Task_1q7sujy" targetRef="Task_0bxd4gc" />
+    <bpmn2:sequenceFlow id="SequenceFlow_1n698tu" sourceRef="Task_0bxd4gc" targetRef="EndEvent_1f41w8d" />
+    <bpmn2:userTask id="Task_1q7sujy" name="تایید سایت" camunda:formKey="Cms-Site-Create-Confirm" camunda:candidateGroups="SysAdmin">
+      <bpmn2:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="FormField_publishAt" label="Publish At" type="date" defaultValue="\${variables.now}" />
+        </camunda:formData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_07djhzg</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_16ad8od</bpmn2:outgoing>
+      <bpmn2:outgoing>SequenceFlow_1kflwlv</bpmn2:outgoing>
+    </bpmn2:userTask>
+    <bpmn2:serviceTask id="Task_0bxd4gc" name="اطلاع رسانی" camunda:expression="\${services.postMessage}">
+      <bpmn2:incoming>SequenceFlow_1kflwlv</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_1n698tu</bpmn2:outgoing>
+    </bpmn2:serviceTask>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Cms-Create-Site">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="152" y="80" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="157" y="123" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_04432uz_di" bpmnElement="SequenceFlow_04432uz">
+        <di:waypoint x="188" y="98" />
+        <di:waypoint x="240" y="98" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_1f41w8d_di" bpmnElement="EndEvent_1f41w8d" bioc:stroke="rgb(229, 57, 53)" bioc:fill="rgb(255, 205, 210)">
+        <dc:Bounds x="812" y="80" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="819" y="56" width="21" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_08zk378_di" bpmnElement="Task_12g9r5v" bioc:stroke="#00897b" bioc:fill="#00897b2b">
+        <dc:Bounds x="240" y="58" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1g0udlu_di" bpmnElement="ExclusiveGateway_1g0udlu" isMarkerVisible="true">
+        <dc:Bounds x="465" y="73" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="453" y="43" width="75" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0da0v0n_di" bpmnElement="SequenceFlow_0da0v0n">
+        <di:waypoint x="340" y="98" />
+        <di:waypoint x="465" y="98" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="360" y="80" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_07djhzg_di" bpmnElement="SequenceFlow_07djhzg">
+        <di:waypoint x="490" y="123" />
+        <di:waypoint x="490" y="230" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="500" y="200" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_16y720e_di" bpmnElement="SequenceFlow_16y720e">
+        <di:waypoint x="515" y="98" />
+        <di:waypoint x="630" y="98" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="565" y="80" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Task_1ivohu4_di" bpmnElement="Task_1v6b97v" bioc:stroke="rgb(251, 140, 0)" bioc:fill="rgb(255, 224, 178)">
+        <dc:Bounds x="630" y="58" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1is50v5_di" bpmnElement="SequenceFlow_1is50v5">
+        <di:waypoint x="730" y="98" />
+        <di:waypoint x="812" y="98" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_052y4mp_di" bpmnElement="ExclusiveGateway_052y4mp" isMarkerVisible="true">
+        <dc:Bounds x="635" y="245" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="594" y="302" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_16ad8od_di" bpmnElement="SequenceFlow_16ad8od">
+        <di:waypoint x="540" y="270" />
+        <di:waypoint x="635" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="546" y="252" width="84" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ja34r6_di" bpmnElement="SequenceFlow_1ja34r6">
+        <di:waypoint x="660" y="245" />
+        <di:waypoint x="660" y="138" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="640" y="173" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1kflwlv_di" bpmnElement="SequenceFlow_1kflwlv">
+        <di:waypoint x="540" y="270" />
+        <di:waypoint x="780" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="725" y="252" width="10" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1n698tu_di" bpmnElement="SequenceFlow_1n698tu">
+        <di:waypoint x="830" y="230" />
+        <di:waypoint x="830" y="116" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_1757eg6_di" bpmnElement="Task_1q7sujy" bioc:stroke="rgb(30, 136, 229)" bioc:fill="rgb(187, 222, 251)">
+        <dc:Bounds x="440" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_1a7l41y_di" bpmnElement="Task_0bxd4gc" bioc:stroke="rgb(251, 140, 0)" bioc:fill="rgb(255, 224, 178)">
+        <dc:Bounds x="780" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>
+
+`;

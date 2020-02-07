@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { uuidv1 } from 'nowjs-core/lib/utils';
@@ -9,45 +10,83 @@ import {
     BpmsBaseMemoryRepository,
     FilterExpression,
 } from '../data/Repository';
+import { BpmsService } from '../BpmsService';
 
 export interface UIServiceOptions {
     name: string;
 }
 
-export interface ProcessViewData {
-    definitionName: string;
-    view: BpmsProcessView;
-}
-export interface BpmsProcessView {
-    definitionName: string;
-    processName: string;
+export interface BpmsDynamicViewModel {
+    processDefinitionId?: string;
+    processDefinitionName?: string;
+    processDefinitionVersion?: number;
     processId: string;
-    definitionId: string;
-    id: string;
-    type: string;
-    key: string;
-    icon: string;
-    target: string;
+    processName: string;
+    activityName: string;
+    activityId: string;
+    id?: string;
+    name: string;
     title: string;
+    type: string;
+    target: string;
+    renderEngine: string;
+    renderEngineVersion: string;
+    default: boolean;
     enabled: string;
-    order: string;
     category: string;
     tags: string;
-    author: string;
+    displayOrder: string;
+    icon: string;
+    class: string;
+    script: string;
+    template: string;
+    style: string;
     authorization: string;
-    body: string;
+    author: string;
+    createdAt?: Date;
+}
+export interface BpmsDynamicView {
+    processDefinitionId: string;
+    processDefinitionName: string;
+    processDefinitionVersion: string;
+    processId: string;
+    processName: string;
+    activityName: string;
+    activityId: string;
+    id?: string;
+    name: string;
+    title: string;
+    type: string;
+    target: string;
+    renderEngine: string;
+    renderEngineVersion: string;
+    default: boolean;
+    enabled: string;
+    category: string;
+    tags: string;
+    displayOrder: string;
+    icon: string;
+    class: string;
+    script: string;
+    template: string;
+    style: string;
+    authorization: string;
+    author: string;
+    createdAt?: Date;
 }
 
-export class UIService<T extends ProcessViewData = ProcessViewData> {
+export class UIService<T extends BpmsDynamicViewModel = BpmsDynamicViewModel> implements BpmsService {
     private viewRepository: BpmsBaseMemoryRepository<T>;
     private id: string = uuidv1();
     private options: UIServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: UIServiceOptions) {
         this.options = options || { name: 'UIService' + this.id };
         this.viewRepository = new BpmsBaseMemoryRepository({
-            storageName: 'View',
+            storageName: 'BpmsView',
             keyPropertyname: 'id',
-            properties: {},
+            properties: {
+                id: { type: 'string', default: () => uuidv1() },
+            },
         });
     }
 
@@ -75,9 +114,12 @@ export class UIService<T extends ProcessViewData = ProcessViewData> {
         return this.viewRepository.clear();
     }
 
-    public async create(definitionName: string, view: any): Promise<T> {
-        const d = { definitionName, view };
-        return this.viewRepository.create(d);
+    public async create(view: BpmsDynamicView): Promise<T> {
+        const v = await this.viewRepository.find({ name: view.name, definitionId: view.processDefinitionId });
+        if (v) {
+            throw new Error(`The view '${view.name}' already exists`);
+        }
+        return this.viewRepository.create(view);
     }
     public async findView(processName: string, viewName: string): Promise<T | null> {
         return this.viewRepository.find({ processName, viewName });
@@ -86,13 +128,15 @@ export class UIService<T extends ProcessViewData = ProcessViewData> {
         return this.viewRepository.delete(entityId);
     }
 
-    public async find(entityId: string): Promise<T | null> {
-        return this.viewRepository.find(entityId);
+    public async find(filter: FilterExpression): Promise<T | null>;
+    public async find(entityId: string): Promise<T | null>;
+    public async find(expression: FilterExpression | string): Promise<T | null> {
+        return this.viewRepository.find(expression);
     }
     public async list<R = T>(filter?: FilterExpression): Promise<R[]> {
         return this.viewRepository.findAll(filter);
     }
-    public async count(filter: FilterExpression): Promise<number> {
+    public async count(filter?: FilterExpression): Promise<number> {
         return this.viewRepository.count('id', filter);
     }
     public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {

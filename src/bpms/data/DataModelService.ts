@@ -4,6 +4,7 @@ import { ValidationDefinition } from 'nowjs-core/lib/validation';
 import { BpmsEngine } from '../BpmsEngine';
 import { DataModelMemoryRepository, DataModelRepository } from './DataModelRepository';
 import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from './Repository';
+import { BpmsService } from '../BpmsService';
 
 export interface DataModelServiceOptions {
     name: string;
@@ -34,7 +35,7 @@ export interface BpmsDataModel {
     createdAt?: string;
 }
 
-export class DataModelService<T extends BpmsDataModel = BpmsDataModel> {
+export class DataModelService<T extends BpmsDataModel = BpmsDataModel> implements BpmsService {
     private dataModelCache: { [name: string]: any } = {};
     private id: string = uuidv1();
     private name: string;

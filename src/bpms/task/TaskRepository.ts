@@ -5,15 +5,16 @@ import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
 export interface TaskModel {
     id?: string;
     title?: string;
-    descriptipns?: string;
+    descriptions?: string;
     name?: string;
     assignee?: string;
     priority?: string;
-    refTenantId?: string;
-    refProcessInstanceId?: string;
-    refProcessId?: string;
-    refProcessExecutionId?: string;
-    refActivityId?: string;
+    tenantId?: string;
+    processDefinitionId?: string;
+    processInstanceId?: string;
+    processInstanceName?: string;
+    processExecutionId?: string;
+    activityId?: string;
     createdAt?: Date;
     seenAt?: Date;
     updatedAt?: Date;
@@ -25,8 +26,6 @@ export interface TaskModel {
 
     completed?: boolean;
     seen?: boolean;
-
-    views?: string;
 }
 
 export interface TaskRepository<T extends TaskModel = TaskModel> extends BpmsRepository<T> {
@@ -47,7 +46,7 @@ export interface TaskRepository<T extends TaskModel = TaskModel> extends BpmsRep
 export class TaskMemoryRepository extends BpmsBaseMemoryRepository<TaskModel> implements TaskRepository<TaskModel> {
     constructor() {
         super({
-            storageName: 'Task',
+            storageName: 'BpmsTask',
             properties: {
                 id: { type: 'string' },
                 name: { type: 'string' },

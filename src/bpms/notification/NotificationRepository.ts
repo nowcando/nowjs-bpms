@@ -19,7 +19,7 @@ export class NotificationMemoryRepository extends BpmsBaseMemoryRepository<Notif
     implements NotificationRepository<NotificationModel> {
     constructor() {
         super({
-            storageName: 'Notification',
+            storageName: 'BpmsNotification',
             properties: {
                 id: { type: 'string' },
                 name: { type: 'string' },

@@ -6,7 +6,7 @@ import { DmnEngine, DmnEngineOptions } from './dmn';
 import { HistoryService, HistoryServiceOptions } from './history/HistoryService';
 import { IdentityService, IdentityServiceOptions } from './identity/IdentityService';
 import { JobService, JobServiceOptions } from './job/JobService';
-import { NavigationService, NavigationServiceOptions } from './navigation/NavigationService';
+import { RouterService, RouterServiceOptions } from './router/RouterService';
 import { NotificationService } from './notification/NotificationService';
 import { QueryService, QueryServiceOptions } from './query/QueryService';
 import { TaskService, TaskServiceOptions } from './task/TaskService';
@@ -28,7 +28,7 @@ export interface BpmsEngineOptions {
     historyService?: HistoryServiceOptions;
     taskService?: TaskServiceOptions;
     tenantService?: TenantServiceOptions;
-    navigationService?: NavigationServiceOptions;
+    routerService?: RouterServiceOptions;
     uiService?: UIServiceOptions;
     jobService?: JobServiceOptions;
     queryService?: QueryServiceOptions;
@@ -58,7 +58,7 @@ export class BpmsEngine {
     private uiService!: UIService;
     private queryService!: QueryService;
     private jobService!: JobService;
-    private navigationService!: NavigationService;
+    private routerService!: RouterService;
     private notificationService!: NotificationService;
 
     private id: string = uuidv1();
@@ -129,9 +129,9 @@ export class BpmsEngine {
             name: this.name,
             ...this.options.jobService,
         });
-        this.navigationService = NavigationService.createService(this, {
+        this.routerService = RouterService.createService(this, {
             name: this.name,
-            ...this.options.navigationService,
+            ...this.options.routerService,
         });
         this.notificationService = NotificationService.createService(this, {
             name: this.name,
@@ -214,8 +214,8 @@ export class BpmsEngine {
         return this.datasourceService as any;
     }
 
-    public get NavigationService(): NavigationService {
-        return this.navigationService as any;
+    public get RouterService(): RouterService {
+        return this.routerService as any;
     }
     public get UIService(): UIService {
         return this.uiService as any;

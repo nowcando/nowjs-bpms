@@ -12,6 +12,7 @@ import {
     BpmsRepository,
     QueryResultSet,
 } from '../data/Repository';
+import { BpmsService } from '../BpmsService';
 
 // export interface IBpmsQueryable{
 //     query<R>(options: QueryOption): Promise<QueryResult<R>>;
@@ -24,7 +25,7 @@ export interface QueryServiceOptions {
 
 export type SourceName = string | string[];
 
-export class QueryService {
+export class QueryService implements BpmsService {
     private id: string = uuidv1();
     private options: QueryServiceOptions;
     private sources: Record<string, BpmsRepository<any>> = {};

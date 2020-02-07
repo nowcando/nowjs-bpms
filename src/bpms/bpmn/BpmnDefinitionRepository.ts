@@ -6,6 +6,8 @@ export interface BpmnDefinitionModel {
     name: string;
     definitions: any;
 
+    version: number;
+
     createdAt?: Date;
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -18,7 +20,7 @@ export class BpmnDefinitionMemoryRepository extends BpmsBaseMemoryRepository<Bpm
     implements BpmnDefinitionRepository<BpmnDefinitionModel> {
     constructor() {
         super({
-            storageName: 'BpmnDefinition',
+            storageName: 'BpmsBpmnDefinition',
             properties: {
                 id: { type: 'string' },
                 name: { type: 'string' },

@@ -13,6 +13,11 @@ import { HumanInvolvementExtension } from './extensions/HumanInvolvementExtensio
 import { NowJsExtension } from './extensions/NowJsExtension';
 import { ServiceTaskExtension } from './extensions/ServiceTaskExtension';
 import { BpmnProcessModel } from './BpmnProcessRepository';
+import { SaveToEnvironmentOutputExtension } from './extensions/SaveToEnvironmentOutputExtension';
+import { InputOutputExtension } from './extensions/InputOutputExtension';
+import { ExecutionListenerExtension } from './extensions/ExecutionListenerExtension';
+import { UserTaskExtension } from './extensions/UserTaskExtension';
+import { DynamicViewResolverExtension } from './extensions/DynamicViewResolverExtension';
 
 const { Engine } = require('bpmn-engine');
 
@@ -42,6 +47,8 @@ export interface BpmnProcessOptions {
     name?: string;
     id?: string;
     definitionId?: string;
+    definitionName?: string;
+    definitionVersion?: number;
     source?: string;
     variables?: any;
 
@@ -361,12 +368,16 @@ export class BpmnProcessInstance extends EventEmitter {
 
     private id = uuidv1();
     private definitionId?: string;
+    private definitionName?: string;
+    private definitionVersion?: number;
     constructor(bpmnEngine: BpmnEngine, options?: BpmnProcessOptions) {
         super();
         this.bpmnEngine = bpmnEngine;
         this.options = options || { name: '', source: '' };
         this.id = this.options.id || this.id;
         this.definitionId = this.options.definitionId;
+        this.definitionName = this.options.definitionName;
+        this.definitionVersion = this.options.definitionVersion;
         this.options.name = this.options.name || 'BpmnProcess-' + this.id;
         if (typeof this.options.name !== 'string') {
             throw new Error('BpmnProcess name must be string');
@@ -474,6 +485,19 @@ export class BpmnProcessInstance extends EventEmitter {
                     }
                 };
             },
+            getUser() {
+                return function getInitiatorUserService(executionContext, callback) {
+                    const username = '';
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                        ids.getUserByUsername(username).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
             // tslint:disable-next-line:no-shadowed-variable
             evaluateDecision<T>(options: { name: string; decisionId: string; context: any }) {
                 return function getEvaludateDecisionService(executionContext, callback) {
@@ -491,10 +515,15 @@ export class BpmnProcessInstance extends EventEmitter {
         };
 
         const internalExtentions = {
-            NowJsExtension: NowJsExtension(self),
+            // NowJsExtension: NowJsExtension(self),
             BusinessRuleTaskExtension: BusinessRuleTaskExtension(self),
             HumanInvolvementExtension: HumanInvolvementExtension(self),
             ServiceTaskExtension: ServiceTaskExtension(self),
+            UserTaskExtension: UserTaskExtension(self),
+            SaveToEnvironmentOutputExtension: SaveToEnvironmentOutputExtension(self),
+            InputOutputExtension: InputOutputExtension(self),
+            ExecutionListenerExtension: ExecutionListenerExtension(self),
+            DynamicViewResolverExtension: DynamicViewResolverExtension(self),
         };
         const internalModdles = {
             nowjs: require('nowjs-bpmn-moddle/resources/nowjs.json'),
@@ -521,6 +550,12 @@ export class BpmnProcessInstance extends EventEmitter {
 
     public get DefinitionId() {
         return this.definitionId;
+    }
+    public get DefinitionName() {
+        return this.definitionName;
+    }
+    public get DefinitionVersion() {
+        return this.definitionVersion;
     }
 
     public get Logger(): BpmnLogger {

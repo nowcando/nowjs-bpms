@@ -3,6 +3,7 @@ import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
 import { DataSourceMemoryRepository, DataSourceRepository } from './DataSourceRepository';
 import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from './Repository';
+import { BpmsService } from '../BpmsService';
 
 export interface DataSourceServiceOptions {
     name: string;
@@ -38,7 +39,7 @@ export interface BpmsDataSource {
     definition: DataSourceDefinition;
     createdAt?: Date;
 }
-export class DataSourceService<T extends BpmsDataSource = BpmsDataSource> {
+export class DataSourceService<T extends BpmsDataSource = BpmsDataSource> implements BpmsService {
     private datasourceCache: { [name: string]: any } = {};
     private id: string = uuidv1();
     private name: string;

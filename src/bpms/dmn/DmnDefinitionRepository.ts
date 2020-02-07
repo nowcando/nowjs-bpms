@@ -20,7 +20,7 @@ export class DmnDefinitionMemoryRepository extends BpmsBaseMemoryRepository<DmnD
     implements DmnDefinitionRepository<DmnDefinition> {
     constructor() {
         super({
-            storageName: 'DmnDefinition',
+            storageName: 'BpmsDmnDefinition',
             properties: {
                 name: { type: 'string' },
             },
