@@ -2,6 +2,7 @@ import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
 import { JobMemoryRepository, JobRepository } from './JobRepository';
 import { IdExpression, FilterExpression, QueryOptions, QueryResult, ScalarOptions } from '../data/Repository';
+import { BpmsService } from '../BpmsService';
 
 // export class Job {
 //    private data: JobData;
@@ -64,7 +65,7 @@ export interface JobServiceOptions {
     jobRepository?: JobRepository;
     name: string;
 }
-export class JobService<T extends BpmsJob = BpmsJob> {
+export class JobService<T extends BpmsJob = BpmsJob> implements BpmsService {
     private jobRepository: JobRepository<T>;
     private id: string = uuidv1();
     private options: JobServiceOptions;

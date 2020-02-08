@@ -17,7 +17,7 @@ export interface DataModelRepository extends BpmsRepository<DataModel> {
 export class DataModelMemoryRepository extends BpmsBaseMemoryRepository<DataModel> implements DataModelRepository {
     constructor() {
         super({
-            storageName: 'DataModel',
+            storageName: 'BpmsDataModel',
             properties: {
                 id: { type: 'string' },
                 name: { type: 'string' },

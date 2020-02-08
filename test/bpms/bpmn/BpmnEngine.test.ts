@@ -5,7 +5,7 @@ import { EventEmitter } from 'events';
 import 'jest';
 import { BpmnEngine, BpmnProcessActivity, BpmnProcessOptions, BpmsEngine } from '../../../src';
 import { sampleDecideTema } from '../dmn/sampleDmn';
-import { source1, source2, source3, source4 } from '../../resources/projects/BpmnSampleSources';
+import { source1, source2, source3, source4, source7 } from '../../resources/projects/BpmnSampleSources';
 
 beforeAll(() => {});
 beforeEach(() => {});
@@ -102,10 +102,8 @@ describe('BpmnEngine', () => {
                 await bpmn.createDefinitions('Team', source4);
                 const v = await bpms.UIService.list();
                 expect(v).toBeDefined();
-                const n = await bpms.NavigationService.list();
+                const n = await bpms.RouterService.list();
                 expect(n).toBeDefined();
-                const vn = await bpms.NavigationService.listViewNavigations();
-                expect(vn).toBeDefined();
             });
         });
     });
@@ -123,6 +121,7 @@ describe('BpmnEngine', () => {
                 expect(actual.Stopped).toBeDefined();
                 expect(actual.Execution).not.toBeDefined();
                 expect(actual.State).toEqual('idle');
+                expect(actual.DefinitionId).not.toBeDefined();
             });
 
             it('should be instantiated a BpmnProcess by createProcess method and execute', async () => {
@@ -151,6 +150,24 @@ describe('BpmnEngine', () => {
                     variables: { id },
                 };
                 expect(bpe.createProcess(prOpts)).rejects.toThrow();
+            });
+
+            it('should be instantiated a BpmnProcess by createProcess method and execute', async () => {
+                const bpe = BpmsEngine.createEngine({ name: 'MyEngine20' });
+                expect(bpe).toBeDefined();
+                const randNum = Math.floor(Math.random() * 10000);
+                await bpe.BpmnEngine.createDefinitions('sampleProcess1', source7);
+                const prOpts: BpmnProcessOptions = {
+                    name: 'sampleProcess1',
+                    variables: { randNum },
+                };
+                const pr = await bpe.BpmnEngine.createProcess(prOpts);
+                expect(pr).toBeDefined();
+                const execution = await pr.execute();
+                expect(execution).toBeDefined();
+                expect(execution.environment.variables.randNum).toEqual(randNum);
+                const routes = await bpe.BpmnEngine.BpmsEngine?.RouterService.getRouteList();
+                expect(routes).toBeDefined();
             });
         });
         describe('persist', () => {

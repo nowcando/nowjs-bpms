@@ -13,6 +13,13 @@ import { HumanInvolvementExtension } from './extensions/HumanInvolvementExtensio
 import { NowJsExtension } from './extensions/NowJsExtension';
 import { ServiceTaskExtension } from './extensions/ServiceTaskExtension';
 import { BpmnProcessModel } from './BpmnProcessRepository';
+import { SaveToEnvironmentOutputExtension } from './extensions/SaveToEnvironmentOutputExtension';
+import { InputOutputExtension } from './extensions/InputOutputExtension';
+import { ExecutionListenerExtension } from './extensions/ExecutionListenerExtension';
+import { UserTaskExtension } from './extensions/UserTaskExtension';
+import { DynamicViewResolverExtension } from './extensions/DynamicViewResolverExtension';
+import { DynamicRouteResolverExtension } from './extensions/DynamicRouteResolverExtension';
+import { ProcessExtension } from './extensions/ProcessExtension';
 
 const { Engine } = require('bpmn-engine');
 
@@ -41,6 +48,9 @@ export interface BpmnExecution {
 export interface BpmnProcessOptions {
     name?: string;
     id?: string;
+    definitionId?: string;
+    definitionName?: string;
+    definitionVersion?: number;
     source?: string;
     variables?: any;
 
@@ -359,11 +369,17 @@ export class BpmnProcessInstance extends EventEmitter {
     private options?: BpmnProcessOptions;
 
     private id = uuidv1();
+    private definitionId?: string;
+    private definitionName?: string;
+    private definitionVersion?: number;
     constructor(bpmnEngine: BpmnEngine, options?: BpmnProcessOptions) {
         super();
         this.bpmnEngine = bpmnEngine;
         this.options = options || { name: '', source: '' };
         this.id = this.options.id || this.id;
+        this.definitionId = this.options.definitionId;
+        this.definitionName = this.options.definitionName;
+        this.definitionVersion = this.options.definitionVersion;
         this.options.name = this.options.name || 'BpmnProcess-' + this.id;
         if (typeof this.options.name !== 'string') {
             throw new Error('BpmnProcess name must be string');
@@ -374,24 +390,114 @@ export class BpmnProcessInstance extends EventEmitter {
         };
 
         const internalServices = {
+            getGroups() {
+                return function getGroupsService(executionContext, callback) {
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                        ids.getGroups().then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            getUserOfEmployee(employeeIdOrName: string) {
+                return function getManagerOfUserService(executionContext, callback) {
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(employeeIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            getEmployeeOfUser(userIdOrName: string) {
+                return function getEmployeeOfUserService(executionContext, callback) {
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(userIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
             getManagerOfUser(userIdOrName: string) {
                 return function getManagerOfUserService(executionContext, callback) {
-                    callback('mohammad');
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(userIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
                 };
             },
             getCoWorkerOfUser(userIdOrName: string) {
                 return function getCoWorkerOfUserService(executionContext, callback) {
-                    callback('hamid');
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(userIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            getGroupsOfUser(userIdOrName: string) {
+                return function getGroupsOfUserService(executionContext, callback) {
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(userIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            getUsersOfGroup(groupIdOrName: string) {
+                return function getUsersOfGroupService(executionContext, callback) {
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                        ids.getGroupUsers(groupIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
                 };
             },
             getInitiatorUser() {
                 return function getInitiatorUserService(executionContext, callback) {
-                    callback('ali');
+                    const username = executionContext?.environment?.variables?.initiatorUsername;
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                        ids.getUserByUsername(username).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
                 };
             },
             getCurrentUser() {
-                return function getInitiatorUserService(executionContext, callback) {
-                    callback('saeed');
+                return function getCurrentUserService(executionContext, callback) {
+                    const username = executionContext?.environment?.variables?.user?.username;
+                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
+                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                        ids.getUserByUsername(username).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
                 };
             },
             // tslint:disable-next-line:no-shadowed-variable
@@ -411,10 +517,17 @@ export class BpmnProcessInstance extends EventEmitter {
         };
 
         const internalExtentions = {
-            NowJsExtension: NowJsExtension(self),
+            // NowJsExtension: NowJsExtension(self),
+            ProcessExtension: ProcessExtension(self),
             BusinessRuleTaskExtension: BusinessRuleTaskExtension(self),
             HumanInvolvementExtension: HumanInvolvementExtension(self),
             ServiceTaskExtension: ServiceTaskExtension(self),
+            UserTaskExtension: UserTaskExtension(self),
+            SaveToEnvironmentOutputExtension: SaveToEnvironmentOutputExtension(self),
+            InputOutputExtension: InputOutputExtension(self),
+            ExecutionListenerExtension: ExecutionListenerExtension(self),
+            DynamicViewResolverExtension: DynamicViewResolverExtension(self),
+            DynamicRouteResolverExtension: DynamicRouteResolverExtension(self),
         };
         const internalModdles = {
             nowjs: require('nowjs-bpmn-moddle/resources/nowjs.json'),
@@ -437,6 +550,16 @@ export class BpmnProcessInstance extends EventEmitter {
 
     public get Id() {
         return this.id;
+    }
+
+    public get DefinitionId() {
+        return this.definitionId;
+    }
+    public get DefinitionName() {
+        return this.definitionName;
+    }
+    public get DefinitionVersion() {
+        return this.definitionVersion;
     }
 
     public get Logger(): BpmnLogger {
@@ -471,16 +594,7 @@ export class BpmnProcessInstance extends EventEmitter {
         const self = this;
         const p = new Promise<R>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.execute(
-                    { listener: self, ...options },
-                    // (err: any, execution: any) => {
-                    //   if (err) {
-                    //     reject(err);
-                    //   } else {
-                    //     resolve(execution);
-                    //   }
-                    // },
-                );
+                const r = await this.processEngine.execute({ listener: self, ...options });
                 resolve(r);
             } catch (error) {
                 reject(error);

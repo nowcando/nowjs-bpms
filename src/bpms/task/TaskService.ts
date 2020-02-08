@@ -2,6 +2,7 @@ import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
 import { TaskMemoryRepository, TaskRepository } from './TaskRepository';
 import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from '../data/Repository';
+import { BpmsService } from '../BpmsService';
 
 // export class Task {
 //    private data: TaskData;
@@ -38,16 +39,18 @@ import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from '../d
 export interface BpmsTask {
     id?: string;
     title?: string;
-    descriptipns?: string;
+    descriptions?: string;
+    type?: string;
+    activityType?: string;
     name?: string;
     assignee?: string;
     priority?: string;
-    refTenantId?: string;
-    refProcessInstanceId?: string;
-    refProcessInstanceName?: string;
-    refProcessId?: string;
-    refProcessExecutionId?: string;
-    refActivityId?: string;
+    tenantId?: string;
+    processDefinitionId?: string;
+    processInstanceId?: string;
+    processInstanceName?: string;
+    processExecutionId?: string;
+    activityId?: string;
     createdAt?: Date;
     seenAt?: Date;
     updatedAt?: Date;
@@ -59,15 +62,13 @@ export interface BpmsTask {
 
     completed?: boolean;
     seen?: boolean;
-
-    views?: string;
 }
 
 export interface TaskServiceOptions {
     taskRepository?: TaskRepository;
     name: string;
 }
-export class TaskService<T extends BpmsTask = BpmsTask> {
+export class TaskService<T extends BpmsTask = BpmsTask> implements BpmsService {
     private taskRepository: TaskRepository<T>;
     private id: string = uuidv1();
     private options: TaskServiceOptions;

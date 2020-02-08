@@ -40,7 +40,7 @@ export interface JobRepository<T extends JobModel = JobModel> extends BpmsReposi
 export class JobMemoryRepository extends BpmsBaseMemoryRepository<JobModel> implements JobRepository<JobModel> {
     constructor() {
         super({
-            storageName: 'Job',
+            storageName: 'BpmsJob',
             properties: {
                 id: { type: 'string' },
                 name: { type: 'string' },

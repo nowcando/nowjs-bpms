@@ -3,6 +3,7 @@ import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
 import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from '../data/Repository';
 import { NotificationRepository, NotificationMemoryRepository } from './NotificationRepository';
+import { BpmsService } from '../BpmsService';
 
 export interface NotificationServiceOptions {
     notificationRepository?: NotificationRepository;
@@ -18,7 +19,7 @@ export interface BpmsNotification {
     seen: boolean;
 }
 
-export class NotificationService<T extends BpmsNotification = BpmsNotification> {
+export class NotificationService<T extends BpmsNotification = BpmsNotification> implements BpmsService {
     private notificationRepository!: NotificationRepository<T>;
     private id: string = uuidv1();
     private options: NotificationServiceOptions;

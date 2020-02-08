@@ -6,6 +6,7 @@ import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
 
 export interface BpmnProcessModel {
     id: string;
+    definitionId: string;
     name: string;
     state: string;
     stopped: boolean;
@@ -21,10 +22,13 @@ export class BpmnProcessMemoryRepository extends BpmsBaseMemoryRepository<BpmnPr
     implements BpmnProcessRepository<BpmnProcessModel> {
     constructor() {
         super({
-            storageName: 'BpmnProcess',
+            storageName: 'BpmsProcess',
             properties: {
                 id: { type: 'string' },
                 name: { type: 'string' },
+                definitionId: { type: 'string' },
+                state: { type: 'string' },
+                stopped: { type: 'boolean' },
             },
         });
     }

@@ -15,7 +15,7 @@ export class OrganizationEmployeePositionMemoryRepository
     implements OrganizationEmployeePositionRepository<OrganizationEmployeePositionModel> {
     constructor() {
         super({
-            storageName: 'OrganizationEmployeePosition',
+            storageName: 'BpmsOrganizationEmployeePosition',
             properties: {
                 name: { type: 'string' },
             },

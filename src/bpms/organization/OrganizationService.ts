@@ -7,8 +7,11 @@ import {
 } from './OrganizationEmployeePositionRepository';
 import { OrganizationEmployeeRepository, OrganizationEmployeeMemoryRepository } from './OrganizationEmployeeRepository';
 import { IdExpression, FilterExpression } from '../data/Repository';
+import { BpmsIdentityUser } from '../identity/IdentityService';
+import { BpmsService } from '../BpmsService';
 export interface BpmsOrganizationEmployee {
     id: string;
+    username?: string;
     name: string;
 }
 export interface BpmsOrganizationPosition {
@@ -28,7 +31,7 @@ export interface OrganizationServiceOptions {
     organizationEmployeeRepository?: OrganizationEmployeeRepository;
     name: string;
 }
-export class OrganizationService {
+export class OrganizationService implements BpmsService {
     private organizationPositionRepository: OrganizationPositionRepository;
     private organizationEmployeePositionRepository: OrganizationEmployeePositionRepository;
     private organizationEmployeeRepository: OrganizationEmployeeRepository;
@@ -78,6 +81,14 @@ export class OrganizationService {
     }
     public async getOrganizationEmployee(employeeId: IdExpression): Promise<BpmsOrganizationEmployee | null> {
         return this.organizationEmployeeRepository.find(employeeId);
+    }
+    public async getOrganizationEmployeeUser(employeeId: IdExpression): Promise<BpmsIdentityUser | null> {
+        const e = await this.organizationEmployeeRepository.find(employeeId);
+        if (e && e.username) {
+            const r = await this.bpmsEngine?.IdentityService.getUserByUsername(e.username);
+            return r as any;
+        }
+        return null;
     }
     public async getOrganizationEmployees(filter?: FilterExpression): Promise<BpmsOrganizationEmployee[] | null> {
         return this.organizationEmployeeRepository.findAll(filter);

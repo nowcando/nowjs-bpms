@@ -3,6 +3,7 @@
 import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
 export interface OrganizationEmployeeModel {
     id: string;
+    username?: string;
     name: string;
 }
 export interface OrganizationEmployeeRepository<T extends OrganizationEmployeeModel = OrganizationEmployeeModel>
@@ -13,7 +14,7 @@ export class OrganizationEmployeeMemoryRepository extends BpmsBaseMemoryReposito
     implements OrganizationEmployeeRepository<OrganizationEmployeeModel> {
     constructor() {
         super({
-            storageName: 'OrganizationEmployee',
+            storageName: 'BpmsOrganizationEmployee',
             properties: {
                 name: { type: 'string' },
             },

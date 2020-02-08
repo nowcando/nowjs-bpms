@@ -15,7 +15,7 @@ export class IdentityGroupMemoryRepository extends BpmsBaseMemoryRepository<Iden
     implements IdentityGroupRepository<IdentityGroupModel> {
     constructor() {
         super({
-            storageName: 'IdentityGroup',
+            storageName: 'BpmsIdentityGroup',
             properties: {
                 name: { type: 'string' },
             },

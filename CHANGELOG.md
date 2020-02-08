@@ -1,3 +1,56 @@
+### 0.26.0 (2020-02-08)
+
+##### Bug Fixes
+
+*  task activitytype ([9542d48c](https://github.com/nowcando/nowjs-bpms/commit/9542d48c26bf932dc0fd85b67eb0af87586d032b))
+
+### 0.25.0 (2020-02-07)
+
+##### Bug Fixes
+
+*  History Service problem ([747ae72e](https://github.com/nowcando/nowjs-bpms/commit/747ae72ef8afbd96d366323d69c011827fdcd3c4))
+*  bpms history added ([eff280ac](https://github.com/nowcando/nowjs-bpms/commit/eff280acc98e8812f09d4d577890fe5ecdc7010a))
+
+### 0.24.0 (2020-02-07)
+
+##### New Features
+
+*  implement view & router ([f5de88a4](https://github.com/nowcando/nowjs-bpms/commit/f5de88a45180718a47fc1a2a738eb0098b93cf26))
+*  route, ui service implemented ([70c71951](https://github.com/nowcando/nowjs-bpms/commit/70c719514dc02b5f3ffd4f3a549fedaaad77eaed))
+
+##### Bug Fixes
+
+*  test of route service ([d17fbdd6](https://github.com/nowcando/nowjs-bpms/commit/d17fbdd61be4df00e99f93e101c9f5d5f5a71e49))
+*  test enabled ([ca9630e5](https://github.com/nowcando/nowjs-bpms/commit/ca9630e5e710d76460ffb6ea49cbfb1458a1af73))
+*  getInitiator service variable ([66dae9c9](https://github.com/nowcando/nowjs-bpms/commit/66dae9c943f532a73791bc1e6035ed2f8490cbde))
+
+### 0.23.0 (2020-02-05)
+
+##### Bug Fixes
+
+*  definitionId in BpmnEngine ([46afaad8](https://github.com/nowcando/nowjs-bpms/commit/46afaad8f9c6f99850452bf6b9b28c605af6acc7))
+
+### 0.22.0 (2020-02-05)
+
+##### Bug Fixes
+
+*  persist after create process . ([461ec032](https://github.com/nowcando/nowjs-bpms/commit/461ec032d64d313c13da1ebe904648a7d5fba821))
+
+### 0.22.0 (2020-02-05)
+
+### 0.21.0 (2020-02-05)
+
+##### New Features
+
+*  some service added for user and organization control ([9ac50977](https://github.com/nowcando/nowjs-bpms/commit/9ac5097729e642a576658c2e8736a2fd9d2dcaf4))
+*  add definition id parameter ([c2309239](https://github.com/nowcando/nowjs-bpms/commit/c23092397c015c8432e9ff67d6cb4843e2c6000b))
+
+### 0.21.0 (2020-02-05)
+
+##### New Features
+
+*  add definition id parameter ([c2309239](https://github.com/nowcando/nowjs-bpms/commit/c23092397c015c8432e9ff67d6cb4843e2c6000b))
+
 ### 0.20.0 (2020-02-04)
 
 ##### New Features

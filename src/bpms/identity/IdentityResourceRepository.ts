@@ -15,7 +15,7 @@ export class IdentityResourceMemoryRepository extends BpmsBaseMemoryRepository<I
     implements IdentityResourceRepository<IdentityResourceModel> {
     constructor() {
         super({
-            storageName: 'IdentityResource',
+            storageName: 'BpmsIdentityResource',
             properties: {
                 name: { type: 'string' },
             },
