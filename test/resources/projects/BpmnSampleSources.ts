@@ -438,9 +438,7 @@ export const source7 = `<?xml version="1.0" encoding="UTF-8"?>
       <bpmn2:extensionElements>
         <nowjs:dynamicView createdAt="Thu Feb 06 2020 01:35:41 GMT+0330 (Iran Standard Time)" icon="" class="" name="view1" title="" type="vue" default="true" category="" tags="" displayOrder="0">
           <nowjs:script scriptFormat="javascript" />
-          <nowjs:template templateFormat="vue">
-          <![CDATA[<h1>Salam Start</h1>]]>
-          </nowjs:template>
+          <nowjs:template templateFormat="vue">&lt;h1&gt;Hello Start&lt;/h1&gt;</nowjs:template>
           <nowjs:style styleFormat="css" />
         </nowjs:dynamicView>
       </bpmn2:extensionElements>
@@ -455,9 +453,7 @@ export const source7 = `<?xml version="1.0" encoding="UTF-8"?>
       <bpmn2:extensionElements>
         <nowjs:dynamicView createdAt="Thu Feb 06 2020 01:37:46 GMT+0330 (Iran Standard Time)" icon="" class="" name="view1" title="" type="vue" default="true" category="" tags="" displayOrder="0">
           <nowjs:script scriptFormat="javascript" />
-          <nowjs:template templateFormat="vue">
-          <![CDATA[<h2>Salam Task</h2>]]>
-          </nowjs:template>
+          <nowjs:template templateFormat="vue">&lt;h1&gt;Hello Task&lt;/h1&gt;</nowjs:template>
           <nowjs:style styleFormat="css" />
         </nowjs:dynamicView>
         <camunda:formData>
