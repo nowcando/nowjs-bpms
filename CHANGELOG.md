@@ -1,3 +1,10 @@
+### 0.27.0 (2020-02-08)
+
+##### Bug Fixes
+
+*  create view from process ([d52e9117](https://github.com/nowcando/nowjs-bpms/commit/d52e911776264ac49667c1d24a3d557a2ab1aad6))
+*  view script template as an object ([9e4860ef](https://github.com/nowcando/nowjs-bpms/commit/9e4860ef0e26a78af3bdbdb19dc302661989b3df))
+
 ### 0.26.0 (2020-02-08)
 
 ##### Bug Fixes
