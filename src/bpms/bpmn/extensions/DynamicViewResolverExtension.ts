@@ -9,10 +9,11 @@ export const DynamicViewResolverExtension = (processInstance: BpmnProcessInstanc
     const extendValues = activity.behaviour.extensionElements.values;
     const bpms = processInstance.BpmnEngine.BpmsEngine;
     if (bpms) {
+        const actions = [];
         const io = extendValues.forEach((extn, ix) => {
             if (extn.$type === 'camunda:DynamicView' || extn.$type === 'nowjs:DynamicView') {
                 // result.input = extension.inputParameters;
-                const view: BpmsDynamicViewModel = {
+                const view: BpmsDynamicView = {
                     processDefinitionId: processInstance.DefinitionId,
                     processDefinitionName: processInstance.DefinitionName,
                     processDefinitionVersion: processInstance.DefinitionVersion,
@@ -20,24 +21,26 @@ export const DynamicViewResolverExtension = (processInstance: BpmnProcessInstanc
                     processName: activity?.parent?.name,
                     activityName: activity.name,
                     activityId: activity.id,
-                    name: extn && extn.name,
-                    title: extn && extn.title,
-                    type: extn && extn.type,
-                    target: extn && extn.target,
-                    renderEngine: extn && extn.renderEngine,
-                    renderEngineVersion: extn && extn.renderEngineVersion,
-                    default: extn && extn.default,
-                    enabled: extn && extn.enabled,
-                    category: extn && extn.category,
-                    tags: extn && extn.tags,
-                    displayOrder: extn && extn.displayOrder,
-                    icon: extn && extn.icon,
-                    class: extn && extn.class,
-                    script: extn && extn.script,
-                    template: extn && extn.template,
-                    style: extn && extn.style,
-                    authorization: extn && extn.authorization,
-                    author: extn && extn.author,
+                    activityType: activity.type,
+                    name: extn.name,
+                    title: extn.title,
+                    type: extn.type,
+                    target: extn.target,
+                    renderEngine: extn.renderEngine,
+                    renderEngineVersion: extn.renderEngineVersion,
+                    default: extn.default,
+                    enabled: extn.enabled,
+                    category: extn.category,
+                    tags: extn.tags,
+                    displayOrder: extn.displayOrder,
+                    icon: extn.icon,
+                    class: extn.class,
+                    script: extn.script,
+                    template: extn.template,
+                    style: extn.style,
+                    authorization: extn.authorization,
+                    author: extn.author,
+                    actions: actions,
                 };
                 bpms.UIService.create(view)
                     .then(xx => xx)

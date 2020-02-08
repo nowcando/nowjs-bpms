@@ -23,6 +23,7 @@ export interface BpmsDynamicViewModel {
     processId: string;
     processName: string;
     activityName: string;
+    activityType: string;
     activityId: string;
     id?: string;
     name: string;
@@ -52,6 +53,7 @@ export interface BpmsDynamicView {
     processId: string;
     processName: string;
     activityName: string;
+    activityType: string;
     activityId: string;
     id?: string;
     name: string;
@@ -73,9 +75,10 @@ export interface BpmsDynamicView {
     authorization: string;
     author: string;
     createdAt?: Date;
+    actions: { name: string; description: string; value: any }[];
 }
 
-export class UIService<T extends BpmsDynamicViewModel = BpmsDynamicViewModel> implements BpmsService {
+export class UIService<T extends BpmsDynamicView = BpmsDynamicView> implements BpmsService {
     private viewRepository: BpmsBaseMemoryRepository<T>;
     private id: string = uuidv1();
     private options: UIServiceOptions;

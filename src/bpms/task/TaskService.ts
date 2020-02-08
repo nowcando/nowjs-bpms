@@ -40,6 +40,8 @@ export interface BpmsTask {
     id?: string;
     title?: string;
     descriptions?: string;
+    type?: string;
+    activityType?: string;
     name?: string;
     assignee?: string;
     priority?: string;
