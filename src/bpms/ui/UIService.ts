@@ -39,9 +39,9 @@ export interface BpmsDynamicViewModel {
     displayOrder: string;
     icon: string;
     class: string;
-    script: string;
-    template: string;
-    style: string;
+    script: { resource?: string; format?: string; content: string };
+    template: { resource?: string; format?: string; content: string };
+    style: { resource?: string; format?: string; content: string };
     authorization: string;
     author: string;
     createdAt?: Date;
@@ -69,9 +69,9 @@ export interface BpmsDynamicView {
     displayOrder: string;
     icon: string;
     class: string;
-    script: string;
-    template: string;
-    style: string;
+    script: { resource?: string; format?: string; content: string };
+    template: { resource?: string; format?: string; content: string };
+    style: { resource?: string; format?: string; content: string };
     authorization: string;
     author: string;
     createdAt?: Date;
