@@ -1,3 +1,9 @@
+### 0.26.0 (2020-02-08)
+
+##### Bug Fixes
+
+*  task activitytype ([9542d48c](https://github.com/nowcando/nowjs-bpms/commit/9542d48c26bf932dc0fd85b67eb0af87586d032b))
+
 ### 0.25.0 (2020-02-07)
 
 ##### Bug Fixes
