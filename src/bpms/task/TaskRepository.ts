@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
+import { BpmsRepository, BpmsBaseMemoryRepository, IdExpression } from '../data/Repository';
 
 export interface TaskModel {
     id?: string;
     title?: string;
     descriptions?: string;
+    type?: string;
+    activityType?: string;
     name?: string;
-    assignee?: string;
+    assignee?: { userId: IdExpression; username: string; fullname?: string; avatar?: string };
     priority?: string;
     tenantId?: string;
     processDefinitionId?: string;
+    processDefinitionName?: string;
+    processDefinitionVersion?: number;
     processInstanceId?: string;
     processInstanceName?: string;
     processExecutionId?: string;
@@ -23,6 +27,8 @@ export interface TaskModel {
     followUpDate?: Date;
     tags?: string;
     categories?: string;
+
+    variables?: any;
 
     completed?: boolean;
     seen?: boolean;

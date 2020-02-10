@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { BpmnProcessInstance } from '../BpmnProcessInstance';
-
+import ExecutionScope from 'bpmn-elements/dist/src/activity/ExecutionScope';
 function ServiceExpression(activity: any) {
     const { type: atype, behaviour, environment } = activity;
     const expression = behaviour.expression || activity.behaviour.implementation;
@@ -14,9 +14,18 @@ function ServiceExpression(activity: any) {
     };
     function execute(executionMessage: any, callback: any) {
         const serviceFn = environment.resolveExpression(expression, executionMessage);
-        serviceFn.call(activity, executionMessage, (err: any, result: any) => {
-            callback(err, result);
-        });
+        if (typeof serviceFn !== 'function') {
+            callback(
+                new Error(
+                    `${behaviour.implementation ? 'Implementation' : 'Expression'}  did not resolve to a function`,
+                ),
+            );
+        }
+        if (serviceFn) {
+            serviceFn.call(activity, ExecutionScope(activity, executionMessage), callback);
+        } else {
+            callback(new Error(`Service not found`));
+        }
     }
 }
 

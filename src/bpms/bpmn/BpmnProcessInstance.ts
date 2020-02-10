@@ -4,13 +4,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import * as bm from 'bpmn-moddle';
+import bent from 'bent';
 import { EventEmitter } from 'events';
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmnEngine } from './BpmnEngine';
-import BusinessRuleTask from './elements/BusinessRuleTask';
 import { BusinessRuleTaskExtension } from './extensions/BusinessRuleTaskExtension';
 import { HumanInvolvementExtension } from './extensions/HumanInvolvementExtension';
-import { NowJsExtension } from './extensions/NowJsExtension';
 import { ServiceTaskExtension } from './extensions/ServiceTaskExtension';
 import { BpmnProcessModel } from './BpmnProcessRepository';
 import { SaveToEnvironmentOutputExtension } from './extensions/SaveToEnvironmentOutputExtension';
@@ -20,9 +19,13 @@ import { UserTaskExtension } from './extensions/UserTaskExtension';
 import { DynamicViewResolverExtension } from './extensions/DynamicViewResolverExtension';
 import { DynamicRouteResolverExtension } from './extensions/DynamicRouteResolverExtension';
 import { ProcessExtension } from './extensions/ProcessExtension';
+import { SaveToResultVariableExtension } from './extensions/SaveToResultVariableExtension';
+import { FormDataResolverExtension } from './extensions/FormDataExtension';
 
 const { Engine } = require('bpmn-engine');
-
+const httpJsonApi = bent('json');
+const httpStreamApi = bent('buffer');
+const httpStringApi = bent('string');
 export interface BpmnLogger {
     debug(...args: any[]): void;
     error(...args: any[]): void;
@@ -142,6 +145,7 @@ export interface BpmnProcessActivity extends EventEmitter {
     type: string;
     name: string;
 
+    content: any;
     attachedTo: any;
 
     Behaviour: any;
@@ -385,9 +389,7 @@ export class BpmnProcessInstance extends EventEmitter {
             throw new Error('BpmnProcess name must be string');
         }
         const self = this;
-        const internalElements = {
-            BusinessRuleTask,
-        };
+        const internalElements = {};
 
         const internalServices = {
             getGroups() {
@@ -487,30 +489,78 @@ export class BpmnProcessInstance extends EventEmitter {
                     }
                 };
             },
-            getCurrentUser() {
-                return function getCurrentUserService(executionContext, callback) {
+            getUser() {
+                return async function getUserService(executionContext) {
                     const username = executionContext?.environment?.variables?.user?.username;
                     if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
                         const ids = self.BpmnEngine.BpmsEngine.IdentityService;
-                        ids.getUserByUsername(username).then(r => {
-                            return callback(r);
-                        });
+                        return ids.getUserByUsername(username);
                     } else {
-                        return callback(undefined);
+                        return null;
                     }
                 };
             },
+            httpJsonApi: httpJsonApi,
+            httpStreamApi: httpStreamApi,
+            httpStringApi: httpStringApi,
+            httpRequestApi: (options: any = {}) => async (scope, callback) => {
+                let result: any = null;
+                const vs = scope?.environment?.variables;
+                const apiBasePath =
+                    options?.basePath ||
+                    vs?.api?.basePath ||
+                    'https://api.kavenegar.com/v1//6E4D34396B5A4A4C71776445754148722F593866364D5A654E5556392F676B6F';
+                const apiPath = options?.path || vs?.api?.path || '/verify/lookup.json';
+                const apiMethod = options?.method || vs?.api?.method || 'GET';
+                const apiHeaders = options?.headers || vs?.api?.headers || {};
+                const apiVars = options?.variables ||
+                    vs?.api?.variables || {
+                        template: 'ebaseTFA',
+                        type: 'sms',
+                        receptor: '09122894146',
+                        token: '457865',
+                        token2: '192168111',
+                        token3: '13981110',
+                    };
+                const apiResponseType = options?.apiResponseType || vs?.api?.responseType || 'json';
+                try {
+                    let s = '';
+                    let apiPaths = '';
+                    if (apiMethod === 'GET' && apiVars) {
+                        for (const key in apiVars) {
+                            if (apiVars.hasOwnProperty(key)) {
+                                s = s + '&' + key + '=' + apiVars[key];
+                            }
+                        }
+                        apiPaths = apiPath + '?' + s;
+                    } else {
+                        apiPaths = apiPath;
+                    }
+                    const hapi = bent(apiBasePath, apiMethod, apiResponseType, 200);
+                    result = await hapi(apiPaths, apiVars, apiHeaders);
+                } catch (err) {
+                    return callback(null, err);
+                }
+
+                return callback(null, result);
+            },
             // tslint:disable-next-line:no-shadowed-variable
-            evaluateDecision<T>(options: { name: string; decisionId: string; context: any }) {
+            evaluateDecision<T>(options: { decisionId?: string; context?: any } = {}) {
                 return function getEvaludateDecisionService(executionContext, callback) {
-                    const { name, decisionId, context } = options;
+                    const { content } = executionContext;
+                    const decisionId = options.decisionId || content?.decision?.decisionRef;
+                    const dcontext = options.context || content?.decision?.decisionContext || {};
                     if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
                         const dmn = self.BpmnEngine.BpmsEngine.DmnEngine;
-                        dmn.evaluateDecision<T>(decisionId, name, context).then(result => {
-                            callback(result);
-                        });
+                        dmn.evaluateDecision<T>(`${decisionId}`, dcontext)
+                            .then(result => {
+                                callback(null, result);
+                            })
+                            .catch(err => {
+                                callback(err);
+                            });
                     } else {
-                        return callback(undefined);
+                        return callback(new Error(`BpmsEngine not defined`));
                     }
                 };
             },
@@ -519,8 +569,10 @@ export class BpmnProcessInstance extends EventEmitter {
         const internalExtentions = {
             // NowJsExtension: NowJsExtension(self),
             ProcessExtension: ProcessExtension(self),
+            FormDataResolverExtension: FormDataResolverExtension(self),
             BusinessRuleTaskExtension: BusinessRuleTaskExtension(self),
             HumanInvolvementExtension: HumanInvolvementExtension(self),
+            SaveToResultVariableExtension: SaveToResultVariableExtension(self),
             ServiceTaskExtension: ServiceTaskExtension(self),
             UserTaskExtension: UserTaskExtension(self),
             SaveToEnvironmentOutputExtension: SaveToEnvironmentOutputExtension(self),

@@ -25,16 +25,16 @@ describe('DmnEngine', () => {
             expect(actual).toBeDefined();
             expect(actual.Name).toBeDefined();
             expect(actual.Id).toBeDefined();
-            expect(actual.clearAllDefinitions).toBeDefined();
+            expect(actual.clear).toBeDefined();
             expect(actual.count).toBeDefined();
             expect(actual.evaluateDecision).toBeDefined();
             expect(actual.find).toBeDefined();
-            expect(actual.getDecisions).toBeDefined();
+            expect(actual.getDecisionsById).toBeDefined();
+            expect(actual.getDecisionsByName).toBeDefined();
             expect(actual.getDefinitionNames).toBeDefined();
             expect(actual.load).toBeDefined();
             expect(actual.list).toBeDefined();
             expect(actual.parseDmnXml).toBeDefined();
-            expect(actual.persist).toBeDefined();
             expect(actual.create).toBeDefined();
             expect(actual.remove).toBeDefined();
         });
@@ -99,7 +99,7 @@ describe('DmnEngine', () => {
                 },
             };
 
-            const actual = await engine.evaluateDecision<any>('decision', decisions, context);
+            const actual = await engine.evaluateDecision<any>(decisions['decision'], context);
             expect(actual).toBeDefined();
             expect(actual.message).toEqual('Message 2');
         });
@@ -116,7 +116,7 @@ describe('DmnEngine', () => {
                     lesson: 'math',
                 },
             };
-            const actual = await engine.evaluateDecision<any>('mypoints', decisions, context);
+            const actual = await engine.evaluateDecision<any>(decisions['mypoints'], context);
             expect(actual).toBeDefined();
             expect(actual.output.point).toEqual(10);
         });
@@ -133,7 +133,7 @@ describe('DmnEngine', () => {
                     lesson: 'math',
                 },
             };
-            const actual = await engine.evaluateDecision<any>('mypoints', decisions, context);
+            const actual = await engine.evaluateDecision<any>(decisions['mypoints'], context);
             expect(actual).toBeDefined();
             expect(actual[0].output.point).toEqual(10);
         });

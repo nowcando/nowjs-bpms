@@ -1,7 +1,7 @@
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
 import { TaskMemoryRepository, TaskRepository } from './TaskRepository';
-import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from '../data/Repository';
+import { QueryOptions, QueryResult, ScalarOptions, FilterExpression, IdExpression } from '../data/Repository';
 import { BpmsService } from '../BpmsService';
 
 // export class Task {
@@ -43,10 +43,12 @@ export interface BpmsTask {
     type?: string;
     activityType?: string;
     name?: string;
-    assignee?: string;
+    assignee?: { userId: IdExpression; username: string; fullname?: string; avatar?: string };
     priority?: string;
     tenantId?: string;
     processDefinitionId?: string;
+    processDefinitionName?: string;
+    processDefinitionVersion?: number;
     processInstanceId?: string;
     processInstanceName?: string;
     processExecutionId?: string;
@@ -59,6 +61,8 @@ export interface BpmsTask {
     followUpDate?: Date;
     tags?: string;
     categories?: string;
+
+    variables?: any;
 
     completed?: boolean;
     seen?: boolean;
