@@ -53,7 +53,7 @@ describe('DmnEngine', () => {
             expect(engine).toBeDefined();
             expect(engine.Name).toBeDefined();
             expect(engine.Id).toBeDefined();
-            const definitions = await engine.parseDmnXml(readDmnFile(path.join(DMN_TEST_PATH, `simple.dmn`)));
+            const definitions = readDmnFile(path.join(DMN_TEST_PATH, `simple.dmn`));
             const actual = await engine.create({ name: 'MyRules', definitions });
             expect(actual).toBeTruthy();
         });
