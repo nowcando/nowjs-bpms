@@ -1,3 +1,10 @@
+### 0.28.0 (2020-02-11)
+
+##### Bug Fixes
+
+*  bpmn process instance ([579aeb89](https://github.com/nowcando/nowjs-bpms/commit/579aeb897cef194f7b4daf11ef756ae7943c99fc))
+*  bpmn & dmn service  execution ([6874b001](https://github.com/nowcando/nowjs-bpms/commit/6874b001fdf59a7e47a6d591e68c2a6341179286))
+
 ### 0.27.0 (2020-02-08)
 
 ##### Bug Fixes
