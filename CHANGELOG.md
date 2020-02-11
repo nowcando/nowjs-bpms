@@ -2,6 +2,15 @@
 
 ##### Bug Fixes
 
+*  builds ([eef83a01](https://github.com/nowcando/nowjs-bpms/commit/eef83a01ea201862dc4de54bafbf7ce5e4fb90b5))
+*  test dmn engine ([e573b0b2](https://github.com/nowcando/nowjs-bpms/commit/e573b0b213fe264ed5db366e28dc7ff0ab6c6bb4))
+*  bpmn process instance ([579aeb89](https://github.com/nowcando/nowjs-bpms/commit/579aeb897cef194f7b4daf11ef756ae7943c99fc))
+*  bpmn & dmn service  execution ([6874b001](https://github.com/nowcando/nowjs-bpms/commit/6874b001fdf59a7e47a6d591e68c2a6341179286))
+
+### 0.29.0 (2020-02-11)
+
+##### Bug Fixes
+
 *  test dmn engine ([e573b0b2](https://github.com/nowcando/nowjs-bpms/commit/e573b0b213fe264ed5db366e28dc7ff0ab6c6bb4))
 *  bpmn process instance ([579aeb89](https://github.com/nowcando/nowjs-bpms/commit/579aeb897cef194f7b4daf11ef756ae7943c99fc))
 *  bpmn & dmn service  execution ([6874b001](https://github.com/nowcando/nowjs-bpms/commit/6874b001fdf59a7e47a6d591e68c2a6341179286))
