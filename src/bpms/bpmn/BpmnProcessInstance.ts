@@ -506,22 +506,11 @@ export class BpmnProcessInstance extends EventEmitter {
             httpRequestApi: (options: any = {}) => async (scope, callback) => {
                 let result: any = null;
                 const vs = scope?.environment?.variables;
-                const apiBasePath =
-                    options?.basePath ||
-                    vs?.api?.basePath ||
-                    'https://api.kavenegar.com/v1//6E4D34396B5A4A4C71776445754148722F593866364D5A654E5556392F676B6F';
-                const apiPath = options?.path || vs?.api?.path || '/verify/lookup.json';
+                const apiBasePath = options?.basePath || vs?.api?.basePath;
+                const apiPath = options?.path || vs?.api?.path;
                 const apiMethod = options?.method || vs?.api?.method || 'GET';
                 const apiHeaders = options?.headers || vs?.api?.headers || {};
-                const apiVars = options?.variables ||
-                    vs?.api?.variables || {
-                        template: 'ebaseTFA',
-                        type: 'sms',
-                        receptor: '09122894146',
-                        token: '457865',
-                        token2: '192168111',
-                        token3: '13981110',
-                    };
+                const apiVars = options?.variables || vs?.api?.variables;
                 const apiResponseType = options?.apiResponseType || vs?.api?.responseType || 'json';
                 try {
                     let s = '';
