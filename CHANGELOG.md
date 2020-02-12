@@ -1,3 +1,9 @@
+### 0.31.0 (2020-02-12)
+
+##### Bug Fixes
+
+*  fix createDefinition ([adaa43c1](https://github.com/nowcando/nowjs-bpms/commit/adaa43c1cd6501bea5f7d7e650e5b1cf1ef8abb9))
+
 ### 0.30.0 (2020-02-12)
 
 ##### Bug Fixes
