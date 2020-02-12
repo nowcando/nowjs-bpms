@@ -1,3 +1,9 @@
+### 0.30.0 (2020-02-12)
+
+##### Bug Fixes
+
+*  definition load ([d9bf6ae8](https://github.com/nowcando/nowjs-bpms/commit/d9bf6ae84ca4a492e35b9c6966bd8c649dd6f01b))
+
 ### 0.29.0 (2020-02-11)
 
 ##### Bug Fixes
