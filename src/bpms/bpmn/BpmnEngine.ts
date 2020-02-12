@@ -139,6 +139,15 @@ export class BpmnEngine {
         const f = await this.bpmnDefinitionRepository.find({ name });
         if (!f) {
             const r = await this.bpmnDefinitionRepository.create({ definitions: source, name });
+            const p = {
+                source: r.definitions,
+                definitionId: r.id,
+                definitionName: r.name,
+                definitionVersion: r.version,
+            };
+            const proc = new BpmnProcessInstance(self, p);
+            proc.getDefinitions();
+            proc.stop();
             this.bpmsEngine?.HistoryService.create({
                 type: 'info',
                 source: this.name,
