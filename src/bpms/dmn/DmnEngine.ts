@@ -29,6 +29,7 @@ export interface DmnDecisionTableRule {
 }
 // tslint:disable: no-empty-interface
 export interface DmnDecision {
+    name: string;
     decisionTable: DmnDecisionTable;
     requiredDecisions: any[];
 }
@@ -43,11 +44,11 @@ export interface DmnEngineOptions {
 export interface BpmsDmnDefinition {
     id?: string;
     name: string;
-    definitions: DmnDefinition | string;
+    definitions: string;
     createdAt?: Date;
 }
 export class DmnEngine {
-    private definitionCache: { [name: string]: any } = {};
+    // private definitionCache: { [name: string]: any } = {};
     private id: string = uuidv1();
     private name: string;
     private options: DmnEngineOptions;
@@ -92,28 +93,28 @@ export class DmnEngine {
         if (!entity) {
             throw new Error(`The BPMN definition entity ${entity} required`);
         }
-        let d = entity.definitions;
+        const df = entity.definitions;
         const s = await this.dmnDefinitionRepository.find({ name: entity.name });
-        d = typeof entity.definitions === 'string' ? await this.parseDmnXml(d as string) : d;
+        // d =  await this.parseDmnXml(df);
         if (!s) {
             const r = await this.dmnDefinitionRepository.create(entity);
-            this.definitionCache[entity.name] = d;
+            // this.definitionCache[entity.name] = d;
             return r;
         }
-        throw new Error('The dmn definition already exists');
+        throw new Error('The DMN definition already exists');
     }
 
     public async update(entity: BpmsDmnDefinition): Promise<BpmsDmnDefinition> {
         if (!entity) {
             throw new Error(`The BPMN definition entity ${entity} required`);
         }
-        let d = entity.definitions;
+        const df = entity.definitions;
         const id = entity.id;
         const s = await this.dmnDefinitionRepository.find({ id: entity.id });
-        d = typeof entity.definitions === 'string' ? await this.parseDmnXml(d as string) : d;
+        // d = await this.parseDmnXml(df);
         if (s && id) {
             const r = await this.dmnDefinitionRepository.update(id, { ...s, ...entity, id });
-            this.definitionCache[entity.name] = d;
+            // this.definitionCache[entity.name] = d;
             return r;
         }
         throw new Error(`The DMN definition id '${id}' not exists`);
@@ -123,11 +124,26 @@ export class DmnEngine {
      * Get decision from special definition name
      *
      * @param {string} name definition name
-     * @returns {Promise<DmnDefinition>}
+     * @returns {Promise<BpmsDmnDefinition>}
      * @memberof DmnEngine
      */
-    public async getDecisions(name: string): Promise<DmnDefinition> {
-        const decisions = this.definitionCache[name];
+    public async getDecisionsByName(name: string): Promise<DmnDefinition | null> {
+        const d = await this.find({ name });
+        if (d) {
+            const ds = this.parseDmnXml(d.definitions);
+            return ds;
+        }
+        return null;
+    }
+    /**
+     * Get decision from special definition name
+     *
+     * @param {string} name definition name
+     * @returns {Promise<BpmsDmnDefinition>}
+     * @memberof DmnEngine
+     */
+    public async getDecisionsById(id: IdExpression): Promise<BpmsDmnDefinition | null> {
+        const decisions = await this.dmnDefinitionRepository.find({ id });
         return Promise.resolve(decisions);
     }
 
@@ -138,51 +154,48 @@ export class DmnEngine {
      * @memberof DmnEngine
      */
     public async getDefinitionNames(): Promise<string[]> {
-        return Promise.resolve(Object.keys(this.definitionCache));
-    }
-
-    /**
-     * Clear all cached Dmn Definitions
-     *
-     * @returns {Promise<void>}
-     * @memberof DmnEngine
-     */
-    public async clearAllDefinitions(): Promise<void> {
-        this.definitionCache = {};
-        return Promise.resolve();
+        const definitions = await this.dmnDefinitionRepository.findAll();
+        const l = definitions.map(xx => xx.name);
+        return Promise.resolve(l);
     }
 
     /**
      * evaluate Decision from decision in the special context
      *
-     * @param {string} decisionId start decision id
-     * @param {DmnDefinition} decisions desicions to be evaluated
+     * @param {DmnDecision} decision desicions to be evaluated
      * @param {*} context context to evaluate
      * @returns {(Promise<R|undefined>)}
      * @memberof DmnEngine
      */
-    public async evaluateDecision<R = any>(
-        decisionId: string,
-        decisions: DmnDefinition | string,
+    public async evaluateDecision<R = Record<string, any>>(
+        decision: DmnDecision | string,
         context: any,
-    ): Promise<R | undefined>;
-    public async evaluateDecision<R = any>(
-        arg1: string,
-        arg2: DmnDefinition | string,
-        arg3: any,
     ): Promise<R | undefined> {
         const p = new Promise<R>(async (resolve, reject) => {
             try {
-                if (typeof arg2 === 'string') {
-                    arg2 = await this.getDecisions(arg2 as string);
+                let ds;
+                let decisionId;
+                if (typeof decision === 'string') {
+                    const a = decision.split('/');
+                    const definitionName = a[0];
+                    decisionId = a[1];
+                    ds = await this.getDecisionsByName(definitionName);
+                } else {
+                    ds = [];
+                    ds[decision.name] = decision;
+                    decisionId = decision.name;
                 }
-                if (!arg2) {
-                    return Promise.resolve(undefined);
+                if (!ds) {
+                    reject(new Error(`The decision ${typeof decision === 'string' ? decision : decisionId} not found`));
+                    return;
                 }
-                const data = decisionTable.evaluateDecision(arg1, arg2, arg3);
+
+                const data = decisionTable.evaluateDecision(decisionId, ds, context);
                 resolve(data);
+                return;
             } catch (error) {
                 reject(error);
+                return;
             }
         });
         return p;
@@ -199,6 +212,12 @@ export class DmnEngine {
     public async parseDmnXml(xmlContent: string, options?: { lax?: boolean; model?: any }): Promise<DmnDefinition> {
         try {
             const decisions: DmnDefinition = await decisionTable.parseDmnXml(xmlContent, options);
+            for (const key in decisions) {
+                if (decisions.hasOwnProperty(key)) {
+                    const element = decisions[key];
+                    element.name = key;
+                }
+            }
             return decisions;
         } catch (error) {
             throw error;
@@ -223,15 +242,6 @@ export class DmnEngine {
 
     public async list<R extends BpmsDmnDefinition = BpmsDmnDefinition>(filter?: FilterExpression): Promise<R[]> {
         return this.dmnDefinitionRepository.findAll(filter);
-    }
-
-    public async persist<R extends BpmsDmnDefinition = BpmsDmnDefinition>(entity: R): Promise<boolean> {
-        if (entity && entity.id) {
-            const r = await this.dmnDefinitionRepository.update(entity.id, entity);
-            return r !== null;
-        } else {
-            return false;
-        }
     }
 
     public async remove(id: IdExpression): Promise<boolean> {

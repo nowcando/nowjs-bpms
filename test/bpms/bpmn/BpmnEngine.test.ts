@@ -4,7 +4,7 @@
 import { EventEmitter } from 'events';
 import 'jest';
 import { BpmnEngine, BpmnProcessActivity, BpmnProcessOptions, BpmsEngine } from '../../../src';
-import { sampleDecideTema } from '../dmn/sampleDmn';
+import { TeamChoosingRules, SmsOperatorRules } from '../dmn/sampleDmn';
 import { source1, source2, source3, source4, source7 } from '../../resources/projects/BpmnSampleSources';
 
 beforeAll(() => {});
@@ -156,10 +156,12 @@ describe('BpmnEngine', () => {
                 const bpe = BpmsEngine.createEngine({ name: 'MyEngine20' });
                 expect(bpe).toBeDefined();
                 const randNum = Math.floor(Math.random() * 10000);
+                await bpe.DmnEngine.create({ name: 'SmsOperatorRules', definitions: SmsOperatorRules });
                 await bpe.BpmnEngine.createDefinitions('sampleProcess1', source7);
+                const currentUser = { userId: 121, username: 'admin', avatar: '' };
                 const prOpts: BpmnProcessOptions = {
                     name: 'sampleProcess1',
-                    variables: { randNum },
+                    variables: { initiator: currentUser, user: currentUser, randNum },
                 };
                 const pr = await bpe.BpmnEngine.createProcess(prOpts);
                 expect(pr).toBeDefined();
@@ -325,7 +327,7 @@ describe('BpmnEngine', () => {
                 const bpms = BpmsEngine.Default;
                 const bpe = bpms.BpmnEngine;
                 const dmn = bpms.DmnEngine;
-                await dmn.create({ name: 'Decide Team', definitions: sampleDecideTema });
+                await dmn.create({ name: 'Decide Team', definitions: TeamChoosingRules });
                 const pr1 = await bpe.createProcess({ name: 'proc1', source: source4 });
                 pr1.on('activity.enter', (elementApi, engineApi) => {
                     // console.log(
@@ -360,7 +362,7 @@ describe('BpmnEngine', () => {
                 const bpms = BpmsEngine.createEngine({ name: 'MyEngine1' });
                 const bpe = bpms.BpmnEngine;
                 expect(bpe).toBeDefined();
-                await bpms.DmnEngine.create({ name: 'Decide Team Rules', definitions: sampleDecideTema });
+                await bpms.DmnEngine.create({ name: 'Decide Team Rules', definitions: TeamChoosingRules });
                 const pr1 = await bpe.createProcess({
                     name: 'Process1',
                     source: source4,

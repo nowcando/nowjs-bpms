@@ -1,7 +1,7 @@
 {
   "name": "nowjs-bpms",
   "description": "NowCanDo Javascript  [nowjs-bpms] is a  library written by TypeScript code maintains under MIT licence",
-  "version": "0.26.0",
+  "version": "0.31.0",
   "private": false,
   "scripts": {
     "debug": "npm run-script build:debug ",
@@ -60,6 +60,7 @@
   },
   "dependencies": {
     "@hbtgmbh/dmn-eval-js": "^1.5.0",
+    "bent": "^7.0.5",
     "bpmn-elements": "^0.11.0",
     "bpmn-engine": "^8.6.0",
     "bpmn-moddle": "^6.0.2",
@@ -70,18 +71,19 @@
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
+    "@types/bent": "^7.0.1",
+    "@types/bpmn-moddle": "^5.1.2",
+    "@types/jest": "^24.9.1",
+    "@types/node": "^12.12.25",
     "@typescript-eslint/eslint-plugin": "^2.17.0",
     "@typescript-eslint/parser": "^2.17.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-prettier": "^3.1.2",
-    "prettier": "^1.19.1",
-    "@types/bpmn-moddle": "^5.1.2",
-    "@types/jest": "^24.9.1",
-    "@types/node": "^12.12.25",
     "generate-changelog": "^1.8.0",
     "jest": "^24.9.0",
     "jest-environment-node-debug": ">=2.0.0",
+    "prettier": "^1.19.1",
     "ts-jest": "^24.3.0",
     "ts-node": "^8.6.2",
     "tslint": "^5.20.1",

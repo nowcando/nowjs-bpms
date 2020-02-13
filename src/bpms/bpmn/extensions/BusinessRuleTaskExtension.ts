@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { BpmnProcessInstance } from '../BpmnProcessInstance';
-
+import ExecutionScope from 'bpmn-elements/dist/src/activity/ExecutionScope';
 function BusinessRuleTaskService(activity: any) {
     const { type: atype, behaviour, environment } = activity;
     const expression = behaviour.implementation || behaviour.expression;
@@ -14,6 +14,7 @@ function BusinessRuleTaskService(activity: any) {
         execute,
     };
     function execute(executionMessage: any, callback: any) {
+        // console.log(`BusinessRuleTaskService executed`);
         const serviceFn = environment.resolveExpression(expression, executionMessage);
         if (typeof serviceFn !== 'function') {
             return callback(
@@ -22,9 +23,45 @@ function BusinessRuleTaskService(activity: any) {
                 ),
             );
         }
-        serviceFn.call(activity, executionMessage, (err: any, result: any) => {
-            callback(err, result);
-        });
+        serviceFn.call(activity, ExecutionScope(activity, executionMessage), callback);
+    }
+}
+
+function BusinessRuleTaskDMNService(activity: any) {
+    const { type: atype, behaviour, environment } = activity;
+    const decisionRef = behaviour.decisionRef;
+    const decisionRefBinding = behaviour.decisionRefBinding;
+    const decisionRefVersion = behaviour.decisionRefVersion;
+    const mapDecisionResult = behaviour.mapDecisionResult;
+    const decisionRefTenantId = behaviour.decisionRefTenantId;
+    const type = `DMN`;
+    return {
+        type,
+        decisionRef,
+        decisionRefBinding,
+        decisionRefVersion,
+        mapDecisionResult,
+        decisionRefTenantId,
+        execute,
+    };
+    function execute(executionMessage: any, callback: any) {
+        const serviceFn = environment.services.evaluateDecision();
+        const { fields, properties, content, ...input } = environment.variables;
+        if (serviceFn) {
+            executionMessage.content.decision = {
+                decisionRef,
+                decisionRefBinding,
+                decisionRefVersion,
+                mapDecisionResult,
+                decisionRefTenantId,
+                decisionContext: { input },
+            };
+            serviceFn.call(activity, ExecutionScope(activity, executionMessage), callback);
+        } else {
+            callback(new Error('BusinessRuleTaskDMN Service not found'));
+        }
+
+        // console.log(`BusinessRuleTaskDMNService executed`);
     }
 }
 
@@ -34,39 +71,13 @@ export const BusinessRuleTaskExtension = (processInstance: BpmnProcessInstance) 
     }
     if (activity.behaviour.expression || activity.behaviour.implementation) {
         activity.behaviour.Service = BusinessRuleTaskService;
+    } else if (activity.behaviour.decisionRef) {
+        activity.behaviour.Service = BusinessRuleTaskDMNService;
     }
     if (activity.behaviour.resultVariable) {
         activity.on('end', (api: any) => {
-            activity.environment.output[activity.behaviour.resultVariable] = api.content.output;
+            api.environment.output[activity.behaviour.resultVariable] = api.content.output;
         });
     }
+    return;
 };
-
-// evaluateDecision(activity: BpmnProcessActivity) {
-//   if (
-//     activity.type.toLowerCase() !== "bpmn:BusinessRuleTask".toLowerCase()
-//   ) {
-//     return;
-//   }
-//   const dmnRef = activity.behaviour.dmnRef;
-//   const decisionRef = activity.behaviour.decisionRef;
-//   const decisionRefTenantId = activity.behaviour.decisionRefTenantId;
-//   // activity.on("enter", (api: BpmnProcessActivity) => {
-//   //   // console.log(activity.id);
-//   // });
-//   activity.on("wait", async (api: BpmnProcessActivity) => {
-//     // console.log(activity.id);
-//     if (dmnRef && decisionRef) {
-//       try {
-//         const ctx = { input: api.environment.variables };
-//         const eoptions =  {dmnRef, decisionRef, ctx};
-//         const msg = await api.environment.services.evaluateDecision(eoptions);
-//         api.signal(msg);
-//       } catch (error) {
-//         api.environment.Logger.error(
-//           `error in evaluating decision in 'bpmn:BusinessRuleTask' (${api.id})`,
-//         );
-//       }
-//     }
-//   });
-// },

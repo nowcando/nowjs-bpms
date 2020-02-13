@@ -139,6 +139,15 @@ export class BpmnEngine {
         const f = await this.bpmnDefinitionRepository.find({ name });
         if (!f) {
             const r = await this.bpmnDefinitionRepository.create({ definitions: source, name });
+            const p = {
+                source: r.definitions,
+                definitionId: r.id,
+                definitionName: r.name,
+                definitionVersion: r.version,
+            };
+            const proc = new BpmnProcessInstance(self, p);
+            proc.getDefinitions();
+            proc.stop();
             this.bpmsEngine?.HistoryService.create({
                 type: 'info',
                 source: this.name,
@@ -195,9 +204,21 @@ export class BpmnEngine {
     public async loadDefinitions<R extends BpmsBpmnDefinition = BpmsBpmnDefinition>(
         options: BpmnDefinitionLoadOptions,
     ): Promise<R[]> {
+        const self = this;
         const filter = options.filter;
-        const d = await this.bpmnDefinitionRepository.findAll<R>(filter);
-        return d;
+        const df = await this.bpmnDefinitionRepository.findAll<R>(filter);
+        for (const item of df) {
+            const p = {
+                source: item.definitions,
+                definitionId: item.id,
+                definitionName: item.name,
+                definitionVersion: item.version,
+            };
+            const proc = new BpmnProcessInstance(self, p);
+            proc.getDefinitions();
+            proc.stop();
+        }
+        return df;
     }
 
     public async removeDefinition(id: IdExpression): Promise<boolean> {

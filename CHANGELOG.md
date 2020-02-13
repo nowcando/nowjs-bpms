@@ -1,3 +1,54 @@
+### 0.31.0 (2020-02-12)
+
+##### Bug Fixes
+
+*  fix createDefinition ([adaa43c1](https://github.com/nowcando/nowjs-bpms/commit/adaa43c1cd6501bea5f7d7e650e5b1cf1ef8abb9))
+
+### 0.30.0 (2020-02-12)
+
+##### Bug Fixes
+
+*  definition load ([d9bf6ae8](https://github.com/nowcando/nowjs-bpms/commit/d9bf6ae84ca4a492e35b9c6966bd8c649dd6f01b))
+
+### 0.29.0 (2020-02-11)
+
+##### Bug Fixes
+
+*  builds ([eef83a01](https://github.com/nowcando/nowjs-bpms/commit/eef83a01ea201862dc4de54bafbf7ce5e4fb90b5))
+*  test dmn engine ([e573b0b2](https://github.com/nowcando/nowjs-bpms/commit/e573b0b213fe264ed5db366e28dc7ff0ab6c6bb4))
+*  bpmn process instance ([579aeb89](https://github.com/nowcando/nowjs-bpms/commit/579aeb897cef194f7b4daf11ef756ae7943c99fc))
+*  bpmn & dmn service  execution ([6874b001](https://github.com/nowcando/nowjs-bpms/commit/6874b001fdf59a7e47a6d591e68c2a6341179286))
+
+### 0.29.0 (2020-02-11)
+
+##### Bug Fixes
+
+*  test dmn engine ([e573b0b2](https://github.com/nowcando/nowjs-bpms/commit/e573b0b213fe264ed5db366e28dc7ff0ab6c6bb4))
+*  bpmn process instance ([579aeb89](https://github.com/nowcando/nowjs-bpms/commit/579aeb897cef194f7b4daf11ef756ae7943c99fc))
+*  bpmn & dmn service  execution ([6874b001](https://github.com/nowcando/nowjs-bpms/commit/6874b001fdf59a7e47a6d591e68c2a6341179286))
+
+### 0.28.0 (2020-02-11)
+
+##### Bug Fixes
+
+*  test dmn engine ([e573b0b2](https://github.com/nowcando/nowjs-bpms/commit/e573b0b213fe264ed5db366e28dc7ff0ab6c6bb4))
+*  bpmn process instance ([579aeb89](https://github.com/nowcando/nowjs-bpms/commit/579aeb897cef194f7b4daf11ef756ae7943c99fc))
+*  bpmn & dmn service  execution ([6874b001](https://github.com/nowcando/nowjs-bpms/commit/6874b001fdf59a7e47a6d591e68c2a6341179286))
+
+### 0.28.0 (2020-02-11)
+
+##### Bug Fixes
+
+*  bpmn process instance ([579aeb89](https://github.com/nowcando/nowjs-bpms/commit/579aeb897cef194f7b4daf11ef756ae7943c99fc))
+*  bpmn & dmn service  execution ([6874b001](https://github.com/nowcando/nowjs-bpms/commit/6874b001fdf59a7e47a6d591e68c2a6341179286))
+
+### 0.27.0 (2020-02-08)
+
+##### Bug Fixes
+
+*  create view from process ([d52e9117](https://github.com/nowcando/nowjs-bpms/commit/d52e911776264ac49667c1d24a3d557a2ab1aad6))
+*  view script template as an object ([9e4860ef](https://github.com/nowcando/nowjs-bpms/commit/9e4860ef0e26a78af3bdbdb19dc302661989b3df))
+
 ### 0.26.0 (2020-02-08)
 
 ##### Bug Fixes
