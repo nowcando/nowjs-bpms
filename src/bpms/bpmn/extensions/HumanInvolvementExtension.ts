@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BpmnProcessActivity, BpmnProcessInstance } from '../BpmnProcessInstance';
+import { BpmnProcessInstance } from '../BpmnProcessInstance';
+import { BpmnActivity } from '../definitions/bpmn-elements';
 
-export const HumanInvolvementExtension = (processInstance: BpmnProcessInstance) => (activity: BpmnProcessActivity) => {
+export const HumanInvolvementExtension = (processInstance: BpmnProcessInstance) => (activity: BpmnActivity) => {
     if (!activity.behaviour.resources || !activity.behaviour.resources.length) {
         return;
     }

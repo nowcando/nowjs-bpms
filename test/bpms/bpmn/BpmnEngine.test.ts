@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { EventEmitter } from 'events';
 import 'jest';
-import { BpmnEngine, BpmnProcessActivity, BpmnProcessOptions, BpmsEngine } from '../../../src';
+import { BpmnEngine, BpmnProcessInstanceOptions, BpmsEngine } from '../../../src';
 import { TeamChoosingRules, SmsOperatorRules } from '../dmn/sampleDmn';
 import { source1, source2, source3, source4, source7 } from '../../resources/projects/BpmnSampleSources';
 
@@ -128,7 +128,7 @@ describe('BpmnEngine', () => {
                 const bpe = BpmnEngine.createEngine({ name: 'MyEngine1' });
                 expect(bpe).toBeDefined();
                 const id = Math.floor(Math.random() * 10000);
-                const prOpts: BpmnProcessOptions = {
+                const prOpts: BpmnProcessInstanceOptions = {
                     name: 'sampleProcess1',
                     source: source1,
                     variables: { id },
@@ -144,7 +144,7 @@ describe('BpmnEngine', () => {
                 const bpe = BpmnEngine.createEngine({ name: 'MyEngine1' });
                 expect(bpe).toBeDefined();
                 const id = Math.floor(Math.random() * 10000);
-                const prOpts: BpmnProcessOptions = {
+                const prOpts: BpmnProcessInstanceOptions = {
                     name: ['sampleProcess1'] as any,
                     source: source1,
                     variables: { id },
@@ -159,7 +159,7 @@ describe('BpmnEngine', () => {
                 await bpe.DmnEngine.create({ name: 'SmsOperatorRules', definitions: SmsOperatorRules });
                 await bpe.BpmnEngine.createDefinitions('sampleProcess1', source7);
                 const currentUser = { userId: 121, username: 'admin', avatar: '' };
-                const prOpts: BpmnProcessOptions = {
+                const prOpts: BpmnProcessInstanceOptions = {
                     name: 'sampleProcess1',
                     variables: { initiator: currentUser, user: currentUser, randNum },
                 };
@@ -235,7 +235,7 @@ describe('BpmnEngine', () => {
                 expect(c).toBe(3);
                 // recover persisted
                 const r = await bpe.recoverProcesses({ resume: false });
-                expect(r).toBe(true);
+                expect(r).toBeDefined();
                 const al1 = await bpe.listLoadedProcess();
                 const ap1 = al1[0];
                 expect(pr1).toBeDefined();
@@ -266,7 +266,7 @@ describe('BpmnEngine', () => {
                 // resume process 3
                 const ap3 = al1[2];
                 expect(pr3.Id).toEqual(ap3.Id);
-                ap3.once('wait', (task: BpmnProcessActivity) => {
+                ap3.once('wait', task => {
                     ap3.Logger.warn(`${task.type} : ${task.name}`);
                 });
                 const n3 = await ap3.resume();
@@ -334,12 +334,12 @@ describe('BpmnEngine', () => {
                     //   `${elementApi.type} <${elementApi.id}> of ${engineApi.name} is entered`,
                     // );
                 });
-                pr1.on('activity.end', async (elementApi: BpmnProcessActivity, instance) => {
+                pr1.on('activity.end', async (elementApi, instance) => {
                     // console.log(
                     //   `${elementApi.type} <${elementApi.id}> of ${instance.name} is ended`,
                     // );
                 });
-                pr1.on('activity.wait', async (elementApi: BpmnProcessActivity, instance) => {
+                pr1.on('activity.wait', async (elementApi, instance) => {
                     // console.log(
                     //   `${elementApi.type} <${elementApi.id}> of ${instance.name} is waiting for input`,
                     // );
@@ -368,7 +368,7 @@ describe('BpmnEngine', () => {
                     source: source4,
                 });
                 expect(pr1).toBeDefined();
-                pr1.on('wait', (activity: BpmnProcessActivity, instance) => {
+                pr1.on('wait', (activity, instance) => {
                     activity.environment.variables.color = 'red';
                     activity.signal({ color: 'red' });
                 });

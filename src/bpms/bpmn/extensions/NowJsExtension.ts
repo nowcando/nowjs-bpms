@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { BpmnProcessActivity, BpmnProcessInstance } from '../BpmnProcessInstance';
+import { BpmnProcessInstance } from '../BpmnProcessInstance';
+import { BpmnActivity } from '../definitions/bpmn-elements';
 
-export const NowJsExtension = (processInstance: BpmnProcessInstance) => (
-    activity: BpmnProcessActivity,
-    definition: any,
-) => {
+export const NowJsExtension = (processInstance: BpmnProcessInstance) => (activity: BpmnActivity, definition: any) => {
     if (activity.type.toLowerCase() === 'bpmn:Process'.toLowerCase()) {
         if (activity.behaviour && activity.behaviour.extensionElements && activity.behaviour.extensionElements.values) {
             for (const extn of activity.behaviour.extensionElements.values) {
@@ -105,7 +103,7 @@ export const NowJsExtension = (processInstance: BpmnProcessInstance) => (
             activity.type.toLowerCase() !== 'bpmn:UserTask'.toLowerCase() ||
             activity.type.toLowerCase() !== 'bpmn:StartEvent'.toLowerCase()
         ) {
-            activity.on('wait', async (api: BpmnProcessActivity) => {
+            activity.on('wait', async (api: BpmnActivity) => {
                 const bpms = processInstance.BpmnEngine.BpmsEngine;
                 if (bpms) {
                     const t = await bpms.TaskService.create({

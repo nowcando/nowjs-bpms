@@ -4,13 +4,7 @@
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
 import { BpmnDefinitionMemoryRepository, BpmnDefinitionRepository } from './BpmnDefinitionRepository';
-import {
-    BpmnProcessInstance,
-    BpmnProcessOptions,
-    BpmnProcess,
-    BpmnProcessExecutionState,
-    BpmnExecution,
-} from './BpmnProcessInstance';
+import { BpmnProcessInstance, BpmnProcessInstanceOptions } from './BpmnProcessInstance';
 import { BpmnProcessMemoryRepository, BpmnProcessRepository } from './BpmnProcessRepository';
 import {
     IdExpression,
@@ -20,6 +14,7 @@ import {
     ScalarOptions,
     QueryResult,
 } from '../data/Repository';
+import { BpmnProcessExecutionState, BpmnProcessExecution } from './definitions/bpmn-elements';
 export type BpmnSource = string;
 
 export interface BpmnEngineOptions {
@@ -29,8 +24,7 @@ export interface BpmnEngineOptions {
 }
 
 export interface BpmnEngineRecoverOptions {
-    id?: string | string[];
-    name?: string | string[];
+    filter?: FilterExpression;
     resume?: boolean;
 }
 
@@ -63,11 +57,6 @@ export interface BpmsProcess {
 
 export interface BpmnDefinitionLoadOptions {
     filter?: FilterExpression;
-}
-
-export interface BpmnDefinitionPersistOptions {
-    id: string;
-    bpmnProcess: BpmnProcess;
 }
 
 export class BpmnEngine {
@@ -243,7 +232,7 @@ export class BpmnEngine {
         return l;
     }
 
-    public async createProcess(options?: BpmnProcessOptions): Promise<BpmnProcessInstance> {
+    public async createProcess(options?: BpmnProcessInstanceOptions): Promise<BpmnProcessInstance> {
         const self = this;
         const p = new Promise<BpmnProcessInstance>(async (resolve, reject) => {
             try {
@@ -312,6 +301,35 @@ export class BpmnEngine {
         return this.loadedProcessRepository.findAll(filter);
     }
 
+    public async getProcess(id: IdExpression): Promise<BpmnProcessInstance | null> {
+        const lp = await this.loadedProcessRepository.find(id);
+        if (!lp) {
+            const p = await this.processRepository.find(id);
+            if (p) {
+                const rp = await this.recoverProcesses({ filter: { id: id } });
+                if (rp.length > 0) {
+                    return rp[0];
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        } else {
+            return lp;
+        }
+    }
+
+    public async getProcesses(filter: FilterExpression): Promise<BpmnProcessInstance[]> {
+        const lp = await this.loadedProcessRepository.findAll(filter);
+        if (!lp || lp.length === 0) {
+            const rp = await this.recoverProcesses({ filter: filter });
+            return rp;
+        } else {
+            return lp;
+        }
+    }
+
     /**
      * Recover process state from persistency source
      *
@@ -319,45 +337,29 @@ export class BpmnEngine {
      * @returns {Promise<boolean>}
      * @memberof BpmnEngine
      */
-    public async recoverProcesses(options?: BpmnEngineRecoverOptions): Promise<boolean> {
+    public async recoverProcesses(options?: BpmnEngineRecoverOptions): Promise<BpmnProcessInstance[]> {
+        const r: BpmnProcessInstance[] = [];
         try {
-            if (options) {
-                const plist = await this.processRepository.findAll({
-                    id: options.id,
-                    name: options.name,
-                });
-                const clist = await this.listLoadedProcess();
-                for (const pitem of plist) {
-                    if (!clist.some(xx => xx.Id === pitem.id)) {
-                        const p = await this.createProcess({
-                            name: pitem.name,
-                            definitionId: pitem.definitionId,
-                            id: pitem.id,
-                        });
-                        p.recover(pitem);
-                        if (options.resume === true) {
-                            await p.resume();
-                        }
+            const plist = await this.processRepository.findAll(options?.filter);
+            const clist = await this.listLoadedProcess();
+            for (const pitem of plist) {
+                if (!clist.some(xx => xx.Id === pitem.id)) {
+                    const p = await this.createProcess({
+                        name: pitem.name,
+                        definitionId: pitem.definitionId,
+                        id: pitem.id,
+                    });
+                    p.recover(pitem);
+                    if (options?.resume === true) {
+                        await p.resume();
                     }
-                }
-            } else {
-                const plist = await this.processRepository.findAll();
-                const clist = await this.listLoadedProcess();
-                for (const pitem of plist) {
-                    if (!clist.some(xx => xx.Id === pitem.id)) {
-                        const p = await this.createProcess({
-                            name: pitem.name,
-                            definitionId: pitem.definitionId,
-                            id: pitem.id,
-                        });
-                        p.recover(pitem, { listener: p });
-                        await p.resume({ listener: p });
-                    }
+                    r.push(p);
                 }
             }
-            return Promise.resolve(true);
+
+            return r;
         } catch (error) {
-            return Promise.reject(error);
+            throw error;
         }
     }
 
@@ -467,7 +469,10 @@ export class BpmnEngine {
         return Promise.resolve(null);
     }
 
-    public async executeProcess(id: IdExpression, options?: BpmnProcessOptions): Promise<BpmnExecution | null> {
+    public async executeProcess(
+        id: IdExpression,
+        options?: BpmnProcessInstanceOptions,
+    ): Promise<BpmnProcessExecution | null> {
         const proc = await this.loadedProcessRepository.find(id);
         if (proc) {
             return proc.execute(options);
@@ -475,7 +480,10 @@ export class BpmnEngine {
         return Promise.resolve(null);
     }
 
-    public async resumeProcess(id: IdExpression, options?: BpmnProcessOptions): Promise<BpmnExecution | null> {
+    public async resumeProcess(
+        id: IdExpression,
+        options?: BpmnProcessInstanceOptions,
+    ): Promise<BpmnProcessExecution | null> {
         const proc = await this.loadedProcessRepository.find(id);
         if (proc) {
             return proc.resume(options);

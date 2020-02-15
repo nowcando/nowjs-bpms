@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BpmnProcessInstance, BpmnProcessActivity } from '../BpmnProcessInstance';
+import { BpmnProcessInstance } from '../BpmnProcessInstance';
+import { BpmnActivity } from '../definitions/bpmn-elements';
 
-export const UserTaskExtension = (processInstance: BpmnProcessInstance) => (activity: any) => {
+export const UserTaskExtension = (processInstance: BpmnProcessInstance) => (activity: BpmnActivity) => {
     if (!activity.behaviour) return;
     if (activity.type.toLowerCase() === 'bpmn:UserTask'.toLowerCase()) {
-        activity.on('wait', async (api: BpmnProcessActivity) => {
+        activity.on('wait', async api => {
             const bpms = processInstance.BpmnEngine.BpmsEngine;
             if (bpms) {
                 const { fields, content, properties, ...variables } = api.environment.variables;
