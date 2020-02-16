@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { EventEmitter } from 'events';
 
 /* eslint-disable @typescript-eslint/no-empty-interface */
@@ -7,13 +6,15 @@ export interface BpmnLogger {
     error(message: string, ...args: any[]): void;
     warn(message: string, ...args: any[]): void;
 }
-export interface BpmnMessage {
-    fields: BpmnApiFields;
-    content: BpmnApiContent;
-    properties: BpmnApiProperties;
+
+export interface BpmnRecordAny extends Record<string, any> {}
+export interface BpmnMessage extends BpmnRecordAny {
+    fields?: BpmnFields;
+    content?: BpmnContent;
+    properties?: BpmnProperties;
 }
 
-export interface BpmnBehaviour extends Record<string, any> {
+export interface BpmnBehaviour extends BpmnRecordAny {
     id: string;
     type: string;
     execute<M extends BpmnMessage = BpmnApiMessage, R = void>(executeMessage?: M): R;
@@ -32,7 +33,7 @@ export interface BpmnFlowBehaviour extends BpmnBehaviour {}
 //     parent?: BpmnExecutionEventMessageContent;
 //     path?: BpmnExecutionEventMessageContent[];
 // }
-export interface BpmnProcessExecutionDefinition extends EventEmitter {
+export interface BpmnProcessExecutionDefinition {
     state: 'pending' | 'running' | 'completed';
     run(callback?: any): void;
     resume(callback?: any): void;
@@ -49,7 +50,7 @@ export interface BpmnProcessExecutionDefinition extends EventEmitter {
     getApi<M extends BpmnMessage = BpmnApiMessage>(message?: M): BpmnApi<any>;
     getElementById<E extends BpmnElement = BpmnElement>(elementId: string): E;
     getActivityById(childId: string): BpmnActivity;
-    environment: BpmnEnvironmentApi;
+    environment: BpmnEnvironment;
     status: string;
     stopped: boolean;
     type: string;
@@ -59,7 +60,7 @@ export interface BpmnProcessExecutionDefinition extends EventEmitter {
     isRunning: boolean;
     name: string;
     logger: BpmnLogger;
-    waitFor<R>(name: string, fn: Function): Promise<R>;
+    waitFor<R>(name: string, onMessage?: OnMessageCallback): Promise<R>;
 }
 export interface BpmnProcessExecutionDefinitionState {
     state: 'pending' | 'running' | 'completed';
@@ -74,10 +75,10 @@ export interface BpmnProcessExecutionDefinitionState {
 
 export interface BpmnProcessExecutionState {
     name: string;
-    state: 'idle' | 'running';
+    state: BpmnProcessExecutionStatus;
     stopped: boolean;
     engineVersion: string;
-    environment: BpmnEnvironmentApi;
+    environment: BpmnEnvironment;
     definitions: BpmnProcessExecutionDefinitionState[];
 
     entered: boolean;
@@ -85,47 +86,47 @@ export interface BpmnProcessExecutionState {
 
 export interface BpmnElement {
     id: string;
-    type: BpmnElementType;
+    type: string;
     name: string;
 }
 export interface BpmnActivity extends BpmnElement, BpmnActivityApi {}
-export interface BpmnFlow extends BpmnElement {}
-export interface BpmnDefinition {}
+export interface BpmnFlow extends BpmnElement, BpmnFlowApi {}
+export interface BpmnDefinition extends BpmnDefinitionApi {}
 
 export interface BpmnBroker<W = any> {
     new (owner: W);
     owner: W;
-    dismiss(onMessage: any): void;
-    subscribeTmp(exchangeName: string, pattern: string, onMessage?: any, options?: any): any;
-    subscribeOnce(exchangeName: string, pattern: string, onMessage?: any, options?: any): any;
+    dismiss(onMessage?: OnMessageCallback): void;
+    subscribeTmp(exchangeName: string, pattern: string, onMessage?: any, options?: BpmnRecordAny): any;
+    subscribeOnce(exchangeName: string, pattern: string, onMessage?: any, options?: BpmnRecordAny): any;
     unsubscribe(queueName: string, onMessage: any): void;
-    assertExchange(exchangeName: string, type?: string, options?: any): void;
+    assertExchange(exchangeName: string, type?: string, options?: BpmnRecordAny): void;
     deleteExchange(exchangeName: string, ifUnused?: boolean): void;
     bindExchange(source: string, destination: string, pattern?: any, ...args: any[]): void;
     unbindExchange(source: string, destination: string, pattern?: any): any;
 
-    publish(exchangeName: string, routingKey: string, content?: any, options?: any): void;
+    publish(exchangeName: string, routingKey: string, content?: any, options?: BpmnRecordAny): void;
     close(): void;
 
     assertQueue(
         queueName: string,
         options?: { durable?: boolean; autoDelete?: boolean; deadLetterExchange?: string },
     ): void;
-    bindQueue(queueName: string, exchangeName: string, pattern: string, options?: any): void;
+    bindQueue(queueName: string, exchangeName: string, pattern: string, options?: BpmnRecordAny): void;
     unbindQueue(queueName: string, exchangeName: string, pattern: string): void;
-    consume(queueName: string, onMessage: any, options?: any): void;
+    consume(queueName: string, onMessage: any, options?: BpmnRecordAny): void;
     cancel(consumerTag: string): void;
     createQueue(): any;
     deleteQueue(queueName: string, options?: { ifUnused: boolean; ifEmpty?: boolean }): void;
     getExchange(exchangeName: string): any;
     getQueue(queueName: string): any;
-    getState(): any;
-    recover(state: any): any;
+    getState<S>(): S;
+    recover<S>(state: S): any;
     purgeQueue(queueName: string): void;
-    sendToQueue(queueName: string, content?: any, options?: any): void;
+    sendToQueue(queueName: string, content?: any, options?: BpmnRecordAny): void;
     stop(): void;
     reset(): void;
-    get(queueName: string, options: any): any;
+    get(queueName: string, options?: any): any;
     ack(message: any, allUpTo?: boolean): void;
     ackAll(): void;
     nack(message: any, allUpTo?: boolean, requeue?: boolean): void;
@@ -137,8 +138,9 @@ export interface BpmnBroker<W = any> {
     reject(message: any, requeue?: boolean): void;
     unbindConsumer(): void;
     on(eventName: string, handler: Function): void;
+    once(eventName: string, handler: Function): void;
     off(eventName: string, handler: Function): void;
-    createShovel(name: string, source: string, destination: string, options: any): any;
+    createShovel(name: string, source: string, destination: string, options?: any): any;
     getShovel(name: string): any;
     closeShovel(name: string): void;
 }
@@ -148,25 +150,31 @@ export interface BpmnMessageFlowBroker extends BpmnEventBroker<BpmnFlow> {}
 export interface BpmnDefinitionBroker extends BpmnEventBroker<BpmnDefinition> {}
 export interface BpmnExecutionBroker<W = any> extends BpmnEventBroker<W> {}
 export interface BpmnEventBroker<W = any> extends BpmnBroker<W> {
-    new (brokerOwner: W, options?: any, onBrokerReturn?: (message?: any) => void);
+    new (brokerOwner: W, options?: BpmnRecordAny, onBrokerReturn?: (message?: any) => void);
     broker: BpmnBroker<W>;
     eventPrefix: string;
 
     on<M = W, R = any>(
         eventName: string,
         callback: (message: M) => void,
-        eventOptions?: { once?: boolean } & Record<string, any>,
+        eventOptions?: { once?: boolean } & BpmnRecordAny,
     ): R;
-    once<M = W, R = any>(eventName: string, callback: (message: M) => void, eventOptions?: Record<string, any>): R;
-    waitFor<R>(eventName: string, onMessage?: (...args: any[]) => void): Promise<R>;
-    emit<C = Record<string, any>, P = BpmnApiContent>(eventName: string, content?: C, props?: P): void;
-    emitFatal<E = Error | string, C = BpmnApiContent>(error: E, content?: C): void;
+    once<M = W, R = any>(eventName: string, callback: (message: M) => void, eventOptions?: BpmnRecordAny): R;
+    waitFor<R>(eventName: string, onMessage?: OnMessageCallback): Promise<R>;
+    emit<C = BpmnRecordAny, P = BpmnContent>(eventName: string, content?: C, props?: P): void;
+    emitFatal<E = Error | string, C = BpmnContent>(error: E, content?: C): void;
 }
 export interface BpmnBrokerState {}
 
-export interface BpmnApiState {
-    settings: BpmnApiSettings;
-    variables: BpmnApiVariables;
+export interface BpmnState {
+    settings: BpmnSettings;
+    variables: BpmnVariables;
+    output: BpmnApiOutput;
+}
+
+export interface BpmnEnvironmentState {
+    settings: BpmnSettings;
+    variables: BpmnVariables;
     output: BpmnApiOutput;
 }
 
@@ -178,9 +186,8 @@ export interface BpmnApiState {
 
 export interface BpmnDataObject extends BpmnElement {}
 export interface BpmnAssociation extends BpmnElement {}
-export interface BpmnFlow extends BpmnElement {}
-export interface BpmnSequenceFlow extends BpmnFlow {}
-export interface BpmnMessageFlow extends BpmnFlow {}
+export interface BpmnSequenceFlow extends BpmnFlow, BpmnSequenceFlowApi {}
+export interface BpmnMessageFlow extends BpmnFlow, BpmnMessageFlowApi {}
 
 export interface BpmnExtention {
     activate<M extends BpmnMessage = BpmnApiMessage>(message?: M): void;
@@ -191,8 +198,8 @@ export interface BpmnApiExecutionContext {
     name: string;
     type: string;
     sid: string;
-    definitionContext: any;
-    environment: BpmnEnvironmentApi;
+    definitionContext: BpmnProcessExecutionDefinition;
+    environment: BpmnEnvironment;
     clone(): BpmnApiExecutionContext;
     getActivities(): BpmnActivity[];
     getActivityById(activityId: string): BpmnActivity;
@@ -209,10 +216,10 @@ export interface BpmnApiExecutionContext {
     getSequenceFlowById(id: string): BpmnSequenceFlow;
     getSequenceFlows(): BpmnSequenceFlow[];
     getStartActivities(): BpmnActivity[];
-    loadExtensions(activity: BpmnActivity): BpmnApiExtentions;
+    loadExtensions(activity: BpmnActivity): BpmnExtentions;
 }
 export interface BpmnExpressions {
-    resolveExpression: BpmnApiResolveExpression;
+    resolveExpression: BpmnResolveExpression;
     isExpression(text: string): boolean;
     hasExpression(text: string): boolean;
 }
@@ -220,77 +227,155 @@ export type BpmnCallback<R, Z = void> = (err: Error, result: R) => Z;
 export interface BpmnScript {
     execute<R, Z = void>(executionContext: BpmnApiExecutionContext, callback?: BpmnCallback<R>): Z;
 }
-export interface BpmnApiScript {
+export interface BpmnScript {
     getScript(scriptType: string, activity: BpmnActivityApi): BpmnScript;
     register(activity: BpmnActivityApi): void;
 }
-export type BpmnApiService<M = any, C = any, R = void> = (executionMessage: M, callback: BpmnCallback<C>) => R;
-export interface BpmnApiSettings {}
+
+export interface BpmnServices extends Record<string, BpmnService> {}
+
+export interface BpmnService {
+    <M = any, C = any, R = void>(executionMessage: M, callback: BpmnCallback<C>): R;
+    <M = any, C = any, R = void>(...args: any[]): (executionMessage: M, callback: BpmnCallback<C>) => R;
+    // <M = any, C = any, R = void>(executionMessage: M, callback: BpmnCallback<C>): Promise<R>;
+    // <R = void>(...args: any[]): Promise<R>;
+}
+export interface BpmnSettings extends BpmnRecordAny {}
 export interface BpmnApiExpression {}
-export type BpmnApiResolveExpression = <E = string>(expression: string, apiMessage?: BpmnApiMessage, owner?: any) => E;
-export interface BpmnApiVariables<E = any> extends Record<string, E> {}
+export type BpmnResolveExpression = <E = string>(expression: string, apiMessage?: BpmnApiMessage, owner?: any) => E;
+export interface BpmnVariables<E = any> extends Record<string, E> {}
 export interface BpmnApiOutput<E = any> extends Record<string, E> {}
 export interface BpmnApiMessage extends BpmnMessage {}
-export type BpmnApiExtention<R = void> = (elment: BpmnElement, context: BpmnProcess) => R;
-export interface BpmnApiExtentions extends Record<string, BpmnApiExtention> {}
-export interface BpmnEnvironmentApiOptions extends Record<string, any> {}
-export interface BpmnEnvironmentApi {
-    options: BpmnEnvironmentApiOptions;
+export interface BpmnApiExtention {
+    <E extends BpmnElement = BpmnActivity, R = void>(element: E, context: BpmnProcess): R;
+    <R = void>(...args: any[]): R;
+}
+export interface BpmnExtentions extends Record<string, BpmnApiExtention> {}
+export interface BpmnEnvironmentOptions extends BpmnRecordAny {}
+export interface BpmnEnvironment {
+    options: BpmnEnvironmentOptions;
     expressions: BpmnApiExpression[];
-    extensions: BpmnApiExtentions[];
+    extensions: Record<string, BpmnExtentions>;
     output: BpmnApiOutput;
-    scripts: BpmnApiScript[];
-    services: BpmnApiService[];
-    settings: BpmnApiSettings;
-    variables: BpmnApiVariables;
-    addService(name: string, fn: BpmnApiService): void;
-    assignVariables(newVars: BpmnApiVariables): void;
-    clone(): BpmnEnvironmentApi;
-    getScript(...args: any[]): BpmnApiScript;
-    getServiceByName(serviceName: string): BpmnApiService;
-    getState(): BpmnApiState;
+    scripts: Record<string, BpmnScript>;
+    services: Record<string, BpmnService>;
+    settings: BpmnSettings;
+    variables: BpmnVariables;
+    addService(name: string, fn: BpmnService): void;
+    assignVariables(newVars: BpmnVariables): void;
+    clone(): BpmnEnvironment;
+    getScript(...args: any[]): BpmnScript;
+    getServiceByName(serviceName: string): BpmnService;
+    getState(): BpmnEnvironmentState;
     registerScript(...args: any[]): void;
-    resolveExpression: BpmnApiResolveExpression;
-    recover(state: BpmnApiState): BpmnEnvironmentApi;
+    resolveExpression: BpmnResolveExpression;
+    recover(state: BpmnState): BpmnEnvironment;
     Logger: BpmnLogger;
 }
 
-export interface BpmnApiFields extends Record<string, any> {}
+export interface BpmnFields extends BpmnRecordAny {}
 
-export interface BpmnApiContent extends Record<string, any> {}
-export interface BpmnApiProperties extends Record<string, any> {}
+export interface BpmnContent extends BpmnRecordAny {}
+export interface BpmnProperties extends BpmnRecordAny {}
 
-export type BpmnElementType = 'activity' | 'process' | 'flow' | 'defnition';
+export type BpmnElementType =
+    | 'activity'
+    | 'process'
+    | 'flow'
+    | 'association'
+    | 'sequenceflow'
+    | 'message'
+    | 'defnition';
 export interface BpmnApi<T> {
     id: string;
-    type: BpmnElementType;
+    // type: BpmnElementType;
     name: string;
-    executionId: string;
-    environment: BpmnEnvironmentApi;
-    fields: BpmnApiFields;
-    content: BpmnApiContent;
-    messageProperties: BpmnApiProperties;
+    readonly executionId: string;
+    readonly environment: BpmnEnvironment;
+    fields: BpmnFields;
+    content: BpmnContent;
+    messageProperties: BpmnProperties;
     owner: any;
     cancel(): void;
     discard(): void;
-    signal<M extends BpmnMessage = BpmnApiMessage, P = any>(message: M, options: P): void;
+    signal<M extends BpmnMessage = BpmnApiMessage, P = BpmnRecordAny>(message?: M, options?: P): void;
     stop(): void;
     resolveExpression(expression: string): string;
-    sendApiMessage(action: string, content: BpmnApiContent, options?: any): void;
-    createMessage<C extends BpmnApiContent, R = C>(content?: C): R;
+    sendApiMessage(action: string, content: BpmnContent, options?: BpmnRecordAny): void;
+    createMessage<C extends BpmnContent, R = C>(content?: C): R;
     getPostponed(...args: any[]): BpmnElement[];
 }
 
-export interface BpmnFlowApi extends BpmnApi<BpmnFlow> {}
+export interface BpmnFlowApi extends BpmnApi<BpmnFlow> {
+    id: string;
+    name: string;
+    parent: BpmnElement;
+    behaviour: BpmnFlowBehaviour;
+}
+export interface BpmnMessageFlowApi extends BpmnApi<BpmnMessageFlow> {
+    id: string;
+    type: 'message' | string;
+    name: string;
+    broker: BpmnMessageFlowBroker;
+    parent: BpmnElement;
+    behaviour: BpmnFlowBehaviour;
+    source: string;
+    target: string;
+    readonly environment: BpmnEnvironment;
+    counters: BpmnCounter;
+    on: BpmnMessageFlowBroker['on'];
+    once: BpmnMessageFlowBroker['once'];
+    emit: BpmnMessageFlowBroker['emit'];
+    waitFor: BpmnMessageFlowBroker['waitFor'];
+    discard(): void;
+    activate(): void;
+    deactivate(): void;
+    getApi<M extends BpmnMessage = BpmnApiMessage>(message?: M): BpmnMessageFlowApi;
+    getState(): BpmnFlowState;
+    recover<S>(state: S): void;
+    resume(): void;
+    stop(): void;
+}
+
+export interface BpmnSequenceFlowApi extends BpmnApi<BpmnSequenceFlow> {
+    id: string;
+    type: 'sequenceflow' | string;
+    name: string;
+    broker: BpmnMessageFlowBroker;
+    parent: BpmnElement;
+    behaviour: BpmnFlowBehaviour;
+    sourceId: string;
+    targetId: string;
+    isDefault: boolean;
+    readonly isSequenceFlow: true;
+    readonly environment: BpmnEnvironment;
+    counters: BpmnCounter;
+    on: BpmnMessageFlowBroker['on'];
+    once: BpmnMessageFlowBroker['once'];
+    waitFor: BpmnMessageFlowBroker['waitFor'];
+    discard(): void;
+    evaluateCondition<M extends BpmnMessage = BpmnApiMessage>(
+        message: M,
+        onEvaluateError: (...args: any[]) => void,
+    ): void;
+    getApi<M extends BpmnMessage = BpmnApiMessage>(message?: M): BpmnSequenceFlowApi;
+    getCondition(): string;
+    getState(): BpmnFlowState;
+    preFlight(action: string): string;
+    recover<S>(state: S): void;
+    shake(): void;
+    stop(): void;
+    take<C>(content: C): void;
+}
 
 export interface BpmnProcessApi {
     broker: BpmnProcessBroker;
     on: BpmnProcessBroker['on'];
     once: BpmnProcessBroker['once'];
     waitFor: BpmnProcessBroker['waitFor'];
-    extensions: BpmnApiExtentions;
+    extensions: BpmnExtentions;
     id: string;
-    type: BpmnElementType;
+    type: 'process';
     name: string;
     isExecutable: boolean;
     behaviour: BpmnProcessBehaviour;
@@ -300,11 +385,11 @@ export interface BpmnProcessApi {
     stopped: boolean;
     execution: BpmnProcessExecution;
     isRunning: boolean;
-    context: any;
-    environment: BpmnEnvironmentApi;
+    context: BpmnApiExecutionContext;
+    environment: BpmnEnvironment;
     parent: BpmnProcess;
     logger: BpmnLogger;
-    getApi(): BpmnApi<BpmnProcess>;
+    getApi<M extends BpmnMessage = BpmnApiMessage>(message?: M): BpmnProcessApi;
     getActivities(): BpmnActivity[];
     getActivityById(id: string): BpmnActivity;
     getSequenceFlows(): BpmnSequenceFlow[];
@@ -312,7 +397,7 @@ export interface BpmnProcessApi {
     getStartActivities(): BpmnActivity[];
     getState(): BpmnProcessState;
     init(): void;
-    recover<S = any>(state: S): BpmnProcessApi;
+    recover<S = any>(state: S): BpmnProcess;
     resume(): BpmnProcessApi;
     run<M = any>(runContent: M): void;
     sendMessage<M extends BpmnMessage = BpmnApiMessage>(message: M): void;
@@ -320,14 +405,69 @@ export interface BpmnProcessApi {
     stop(): void;
 }
 
-export interface BpmnDefinitionApi extends BpmnApi<BpmnDefinition> {}
+export interface BpmnDefinitionApi extends BpmnApi<BpmnDefinition> {
+    broker: BpmnDefinitionBroker;
+    on: BpmnDefinitionBroker['on'];
+    once: BpmnDefinitionBroker['once'];
+    waitFor: BpmnDefinitionBroker['waitFor'];
+    emit: BpmnDefinitionBroker['emit'];
+    emitFatal: BpmnDefinitionBroker['emitFatal'];
+    id: string;
+    type: 'definition';
+    name: string;
+    logger: BpmnLogger;
+    context: BpmnApiExecutionContext;
+    readonly counters: BpmnCounter;
+    readonly executionId: string;
+    readonly status: string;
+    readonly execution: BpmnDefinitionExecution;
+    readonly isRunning: boolean;
+    readonly environment: BpmnEnvironment;
+    run<R>(callback?: BpmnCallback<R>): this;
+    getApi<M extends BpmnMessage = BpmnApiMessage>(message?: M): this;
+    getState(): BpmnDefinitionState;
+    getActivityById(id: string): BpmnActivity;
+    getElementById(id: string): BpmnElement;
+    getPostponed(): BpmnElement[];
+    getProcesses(): BpmnProcess[];
+    getExecutableProcesses(): BpmnProcess[];
+    getProcessById(id: string): BpmnProcess;
+    sendMessage<M extends BpmnMessage = BpmnApiMessage>(message: M): this;
+    recover<S>(state?: S): this;
+    resume<R>(callback?: BpmnCallback<R>): this;
+    signal<M extends BpmnMessage = BpmnApiMessage>(message?: M): this;
+    stop(): void;
+}
+
+export interface BpmnDefinitionExecution {
+    id: string;
+    type: 'definition';
+    broker: BpmnDefinitionBroker;
+    readonly environment: BpmnEnvironment;
+    readonly executionId: string;
+    readonly completed: boolean;
+    readonly status: string;
+    readonly stopped: boolean;
+    readonly postponedCount: number;
+    readonly isRunning: boolean;
+    readonly processes: BpmnProcess[];
+    createMessage<C extends BpmnContent, R = C>(content?: C): R;
+    getApi<M extends BpmnMessage = BpmnApiMessage>(message?: M): this;
+    getState(): BpmnDefinitionState;
+    getPostponed(): BpmnElement[];
+    execute<M extends BpmnMessage = BpmnApiMessage>(message?: M): boolean;
+    resume<R>(callback?: BpmnCallback<R>): this;
+    recover<S>(state?: S): this;
+    stop(): void;
+}
 
 export interface BpmnActivityApi extends BpmnApi<BpmnActivity> {
+    type: 'activity' | string;
     broker: BpmnActivityBroker;
     on: BpmnActivityBroker['on'];
     once: BpmnActivityBroker['once'];
     waitFor: BpmnActivityBroker['waitFor'];
-    extensions: BpmnApiExtentions;
+    extensions: BpmnExtentions;
 
     behaviour: BpmnActivityBehaviour;
     isEnd: boolean;
@@ -338,7 +478,7 @@ export interface BpmnActivityApi extends BpmnApi<BpmnActivity> {
     triggeredByEvent: boolean;
     parent: BpmnElement;
     attachedTo: BpmnActivity;
-    environment: BpmnEnvironmentApi;
+    environment: BpmnEnvironment;
     inbound: BpmnSequenceFlow[];
     outbound: BpmnSequenceFlow[];
     counters: BpmnCounter;
@@ -361,7 +501,7 @@ export interface BpmnActivityApi extends BpmnApi<BpmnActivity> {
     deactivate(): void;
     logger: BpmnLogger;
     discard(): void;
-    getApi<M extends BpmnMessage = BpmnApiMessage>(message: M): BpmnActivityApi;
+    getApi<M extends BpmnMessage = BpmnApiMessage>(message?: M): BpmnActivityApi;
     getActivityById(id: string): BpmnActivity;
     getState(): BpmnActivityState;
     init(): void;
@@ -385,44 +525,41 @@ export interface BpmnProcessState {
     broker: BpmnBrokerState;
     execution: BpmnExecutionProcessState;
 }
-export interface BpmnProcess {
+export interface BpmnProcess extends BpmnProcessApi {
     new (processDefinition: any, context: BpmnApiExecutionContext);
-    id: string;
-    type: string;
-    name: string;
-    isExecutable: boolean;
-    behaviour: any;
-    counters: BpmnCounter;
-    executionId: string;
-    status: string;
-    stopped: boolean;
-    execution: BpmnProcessExecution;
-    isRunning: boolean;
-    context: BpmnApiExecutionContext;
-    environment: BpmnEnvironmentApi;
-    parent: BpmnProcess;
-    logger: BpmnLogger;
-    getApi<M extends BpmnMessage = BpmnApiMessage>(message: M): BpmnProcessApi;
-    getActivities(): BpmnActivity[];
-    getActivityById(id: string): BpmnActivity;
-    getSequenceFlows(): BpmnSequenceFlow[];
-    getPostponed(): BpmnElement[];
-    getStartActivities(): BpmnActivity[];
-    getState(): BpmnProcessState;
-    init(): void;
-    recover<S = any>(state: S): BpmnProcessApi;
-    resume(): BpmnProcessApi;
-    run<M extends BpmnMessage = BpmnApiMessage>(runContent?: M): void;
-    sendMessage<M extends BpmnMessage = BpmnApiMessage>(message: M): void;
-    signal<M = any>(message?: M): void;
-    stop(): void;
+    // isExecutable: boolean;
+    // behaviour: any;
+    // counters: BpmnCounter;
+    // executionId: string;
+    // status: string;
+    // stopped: boolean;
+    // execution: BpmnProcessExecution;
+    // isRunning: boolean;
+    // context: BpmnApiExecutionContext;
+    // environment: BpmnEnvironmentApi;
+    // parent: BpmnProcess;
+    // logger: BpmnLogger;
+    // getApi<M extends BpmnMessage = BpmnApiMessage>(message?: M): BpmnProcessApi;
+    // getActivities(): BpmnActivity[];
+    // getActivityById(id: string): BpmnActivity;
+    // getSequenceFlows(): BpmnSequenceFlow[];
+    // getPostponed(): BpmnElement[];
+    // getStartActivities(): BpmnActivity[];
+    // getState(): BpmnProcessState;
+    // init(): void;
+    // recover<S = any>(state: S): BpmnProcessApi;
+    // resume(): BpmnProcessApi;
+    // run<M extends BpmnMessage = BpmnApiMessage>(runContent?: M): void;
+    // sendMessage<M extends BpmnMessage = BpmnApiMessage>(message: M): void;
+    // signal<M = any>(message?: M): void;
+    // stop(): void;
 }
-export type BpmnProcessExecutionStatus = 'running' | 'idle';
+export type BpmnProcessExecutionStatus = 'stopped' | 'idle' | 'error' | 'running';
 export interface BpmnProcessExecution {
     id: string;
     type: string;
     broker: BpmnExecutionBroker;
-    environment: BpmnEnvironmentApi;
+    environment: BpmnEnvironment;
     executionId: string;
     completed: boolean;
     status: BpmnProcessExecutionStatus;
@@ -431,7 +568,7 @@ export interface BpmnProcessExecution {
     isRunning: boolean;
     discard(): void;
     execute<M extends BpmnMessage = BpmnApiMessage>(executeMessage: M): boolean;
-    getApi<M extends BpmnMessage = BpmnApiMessage>(message: M): BpmnProcessApi;
+    getApi<M extends BpmnMessage = BpmnApiMessage>(message?: M): BpmnProcessApi;
     getActivityById(id: string): BpmnActivity;
     getActivities(): BpmnActivity[];
     getPostponed(): BpmnElement[];
@@ -473,3 +610,77 @@ export interface BpmnExecutionProcessState {
     messageFlows: BpmnMessageFlowState[];
     associations: BpmnAssociationState[];
 }
+
+export interface BpmnDefinitionState {
+    readonly executionId: string;
+    readonly stopped: boolean;
+    readonly completed: boolean;
+    readonly status: string;
+    readonly processes: BpmnProcessState[];
+}
+
+export interface BpmnEngineRuntimeState {
+    name: string;
+    state: BpmnEngineRuntimeStateType;
+    stopped: boolean;
+    engineVersion: boolean;
+    environment: BpmnEnvironment;
+    definitions: BpmnDefinitionState;
+}
+export type BpmnEngineRuntimeStateType = 'stopped' | 'idle' | 'error' | 'running';
+export interface BpmnEngineRuntimeOptions {
+    name?: string;
+    variables?: BpmnVariables;
+
+    Logger?: BpmnLogger;
+
+    scripts?: Record<string, BpmnScript>;
+    listener?: EventEmitter;
+    services?: BpmnServices;
+
+    elements?: any;
+
+    typeResolver?: <R>(...elements: any) => R;
+    moddleOptions?: any;
+
+    extensions?: BpmnExtentions;
+}
+
+export interface BpmnEngineRuntime {
+    broker: BpmnBroker<this>;
+    name: string;
+
+    on: BpmnBroker['on'];
+    once: BpmnBroker['once'];
+
+    environment: BpmnEnvironment;
+    execution: BpmnProcessExecution;
+    stopped: boolean;
+    state: BpmnEngineRuntimeStateType;
+    execute<P extends BpmnEngineRuntimeOptions = BpmnEngineRuntimeOptions>(
+        executeOptions?: P,
+    ): Promise<BpmnEngineRuntimeApi>;
+    logger: BpmnLogger;
+    getDefinitionById(id: string): Promise<BpmnDefinition>;
+    getDefinitions(executeOptions?: BpmnEngineRuntimeOptions): Promise<BpmnDefinition[]>;
+    getState(): Promise<BpmnEngineRuntimeState>;
+    recover(savedState: any, recoverOptions: any): this;
+    resume<P extends BpmnEngineRuntimeOptions = BpmnEngineRuntimeOptions>(
+        executeOptions?: P,
+    ): Promise<BpmnEngineRuntimeApi>;
+    stop(): Promise<void>;
+    waitFor<R = void>(eventName: string, onMessage?: OnMessageCallback): Promise<R>;
+}
+export interface BpmnEngineRuntimeApi {
+    name: string;
+    readonly state: BpmnEngineRuntimeStateType;
+    readonly stopped: boolean;
+    environment: BpmnEnvironment;
+    definitions: BpmnDefinition[];
+    stop(): Promise<void>;
+    getState(): Promise<BpmnEngineRuntimeState>;
+    getPostponed(): Promise<BpmnElement[]>;
+    waitFor<R = void>(eventName: string, onMessage?: OnMessageCallback): Promise<R>;
+}
+
+export type OnMessageCallback = (routingKey: string, message: string, owner: any) => void;
