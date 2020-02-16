@@ -14,7 +14,7 @@ import {
     ScalarOptions,
     QueryResult,
 } from '../data/Repository';
-import { BpmnProcessExecutionState, BpmnProcessExecution } from './definitions/bpmn-elements';
+import { BpmnEngineRuntimeState, BpmnEngineRuntimeApi } from './definitions/bpmn-elements';
 export type BpmnSource = string;
 
 export interface BpmnEngineOptions {
@@ -461,7 +461,7 @@ export class BpmnEngine {
         return Promise.resolve();
     }
 
-    public async getProcessState(id: IdExpression): Promise<BpmnProcessExecutionState | null> {
+    public async getProcessState(id: IdExpression): Promise<BpmnEngineRuntimeState | null> {
         const proc = await this.loadedProcessRepository.find(id);
         if (proc) {
             return proc.getState();
@@ -472,7 +472,7 @@ export class BpmnEngine {
     public async executeProcess(
         id: IdExpression,
         options?: BpmnProcessInstanceOptions,
-    ): Promise<BpmnProcessExecution | null> {
+    ): Promise<BpmnEngineRuntimeApi | null> {
         const proc = await this.loadedProcessRepository.find(id);
         if (proc) {
             return proc.execute(options);
@@ -483,7 +483,7 @@ export class BpmnEngine {
     public async resumeProcess(
         id: IdExpression,
         options?: BpmnProcessInstanceOptions,
-    ): Promise<BpmnProcessExecution | null> {
+    ): Promise<BpmnEngineRuntimeApi | null> {
         const proc = await this.loadedProcessRepository.find(id);
         if (proc) {
             return proc.resume(options);
