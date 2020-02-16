@@ -237,8 +237,6 @@ export interface BpmnServices extends Record<string, BpmnService> {}
 export interface BpmnService {
     <M = any, C = any, R = void>(executionMessage: M, callback: BpmnCallback<C>): R;
     <M = any, C = any, R = void>(...args: any[]): (executionMessage: M, callback: BpmnCallback<C>) => R;
-    // <M = any, C = any, R = void>(executionMessage: M, callback: BpmnCallback<C>): Promise<R>;
-    // <R = void>(...args: any[]): Promise<R>;
 }
 export interface BpmnSettings extends BpmnRecordAny {}
 export interface BpmnApiExpression {}
