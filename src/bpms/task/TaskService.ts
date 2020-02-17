@@ -107,12 +107,14 @@ export class TaskService<T extends BpmsTask = BpmsTask> implements BpmsService {
     public async create(task: T): Promise<T> {
         return this.taskRepository.create(task);
     }
-    public async remove(taskId: string): Promise<boolean> {
+    public async remove(taskId: IdExpression): Promise<boolean> {
         return this.taskRepository.delete(taskId);
     }
 
-    public async find(taskId: string): Promise<T | null> {
-        return this.taskRepository.find(taskId);
+    public async find(taskId: IdExpression): Promise<T | null>;
+    public async find(filter: FilterExpression): Promise<T | null>;
+    public async find(expression: IdExpression | FilterExpression): Promise<T | null> {
+        return this.taskRepository.find(expression);
     }
     public async list<R = T>(filter?: FilterExpression): Promise<R[]> {
         return this.taskRepository.findAll(filter);
