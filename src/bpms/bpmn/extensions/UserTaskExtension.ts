@@ -25,21 +25,39 @@ export const UserTaskExtension = (processInstance: BpmnProcessInstance | BpmnDef
                     assignees.push(performerUsers || initiator);
                 }
                 for (const assignee of assignees) {
-                    const t = await bpms.TaskService.create({
-                        name: api.name,
+                    if (!assignee) {
+                        continue;
+                    }
+                    const pf = {
                         activityId: api.id,
                         activityType: api.type,
                         processDefinitionId: processInstance.DefinitionId,
-                        processDefinitionName: processInstance.DefinitionName,
-                        processDefinitionVersion: processInstance.DefinitionVersion,
-                        processInstanceName: (processInstance as any)?.Name,
                         processInstanceId: processInstance.Id,
                         tenantId: bpms.Name,
-                        priority: 'normal',
-                        descriptions: '',
-                        variables: variables,
-                        assignee: assignee,
-                    });
+                        completed: false,
+                    };
+                    if (assignee && assignee.userId) {
+                        pf['assignee.userId'] = assignee?.userId;
+                    }
+                    const f = await bpms.TaskService.find(pf);
+                    if (!f) {
+                        const t = await bpms.TaskService.create({
+                            name: api.name,
+                            activityId: api.id,
+                            activityType: api.type,
+                            processDefinitionId: processInstance.DefinitionId,
+                            processDefinitionName: processInstance.DefinitionName,
+                            processDefinitionVersion: processInstance.DefinitionVersion,
+                            processInstanceName: (processInstance as any)?.Name,
+                            processInstanceId: processInstance.Id,
+                            tenantId: bpms.Name,
+                            priority: 'normal',
+                            descriptions: '',
+                            variables: variables,
+                            assignee: assignee,
+                            completed: false,
+                        });
+                    }
                 }
             }
         });

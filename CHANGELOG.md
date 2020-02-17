@@ -1,3 +1,34 @@
+### 0.37.0 (2020-02-17)
+
+##### Bug Fixes
+
+*  assignee null checking ([7bd04027](https://github.com/nowcando/nowjs-bpms/commit/7bd0402727c52473ae2c4b3c16f4c2938c040c09))
+
+### 0.36.0 (2020-02-17)
+
+##### Bug Fixes
+
+*  assignee userId ([04fe18c9](https://github.com/nowcando/nowjs-bpms/commit/04fe18c934931e29e5ca09c8b152679306746e42))
+
+### 0.35.0 (2020-02-17)
+
+##### Bug Fixes
+
+*  assignee userid ([2b40f7bb](https://github.com/nowcando/nowjs-bpms/commit/2b40f7bb049da90d40024b4130b7dea8122019b0))
+
+### 0.34.0 (2020-02-17)
+
+##### Bug Fixes
+
+*  assignee userId ([2a0e0ee3](https://github.com/nowcando/nowjs-bpms/commit/2a0e0ee3e712e2c4b7b798caedc7081857128c34))
+*  UserTask extension create task. ([d1f41b31](https://github.com/nowcando/nowjs-bpms/commit/d1f41b3175d52dbe2faa060128b1d0da1e1ebdb6))
+
+### 0.34.0 (2020-02-17)
+
+##### Bug Fixes
+
+*  UserTask extension create task. ([d1f41b31](https://github.com/nowcando/nowjs-bpms/commit/d1f41b3175d52dbe2faa060128b1d0da1e1ebdb6))
+
 ### 0.33.0 (2020-02-17)
 
 ##### Bug Fixes

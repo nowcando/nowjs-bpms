@@ -381,13 +381,16 @@ export class BpmnProcessInstance {
         const self = this;
         const p = new Promise<BpmnEngineRuntimeApi>(async (resolve, reject) => {
             try {
-                if(this.execution) return Promise.resolve(this.execution);
+                if(self.execution) {
+                    resolve(self.execution);
+                    return;
+                } 
                 const r = await self.processRuntime.execute<any>({
                     // listener: self.eventEmitter,
                     ...self.options,
                     ...options,
                 });
-                this.execution = r;
+                self.execution = r;
                 resolve(r);
             } catch (error) {
                 reject(error);
@@ -527,8 +530,12 @@ export class BpmnProcessInstance {
         const self = this;
         const p = new Promise<BpmnEngineRuntimeApi>(async (resolve, reject) => {
             try {
+                if(self.execution) {
+                     resolve(self.execution);
+                     return;
+                } 
                 if(this.State==="idle"){
-                    if(this.execution) return Promise.resolve(this.execution);
+                   
                     const r = await self.processRuntime.execute<any>({
                         // listener: self.eventEmitter,
                         ...self.options,
@@ -537,7 +544,6 @@ export class BpmnProcessInstance {
                     this.execution = r;
                     resolve(r);
                 } else {
-                    if(this.execution) return Promise.resolve(this.execution);
                     const r = await self.processRuntime.resume<any>({
                         // listener: self.eventEmitter,
                         ...self.options,
