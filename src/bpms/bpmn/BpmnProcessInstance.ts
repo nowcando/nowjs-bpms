@@ -44,6 +44,8 @@ import {
     BpmnEngineRuntimeApi,
     OnMessageCallback,
     BpmnServices,
+    BpmnApiExecutionContext,
+    BpmnEngineRuntimeExecution,
 } from './definitions/bpmn-elements';
 import { BpmnDefinitionInstance } from './BpmnDefinitionInstance';
 
@@ -92,7 +94,7 @@ export class BpmnProcessInstance {
     private bpmnEngine: BpmnEngine;
     private eventEmitter: EventEmitter;
     private options?: BpmnProcessInstanceOptions;
-
+    private execution!: BpmnEngineRuntimeExecution;
     private name: string;
     private id = uuidv1();
     private definitionId?: string;
@@ -352,7 +354,7 @@ export class BpmnProcessInstance {
     }
 
     public get Name(): string {
-        return this.processRuntime.name;
+        return this.name;
     }
 
     public get Broker(): BpmnBroker {
@@ -371,19 +373,21 @@ export class BpmnProcessInstance {
         return this.processRuntime.stopped;
     }
 
-    public get Execution(): BpmnProcessExecution {
-        return this.processRuntime.execution;
+    public get Execution(): BpmnEngineRuntimeExecution {
+        return this.execution;
     }
 
     public async execute(options?: BpmnProcessExecuteOptions): Promise<BpmnEngineRuntimeApi> {
         const self = this;
         const p = new Promise<BpmnEngineRuntimeApi>(async (resolve, reject) => {
             try {
+                if(this.execution) return Promise.resolve(this.execution);
                 const r = await self.processRuntime.execute<any>({
                     // listener: self.eventEmitter,
                     ...self.options,
                     ...options,
                 });
+                this.execution = r;
                 resolve(r);
             } catch (error) {
                 reject(error);
@@ -524,18 +528,22 @@ export class BpmnProcessInstance {
         const p = new Promise<BpmnEngineRuntimeApi>(async (resolve, reject) => {
             try {
                 if(this.State==="idle"){
+                    if(this.execution) return Promise.resolve(this.execution);
                     const r = await self.processRuntime.execute<any>({
                         // listener: self.eventEmitter,
                         ...self.options,
                        ...options,
                     });
+                    this.execution = r;
                     resolve(r);
                 } else {
+                    if(this.execution) return Promise.resolve(this.execution);
                     const r = await self.processRuntime.resume<any>({
                         // listener: self.eventEmitter,
                         ...self.options,
                        ...options,
                     });
+                    this.execution = r;
                     resolve(r);
                 }
                
@@ -554,7 +562,7 @@ export class BpmnProcessInstance {
     public async getDefinitions(): Promise<BpmnDefinition[]> {
         const p = new Promise<BpmnDefinition[]>(async (resolve, reject) => {
             try {
-                const r = await this.processRuntime.getDefinitions();
+                const r = this.execution ? this.execution.definitions :  await this.processRuntime.getDefinitions();
                 resolve(r);
             } catch (error) {
                 reject(error);
@@ -571,11 +579,12 @@ export class BpmnProcessInstance {
      * @returns {Promise<R>}
      * @memberof BpmnProcess
      */
-    public async getDefinitionById(id: string): Promise<BpmnDefinition> {
-        const p = new Promise<BpmnDefinition>(async (resolve, reject) => {
+    public async getDefinitionById(id: string): Promise<BpmnDefinition | null> {
+        const p = new Promise<BpmnDefinition | null>(async (resolve, reject) => {
             try {
-                const r = await this.processRuntime.getDefinitionById(id);
-                resolve(r);
+                const r = this.execution ? this.execution.definitions.filter(xx=>xx.id === id) : [await this.processRuntime.getDefinitionById(id)];
+                if(r.length>0) return resolve(null);
+                resolve(r[0]);
             } catch (error) {
                 reject(error);
             }

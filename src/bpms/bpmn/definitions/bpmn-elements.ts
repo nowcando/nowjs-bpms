@@ -644,6 +644,7 @@ export interface BpmnEngineRuntime extends EventEmitter {
     stop(): Promise<void>;
     waitFor<R = void>(eventName: string, onMessage?: OnMessageCallback): Promise<R>;
 }
+export interface BpmnEngineRuntimeExecution extends BpmnEngineRuntimeApi {}
 export interface BpmnEngineRuntimeApi {
     readonly name: string;
     readonly state: BpmnEngineRuntimeStateType;
