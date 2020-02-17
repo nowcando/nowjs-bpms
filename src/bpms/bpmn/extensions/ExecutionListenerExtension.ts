@@ -3,8 +3,9 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BpmnProcessInstance } from '../BpmnProcessInstance';
+import { BpmnDefinitionInstance } from '../BpmnDefinitionInstance';
 
-export const ExecutionListenerExtension = (processInstance: BpmnProcessInstance) => (activity: any) => {
+export const ExecutionListenerExtension = (processInstance: BpmnProcessInstance | BpmnDefinitionInstance) => (activity: any) => {
     if (!activity.behaviour.extensionElements) return;
 
     const { broker, environment } = activity;

@@ -1,3 +1,19 @@
+### 0.33.0 (2020-02-17)
+
+##### Bug Fixes
+
+*  Process Execution ([719f55fa](https://github.com/nowcando/nowjs-bpms/commit/719f55fac408d177d8b5a947aea94353333eb229))
+
+### 0.32.0 (2020-02-17)
+
+##### Bug Fixes
+
+*  recover process ([2f153f57](https://github.com/nowcando/nowjs-bpms/commit/2f153f57d07c31cc7c4ecd14ffd183aaa1498cdb))
+*  bpmn definition ([d41e05e8](https://github.com/nowcando/nowjs-bpms/commit/d41e05e84d04a2ff09ec7ea18d9d8f34c98baf56))
+*  bpmn engine type fixed ([055616ce](https://github.com/nowcando/nowjs-bpms/commit/055616cec2b53fd74c27937b0188857bcf9755eb))
+*  Bpmn fix definitions ([1ce950cd](https://github.com/nowcando/nowjs-bpms/commit/1ce950cd0e41e231cf7bf2a9e73ca6b7b93c8113))
+*  bpmn element definitions ([9f07fa85](https://github.com/nowcando/nowjs-bpms/commit/9f07fa85a4af44bd3b762a71c7b874eff2f5d7a6))
+
 ### 0.31.0 (2020-02-12)
 
 ##### Bug Fixes

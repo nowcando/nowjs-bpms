@@ -1,11 +1,15 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BpmnProcessInstance, BpmnProcessActivity } from '../BpmnProcessInstance';
+import { BpmnProcessInstance } from '../BpmnProcessInstance';
+import { BpmnActivity } from '../definitions/bpmn-elements';
+import { BpmnDefinitionInstance } from '../BpmnDefinitionInstance';
 
-export const UserTaskExtension = (processInstance: BpmnProcessInstance) => (activity: any) => {
+export const UserTaskExtension = (processInstance: BpmnProcessInstance | BpmnDefinitionInstance) => (
+    activity: BpmnActivity,
+) => {
     if (!activity.behaviour) return;
     if (activity.type.toLowerCase() === 'bpmn:UserTask'.toLowerCase()) {
-        activity.on('wait', async (api: BpmnProcessActivity) => {
+        activity.on('wait', async api => {
             const bpms = processInstance.BpmnEngine.BpmsEngine;
             if (bpms) {
                 const { fields, content, properties, ...variables } = api.environment.variables;
@@ -28,7 +32,7 @@ export const UserTaskExtension = (processInstance: BpmnProcessInstance) => (acti
                         processDefinitionId: processInstance.DefinitionId,
                         processDefinitionName: processInstance.DefinitionName,
                         processDefinitionVersion: processInstance.DefinitionVersion,
-                        processInstanceName: processInstance.Name,
+                        processInstanceName: (processInstance as any)?.Name,
                         processInstanceId: processInstance.Id,
                         tenantId: bpms.Name,
                         priority: 'normal',

@@ -1,9 +1,11 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-empty-interface */
 /* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import * as bm from 'bpmn-moddle';
+import bm from 'bpmn-moddle';
 import bent from 'bent';
 import { EventEmitter } from 'events';
 import { uuidv1 } from 'nowjs-core/lib/utils';
@@ -21,381 +23,146 @@ import { DynamicRouteResolverExtension } from './extensions/DynamicRouteResolver
 import { ProcessExtension } from './extensions/ProcessExtension';
 import { SaveToResultVariableExtension } from './extensions/SaveToResultVariableExtension';
 import { FormDataResolverExtension } from './extensions/FormDataExtension';
+import {
+    BpmnVariables,
+    BpmnLogger,
+    BpmnService,
+    BpmnEnvironment,
+    BpmnProcessExecution,
+    BpmnActivity,
+    BpmnProcess,
+    BpmnProcessExecutionState,
+    BpmnFlow,
+    BpmnExtentions,
+    BpmnBroker,
+    BpmnExecutionProcessState,
+    BpmnEngineRuntime,
+    BpmnEngineRuntimeState,
+    BpmnEngineRuntimeStateType,
+    BpmnEngineRuntimeOptions,
+    BpmnDefinition,
+    BpmnEngineRuntimeApi,
+    OnMessageCallback,
+    BpmnServices,
+    BpmnApiExecutionContext,
+    BpmnEngineRuntimeExecution,
+} from './definitions/bpmn-elements';
+import { BpmnDefinitionInstance } from './BpmnDefinitionInstance';
 
 const { Engine } = require('bpmn-engine');
 const httpJsonApi = bent('json');
 const httpStreamApi = bent('buffer');
 const httpStringApi = bent('string');
-export interface BpmnLogger {
-    debug(...args: any[]): void;
-    error(...args: any[]): void;
-    warn(...args: any[]): void;
-}
 
-export interface BpmnExecution {
-    definitions: BpmnProcessExecutionDefinition[];
-    state: 'idle' | 'running';
-
-    stopped: boolean;
-    execute(executeOptions?: any): BpmnProcessExeuctionApi;
-    getState<R>(): R;
-
-    resume(resumeOptions?: any): void;
-
-    stop(): void;
-
-    environment: BpmnProcessExecutionEnvironment;
-}
-
-// tslint:disable: max-line-length
-export interface BpmnProcessOptions {
+export interface BpmnProcessInstanceOptions extends BpmnEngineRuntimeOptions {
     name?: string;
     id?: string;
     definitionId?: string;
     definitionName?: string;
     definitionVersion?: number;
     source?: string;
-    variables?: any;
-
-    Logger?: BpmnLogger;
-
-    scripts?: any;
-
-    listener?: EventEmitter;
-    // tslint:disable-next-line:ban-types
-    services?: { [name: string]: Function };
-
-    elements?: any;
-
-    typeResolver?: <R>(...elements: any) => R;
-    moddleOptions?: any;
-
-    extensions?: any;
 }
 
-export interface BpmnProcess {
-    new (processDefinition: any, context: BpmnProcessExecutionContext);
-    id: string;
-    type: string;
-    name: string;
-    isExecutable: boolean;
-    broker: any;
+export type BpmnActivityEventType =
+    | 'wait'
+    | 'enter'
+    | 'leave'
+    | 'start'
+    | 'end'
+    | 'stop'
+    | 'throw'
+    | 'error'
+    | 'activity.enter'
+    | 'activity.start'
+    | 'activity.wait'
+    | 'activity.end'
+    | 'activity.leave'
+    | 'activity.stop'
+    | 'activity.throw'
+    | 'activity.error';
+export type BpmnErrorEventType = 'error' | 'end';
+export type BpmnProcessExecutionEventType = 'created' | 'destroyed';
+export type BpmnFlowEventType = 'flow.take' | 'flow.discard' | 'flow.looped';
+export type BpmnProcessExecuteOptions = BpmnProcessInstanceOptions;
 
-    context: BpmnProcessExecutionContext;
-    counters: any;
-    environment: BpmnProcessExecutionEnvironment;
-    execution: any;
-    executionId: string;
-    isRunning: boolean;
+export type BpmnProcessRecoverOptions = BpmnProcessInstanceOptions;
 
-    logger: BpmnLogger;
-    parent: BpmnProcess;
-    status: any;
+export type BpmnProcessResumeOptions = BpmnProcessInstanceOptions;
 
-    stopped: boolean;
-
-    getApi(message: any): BpmnProcessExeuctionApi;
-    getActivities(): BpmnProcessActivity[];
-    getActivityById(id: string): BpmnProcessActivity;
-
-    getSequenceFlows(): any[];
-    getPostponed(): BpmnProcessActivity[];
-
-    getState(): any;
-
-    recover(state: any): void;
-    resume(): void;
-    run(): void;
-    stop(): void;
-    waitFor<R>(eventName: string): Promise<R>;
-}
-
-export interface BpmnProcessExecutionContext {
-    id: string;
-    name: string;
-    type: string;
-    sid: any;
-    definitionContext: any;
-    environment: BpmnProcessExecutionEnvironment;
-
-    clone(environment?: BpmnProcessExecutionEnvironment): BpmnProcessExecutionContext;
-    getActivities(scopeId?: string): BpmnProcessActivity[];
-    getActivityById(id): BpmnProcessActivity;
-    getExecutableProcesses(): any[];
-    getDataObjectById(id: string): any;
-
-    getMessageFlows(): any[];
-
-    getProcessById(id: string): any;
-
-    getProcesses(): any;
-
-    getSequenceFlowById(id: string): any;
-
-    getSequenceFlows(scopeId: string): any[];
-
-    getInboundSequenceFlows(activityId: string): any[];
-    getOutboundSequenceFlows(activityId: string): any[];
-
-    loadExtensions(activity: BpmnProcessActivity): void;
-}
-
-export interface BpmnProcessActivity extends EventEmitter {
-    id: string;
-    type: string;
-    name: string;
-
-    content: any;
-    attachedTo: any;
-
-    Behaviour: any;
-
-    behaviour: any;
-
-    broker: any;
-
-    counters: any;
-    environment: BpmnProcessExecutionEnvironment;
-    execution: any;
-    executionId: string;
-    extensions: any[];
-    logger: BpmnLogger;
-    inbound: any[];
-    isRunning: boolean;
-    isStart: boolean;
-    isSubProcess: boolean;
-
-    // logger: BpmnLogger;
-    outbound: any[];
-    parent?: BpmnProcessActivity;
-    status: any;
-    stopped: boolean;
-
-    activate(): void;
-
-    deactivate(): void;
-
-    discard(): void;
-
-    getApi(message: any): BpmnProcessExeuctionApi;
-
-    getActivityById(id: string): BpmnProcessActivity;
-
-    getState(): any;
-
-    message(messageContent: any): void;
-    signal: (message?: any, options?: any) => void;
-    next(): void;
-
-    recover(state: any): void;
-
-    resume(): void;
-
-    run(runContent?: any): void;
-
-    stop(): void;
-
-    waitFor<R>(eventName: string): Promise<R>;
-}
-
-export interface BpmnProcessExecutionEnvironment {
-    options: any;
-    extensions: any;
-
-    scripts: any;
-    output: any;
-    variables: any;
-
-    settings: any;
-
-    Logger: BpmnLogger;
-    services: any;
-    // tslint:disable: ban-types
-    addService(name: string, serviceFn: Function): void;
-    assignVariables(...vars: any): void;
-    clone(overrideOptions?: any): BpmnProcessExecutionEnvironment;
-    getScript(scriptType: string, activity: any): any;
-    getServiceByName(name: string): any;
-
-    getState(): BpmnProcessExecutionState;
-
-    registerScript(activity: any): void;
-
-    resolveExpression<R>(expression: any, message?: any, expressionFnContext?: any): R;
-
-    recover(state: any): void;
-}
-export interface BpmnExecutionEventMessageContent {
-    id: string;
-    type: string;
-    executionId: string;
-    parent?: BpmnExecutionEventMessageContent;
-    path?: BpmnExecutionEventMessageContent[];
-}
-export interface BpmnExecutionEventMessageApi {
-    id: string;
-    type: string;
-    name: string;
-    executionId: string;
-    environment: BpmnProcessExecutionEnvironment;
-    fields: any;
-
-    content: BpmnExecutionEventMessageContent;
-    messageProperties: any;
-    owner: any;
-
-    cancel(): void;
-    discard(): void;
-    signal(message: string, options: any): void;
-    stop(): void;
-
-    resolveExpression<R>(expression: any): R;
-    createMessage(overrideContent?: any): BpmnExecutionEventMessageApi;
-}
-export interface BpmnProcessExecutionDefinition extends EventEmitter {
-    state: 'pending' | 'running' | 'completed';
-    run: (callback?: any) => void;
-    resume: (callback?: any) => void;
-
-    recover: (state?: any) => void;
-
-    sendMessage: (message: any) => void;
-
-    executionId: string;
-    execution: any;
-    getProcesses: () => any[];
-
-    getExecutableProcesses: () => any[];
-    getApi: <T>(message: any) => T;
-    getElementById: (elementId: string) => any;
-    getActivityById: (childId: string) => any;
-    environment: BpmnProcessExecutionEnvironment;
-    status: string;
-    stopped: boolean;
-    type: string;
-    signal: (message: any) => void;
-    broker: any;
-    id: string;
-    isRunning: boolean;
-    name: string;
-    logger: BpmnLogger;
-    waitFor(name: string, fn: Function): void;
-}
-export interface BpmnProcessExecutionDefinitionState {
-    state: 'pending' | 'running' | 'completed';
-    processes: {
-        [processId: string]: {
-            variables: any;
-            services: any;
-            children: BpmnProcessExecutionState[];
-        };
-    };
-}
-export interface BpmnProcessExecutionState {
-    name: string;
-    state: 'idle' | 'running';
-    stopped: boolean;
-    engineVersion: string;
-    environment: BpmnProcessExecutionEnvironment;
-    definitions: BpmnProcessExecutionDefinitionState[];
-
-    entered: boolean;
-}
-export interface BpmnProcessExeuctionApi {
-    /**
-     * engine name
-     *
-     * @type {string}
-     * @memberof BpmnProcessExeuctionApi
-     */
-    name: string;
-    /**
-     * state of execution, i.e running or idle
-     *
-     * @type {("running"| "idle")}
-     * @memberof BpmnProcessExeuctionApi
-     */
-    state: 'running' | 'idle';
-    /**
-     * is the execution stopped
-     *
-     * @type {boolean}
-     * @memberof BpmnProcessExeuctionApi
-     */
-    stopped: boolean;
-    /**
-     * engine environment
-     *
-     * @type {BpmnProcessExecutionEnvironment}
-     * @memberof BpmnProcessExeuctionApi
-     */
-    environment: BpmnProcessExecutionEnvironment;
-
-    /**
-     * executing definitions
-     *
-     * @type {BpmnProcessExecutionDefinition}
-     * @memberof BpmnProcessExeuctionApi
-     */
-    definitions: BpmnProcessExecutionDefinition;
-    /**
-     * get execution serializable state
-     *
-     * @returns {BpmnProcessExecutionState}
-     * @memberof BpmnProcessExeuctionApi
-     */
-    getState(): BpmnProcessExecutionState;
-
-    /**
-     * stop execution
-     *
-     * @memberof BpmnProcessExeuctionApi
-     */
-    stop(): void;
-
-    /**
-     * get activities in a postponed state
-     *
-     * @memberof BpmnProcessExeuctionApi
-     */
-    getPostponed(): void;
-}
-// tslint:disable: no-empty-interface
-export type BpmnProcessExecuteOptions = BpmnProcessOptions;
-
-export type BpmnProcessRecoverOptions = BpmnProcessOptions;
-
-export type BpmnProcessResumeOptions = BpmnProcessOptions;
-
-export class BpmnProcessInstance extends EventEmitter {
-    private processEngine: any;
+export class BpmnProcessInstance {
+    private processRuntime: BpmnEngineRuntime;
     private bpmnEngine: BpmnEngine;
-    private options?: BpmnProcessOptions;
-
+    private eventEmitter: EventEmitter;
+    private options?: BpmnProcessInstanceOptions;
+    private execution!: BpmnEngineRuntimeExecution;
+    private name: string;
     private id = uuidv1();
     private definitionId?: string;
     private definitionName?: string;
     private definitionVersion?: number;
-    constructor(bpmnEngine: BpmnEngine, options?: BpmnProcessOptions) {
-        super();
+    constructor(bpmnEngine: BpmnEngine, options?: BpmnProcessInstanceOptions) {
+        const self = this;
         this.bpmnEngine = bpmnEngine;
+        this.eventEmitter = new EventEmitter();
         this.options = options || { name: '', source: '' };
         this.id = this.options.id || this.id;
         this.definitionId = this.options.definitionId;
         this.definitionName = this.options.definitionName;
         this.definitionVersion = this.options.definitionVersion;
-        this.options.name = this.options.name || 'BpmnProcess-' + this.id;
+        this.options.name = this.options.name || this.definitionName || 'BpmnProcess-' + this.id;
         if (typeof this.options.name !== 'string') {
             throw new Error('BpmnProcess name must be string');
         }
-        const self = this;
-        const internalElements = {};
+        this.name = this.options.name;
 
-        const internalServices = {
+        const internalElements = {};
+        const internalExtentions: BpmnExtentions = BpmnProcessInstance.getDefaultExtensions(this);
+        const internalServices: BpmnServices = BpmnProcessInstance.getDefaultBpmnServices(bpmnEngine);
+        const internalModdles = BpmnProcessInstance.getDefaultModdles(bpmnEngine);
+        this.options.moddleOptions = {
+            ...internalModdles,
+            ...this.options.moddleOptions,
+        };
+        this.options.services = { ...internalServices, ...this.options.services };
+        this.options.elements = { ...internalElements, ...this.options.elements };
+        this.options.extensions = { ...internalExtentions, ...this.options.extensions };
+        this.options = { listener: self.eventEmitter, ...this.options };
+        this.processRuntime = Engine(this.options);
+        this.name = this.processRuntime.name;
+        this.emit('created', this);
+    }
+
+    public static getDefaultExtensions(self: BpmnProcessInstance | BpmnDefinitionInstance): BpmnExtentions {
+        return {
+            // NowJsExtension: NowJsExtension(self),
+            ProcessExtension: ProcessExtension(self),
+            FormDataResolverExtension: FormDataResolverExtension(self),
+            BusinessRuleTaskExtension: BusinessRuleTaskExtension(self),
+            HumanInvolvementExtension: HumanInvolvementExtension(self),
+            SaveToResultVariableExtension: SaveToResultVariableExtension(self),
+            ServiceTaskExtension: ServiceTaskExtension(self),
+            UserTaskExtension: UserTaskExtension(self),
+            SaveToEnvironmentOutputExtension: SaveToEnvironmentOutputExtension(self),
+            InputOutputExtension: InputOutputExtension(self),
+            ExecutionListenerExtension: ExecutionListenerExtension(self),
+            DynamicViewResolverExtension: DynamicViewResolverExtension(self),
+            DynamicRouteResolverExtension: DynamicRouteResolverExtension(self),
+        };
+    }
+
+    public static getDefaultModdles(bpmnEngine: BpmnEngine) {
+        return {
+            nowjs: require('nowjs-bpmn-moddle/resources/nowjs.json'),
+            // camunda: require("camunda-bpmn-moddle/resources/camunda.json"),
+        };
+    }
+
+    public static getDefaultBpmnServices(bpmnEngine: BpmnEngine): BpmnServices {
+        return {
             getGroups() {
                 return function getGroupsService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.IdentityService;
                         ids.getGroups().then(r => {
                             return callback(r);
                         });
@@ -406,8 +173,8 @@ export class BpmnProcessInstance extends EventEmitter {
             },
             getUserOfEmployee(employeeIdOrName: string) {
                 return function getManagerOfUserService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
                         ids.getOrganizationEmployee(employeeIdOrName).then(r => {
                             return callback(r);
                         });
@@ -418,8 +185,8 @@ export class BpmnProcessInstance extends EventEmitter {
             },
             getEmployeeOfUser(userIdOrName: string) {
                 return function getEmployeeOfUserService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
                         ids.getOrganizationEmployee(userIdOrName).then(r => {
                             return callback(r);
                         });
@@ -430,8 +197,8 @@ export class BpmnProcessInstance extends EventEmitter {
             },
             getManagerOfUser(userIdOrName: string) {
                 return function getManagerOfUserService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
                         ids.getOrganizationEmployee(userIdOrName).then(r => {
                             return callback(r);
                         });
@@ -442,8 +209,8 @@ export class BpmnProcessInstance extends EventEmitter {
             },
             getCoWorkerOfUser(userIdOrName: string) {
                 return function getCoWorkerOfUserService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
                         ids.getOrganizationEmployee(userIdOrName).then(r => {
                             return callback(r);
                         });
@@ -454,8 +221,8 @@ export class BpmnProcessInstance extends EventEmitter {
             },
             getGroupsOfUser(userIdOrName: string) {
                 return function getGroupsOfUserService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
                         ids.getOrganizationEmployee(userIdOrName).then(r => {
                             return callback(r);
                         });
@@ -466,8 +233,8 @@ export class BpmnProcessInstance extends EventEmitter {
             },
             getUsersOfGroup(groupIdOrName: string) {
                 return function getUsersOfGroupService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.IdentityService;
                         ids.getGroupUsers(groupIdOrName).then(r => {
                             return callback(r);
                         });
@@ -479,8 +246,8 @@ export class BpmnProcessInstance extends EventEmitter {
             getInitiatorUser() {
                 return function getInitiatorUserService(executionContext, callback) {
                     const username = executionContext?.environment?.variables?.initiatorUsername;
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.IdentityService;
                         ids.getUserByUsername(username).then(r => {
                             return callback(r);
                         });
@@ -492,17 +259,17 @@ export class BpmnProcessInstance extends EventEmitter {
             getUser() {
                 return async function getUserService(executionContext) {
                     const username = executionContext?.environment?.variables?.user?.username;
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.IdentityService;
                         return ids.getUserByUsername(username);
                     } else {
                         return null;
                     }
                 };
             },
-            httpJsonApi: httpJsonApi,
-            httpStreamApi: httpStreamApi,
-            httpStringApi: httpStringApi,
+            httpJsonApi: () => httpJsonApi,
+            httpStreamApi: () => httpStreamApi,
+            httpStringApi: () => httpStringApi,
             httpRequestApi: (options: any = {}) => async (scope, callback) => {
                 let result: any = null;
                 const vs = scope?.environment?.variables;
@@ -539,8 +306,8 @@ export class BpmnProcessInstance extends EventEmitter {
                     const { content } = executionContext;
                     const decisionId = options.decisionId || content?.decision?.decisionRef;
                     const dcontext = options.context || content?.decision?.decisionContext || {};
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const dmn = self.BpmnEngine.BpmsEngine.DmnEngine;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const dmn = bpmnEngine.BpmsEngine.DmnEngine;
                         dmn.evaluateDecision<T>(`${decisionId}`, dcontext)
                             .then(result => {
                                 callback(null, result);
@@ -554,35 +321,6 @@ export class BpmnProcessInstance extends EventEmitter {
                 };
             },
         };
-
-        const internalExtentions = {
-            // NowJsExtension: NowJsExtension(self),
-            ProcessExtension: ProcessExtension(self),
-            FormDataResolverExtension: FormDataResolverExtension(self),
-            BusinessRuleTaskExtension: BusinessRuleTaskExtension(self),
-            HumanInvolvementExtension: HumanInvolvementExtension(self),
-            SaveToResultVariableExtension: SaveToResultVariableExtension(self),
-            ServiceTaskExtension: ServiceTaskExtension(self),
-            UserTaskExtension: UserTaskExtension(self),
-            SaveToEnvironmentOutputExtension: SaveToEnvironmentOutputExtension(self),
-            InputOutputExtension: InputOutputExtension(self),
-            ExecutionListenerExtension: ExecutionListenerExtension(self),
-            DynamicViewResolverExtension: DynamicViewResolverExtension(self),
-            DynamicRouteResolverExtension: DynamicRouteResolverExtension(self),
-        };
-        const internalModdles = {
-            nowjs: require('nowjs-bpmn-moddle/resources/nowjs.json'),
-            // camunda: require("camunda-bpmn-moddle/resources/camunda.json"),
-        };
-        this.options.moddleOptions = {
-            ...internalModdles,
-            ...this.options.moddleOptions,
-        };
-        this.options.services = { ...internalServices, ...this.options.services };
-        this.options.elements = { ...internalElements, ...this.options.elements };
-        this.options.extensions = { ...internalExtentions, ...this.options.extensions };
-        this.options = { listener: self, ...this.options };
-        this.processEngine = Engine(this.options);
     }
 
     public get BpmnEngine() {
@@ -591,6 +329,14 @@ export class BpmnProcessInstance extends EventEmitter {
 
     public get Id() {
         return this.id;
+    }
+
+    public get Options() {
+        return  {...this.options};
+    }
+
+    public get Source() {
+        return this.options?.source;
     }
 
     public get DefinitionId() {
@@ -604,38 +350,44 @@ export class BpmnProcessInstance extends EventEmitter {
     }
 
     public get Logger(): BpmnLogger {
-        return this.processEngine.logger;
+        return this.processRuntime.logger;
     }
 
     public get Name(): string {
-        return this.processEngine.name;
+        return this.name;
     }
 
-    public get Broker(): any {
-        return this.processEngine.broker;
+    public get Broker(): BpmnBroker {
+        return this.processRuntime.broker;
     }
 
-    public get State(): any {
-        return this.processEngine.state;
+    public get State(): BpmnEngineRuntimeStateType {
+        return this.processRuntime.state;
     }
 
-    public get Environment(): BpmnProcessExecutionEnvironment {
-        return this.processEngine.environment;
+    public get Environment(): BpmnEnvironment {
+        return this.processRuntime.environment;
     }
 
     public get Stopped(): boolean {
-        return this.processEngine.stopped;
+        return this.processRuntime.stopped;
     }
 
-    public get Execution(): BpmnExecution {
-        return this.processEngine.execution;
+    public get Execution(): BpmnEngineRuntimeExecution {
+        return this.execution;
     }
 
-    public async execute<R extends BpmnExecution>(options?: BpmnProcessExecuteOptions): Promise<R> {
+    public async execute(options?: BpmnProcessExecuteOptions): Promise<BpmnEngineRuntimeApi> {
         const self = this;
-        const p = new Promise<R>(async (resolve, reject) => {
+        const p = new Promise<BpmnEngineRuntimeApi>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.execute({ listener: self, ...options });
+                if(this.execution) return Promise.resolve(this.execution);
+                const r = await self.processRuntime.execute<any>({
+                    // listener: self.eventEmitter,
+                    ...self.options,
+                    ...options,
+                });
+                this.execution = r;
                 resolve(r);
             } catch (error) {
                 reject(error);
@@ -644,16 +396,67 @@ export class BpmnProcessInstance extends EventEmitter {
         return p;
     }
 
-    public onActivityWait(callback: (activity: BpmnProcessActivity, processApi: any) => void) {
+    public on<R>(
+        eventName: BpmnErrorEventType,
+        callback: (activity: BpmnActivity, processApi: BpmnProcess) => R,
+    ): BpmnProcessInstance;
+    public on<R>(
+        eventName: BpmnFlowEventType,
+        callback: (activity: BpmnFlow, processApi: BpmnProcess) => R,
+    ): BpmnProcessInstance;
+    public on<R>(
+        eventName: BpmnActivityEventType,
+        callback: (activity: BpmnActivity, processApi: BpmnProcess) => R,
+    ): BpmnProcessInstance;
+    public on<R>(eventName: string, callback: (...args: any[]) => R): BpmnProcessInstance {
+        this.eventEmitter.on(eventName, callback);
+        return this;
+    }
+
+    public once<R>(
+        eventName: BpmnErrorEventType,
+        callback: (activity: BpmnActivity, processApi: BpmnProcess) => R,
+    ): BpmnProcessInstance;
+    public once<R>(
+        eventName: BpmnFlowEventType,
+        callback: (activity: BpmnFlow, processApi: BpmnProcess) => R,
+    ): BpmnProcessInstance;
+    public once<R>(
+        eventName: BpmnActivityEventType,
+        callback: (activity: BpmnActivity, processApi: BpmnProcess) => R,
+    ): BpmnProcessInstance;
+    public once<R>(eventName: string, callback: (...args: any[]) => R): BpmnProcessInstance {
+        this.eventEmitter.once(eventName, callback);
+        return this;
+    }
+
+    public off<R>(
+        eventName: BpmnErrorEventType,
+        callback: (activity: BpmnActivity, processApi: BpmnProcess) => R,
+    ): BpmnProcessInstance;
+    public off<R>(
+        eventName: BpmnFlowEventType,
+        callback: (activity: BpmnFlow, processApi: BpmnProcess) => R,
+    ): BpmnProcessInstance;
+    public off<R>(
+        eventName: BpmnActivityEventType,
+        callback: (activity: BpmnActivity, processApi: BpmnProcess) => R,
+    ): BpmnProcessInstance;
+    public off<R>(eventName: string, callback: (...args: any[]) => R): BpmnProcessInstance {
+        this.eventEmitter.off(eventName, callback);
+        return this;
+    }
+
+    public onActivityWait(callback: (activity?: BpmnActivity, processApi?: BpmnProcess) => void) {
         this.on('activity.wait', callback);
     }
 
     public onEnd(callback: (payload?: any) => void) {
-        this.processEngine.once('end', callback);
+        this.processRuntime.once('end', callback);
     }
 
     public onError(callback: (error: Error) => void) {
-        this.processEngine.once('error', callback);
+        this.processRuntime.once('error', callback);
     }
 
     /**
@@ -663,7 +466,36 @@ export class BpmnProcessInstance extends EventEmitter {
      * @memberof BpmnProcess
      */
     public async stop(): Promise<void> {
-        return this.processEngine.stop();
+        return this.processRuntime.stop();
+    }
+
+    public destroy(): boolean {
+        this.removeAllListeners();
+        this.emit('destroyed');
+        return true;
+    }
+    public listenerCount(type: string | symbol): number {
+        return this.eventEmitter.listenerCount(type);
+    }
+    public getMaxListeners(): number {
+        return this.eventEmitter.getMaxListeners();
+    }
+    private emit(event: string, ...args: any[]): void {
+        // this.Broker..eventEmitter.emit(event, args );
+        this.Broker.publish('event', 'engine.' + event, { type: event });
+    }
+    public eventNames(): (string | symbol)[] {
+        return this.eventEmitter.eventNames();
+    }
+    private removeAllListeners(event?: string): this {
+        this.eventEmitter.removeAllListeners(event);
+        this.processRuntime.removeAllListeners(event);
+        return this;
+    }
+
+    private removeListener(event: string | symbol, listener: (...args: any[]) => void): this {
+        this.eventEmitter.removeListener(event, listener);
+        return this;
     }
 
     /**
@@ -676,8 +508,9 @@ export class BpmnProcessInstance extends EventEmitter {
      */
     public recover(savedState: BpmnProcessModel, recoverOptions?: BpmnProcessRecoverOptions): BpmnProcessInstance {
         const self = this;
-        this.processEngine = this.processEngine.recover(savedState.data, {
-            listener: self,
+        this.processRuntime = this.processRuntime.recover(savedState.data, {
+            // listener: self.eventEmitter,
+            ...self.options,
             ...recoverOptions,
         });
         return this;
@@ -690,20 +523,30 @@ export class BpmnProcessInstance extends EventEmitter {
      * @returns {Promise<any>}
      * @memberof BpmnProcess
      */
-    public async resume(options?: BpmnProcessResumeOptions): Promise<BpmnExecution> {
+    public async resume(options?: BpmnProcessResumeOptions): Promise<BpmnEngineRuntimeApi> {
         const self = this;
-        const p = new Promise<BpmnExecution>(async (resolve, reject) => {
+        const p = new Promise<BpmnEngineRuntimeApi>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.resume({
-                    listener: self,
-                    ...options,
-                });
-                if (r && r.definitions) {
-                    for (const pdf of r.definitions) {
-                        pdf.run();
-                    }
+                if(this.State==="idle"){
+                    if(this.execution) return Promise.resolve(this.execution);
+                    const r = await self.processRuntime.execute<any>({
+                        // listener: self.eventEmitter,
+                        ...self.options,
+                       ...options,
+                    });
+                    this.execution = r;
+                    resolve(r);
+                } else {
+                    if(this.execution) return Promise.resolve(this.execution);
+                    const r = await self.processRuntime.resume<any>({
+                        // listener: self.eventEmitter,
+                        ...self.options,
+                       ...options,
+                    });
+                    this.execution = r;
+                    resolve(r);
                 }
-                resolve(r);
+               
             } catch (error) {
                 reject(error);
             }
@@ -713,13 +556,13 @@ export class BpmnProcessInstance extends EventEmitter {
     /**
      * Get all definitions
      *
-     * @returns {Promise<bm.Definitions>}
+     * @returns {Promise<BpmnDefinition>}
      * @memberof BpmnProcess
      */
-    public async getDefinitions(): Promise<bm.Definitions> {
-        const p = new Promise<bm.Definitions>(async (resolve, reject) => {
+    public async getDefinitions(): Promise<BpmnDefinition[]> {
+        const p = new Promise<BpmnDefinition[]>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.getDefinitions();
+                const r = this.execution ? this.execution.definitions :  await this.processRuntime.getDefinitions();
                 resolve(r);
             } catch (error) {
                 reject(error);
@@ -736,11 +579,12 @@ export class BpmnProcessInstance extends EventEmitter {
      * @returns {Promise<R>}
      * @memberof BpmnProcess
      */
-    public async getDefinitionById<R extends bm.BaseElement>(id: string): Promise<R> {
-        const p = new Promise<R>(async (resolve, reject) => {
+    public async getDefinitionById(id: string): Promise<BpmnDefinition | null> {
+        const p = new Promise<BpmnDefinition | null>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.getDefinitionById(id);
-                resolve(r);
+                const r = this.execution ? this.execution.definitions.filter(xx=>xx.id === id) : [await this.processRuntime.getDefinitionById(id)];
+                if(r.length>0) return resolve(null);
+                resolve(r[0]);
             } catch (error) {
                 reject(error);
             }
@@ -755,10 +599,10 @@ export class BpmnProcessInstance extends EventEmitter {
      * @returns {Promise<S>}
      * @memberof BpmnProcess
      */
-    public async getState<S extends BpmnProcessExecutionState>(): Promise<S> {
-        const p = new Promise<S>(async (resolve, reject) => {
+    public async getState(): Promise<BpmnEngineRuntimeState> {
+        const p = new Promise<BpmnEngineRuntimeState>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.getState();
+                const r = await this.processRuntime.getState();
                 resolve(r);
             } catch (error) {
                 reject(error);
@@ -775,10 +619,10 @@ export class BpmnProcessInstance extends EventEmitter {
      * @returns {Promise<T>}
      * @memberof BpmnProcess
      */
-    public async waitFor<T>(eventName: string): Promise<T> {
+    public async waitFor<T>(eventName: string, onMessage?: OnMessageCallback): Promise<T> {
         const p = new Promise<T>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.waitFor(eventName);
+                const r = await this.processRuntime.waitFor<T>(eventName, onMessage);
                 resolve(r);
             } catch (error) {
                 reject(error);

@@ -2,8 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BpmnProcessInstance } from '../BpmnProcessInstance';
 import { BpmsRoute } from '../../router/RouterService';
+import { BpmnDefinitionInstance } from '../BpmnDefinitionInstance';
 
-export const DynamicRouteResolverExtension = (processInstance: BpmnProcessInstance) => activity => {
+export const DynamicRouteResolverExtension = (
+    processInstance: BpmnProcessInstance | BpmnDefinitionInstance,
+) => activity => {
     if (!activity.behaviour.extensionElements || !activity.behaviour.extensionElements.values) return;
 
     const extendValues = activity.behaviour.extensionElements.values;

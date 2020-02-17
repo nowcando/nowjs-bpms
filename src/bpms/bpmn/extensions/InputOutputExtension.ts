@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BpmnProcessInstance } from '../BpmnProcessInstance';
+import { BpmnDefinitionInstance } from '../BpmnDefinitionInstance';
 
-export const InputOutputExtension = (processInstance: BpmnProcessInstance) => activity => {
+export const InputOutputExtension = (processInstance: BpmnProcessInstance | BpmnDefinitionInstance) => activity => {
     if (!activity.behaviour.extensionElements || !activity.behaviour.extensionElements.values) return;
 
     const extendValues = activity.behaviour.extensionElements.values;
