@@ -25,15 +25,18 @@ export const UserTaskExtension = (processInstance: BpmnProcessInstance | BpmnDef
                     assignees.push(performerUsers || initiator);
                 }
                 for (const assignee of assignees) {
-                    const f = await bpms.TaskService.find({
+                    const pf = {
                         activityId: api.id,
                         activityType: api.type,
                         processDefinitionId: processInstance.DefinitionId,
                         processInstanceId: processInstance.Id,
-                        ['assignee.userId']: assignee?.userId,
                         tenantId: bpms.Name,
                         completed: false,
-                    });
+                    };
+                    if (assignee.userId) {
+                        pf['assignee.userId'] = assignee?.userId;
+                    }
+                    const f = await bpms.TaskService.find(pf);
                     if (!f) {
                         const t = await bpms.TaskService.create({
                             name: api.name,
