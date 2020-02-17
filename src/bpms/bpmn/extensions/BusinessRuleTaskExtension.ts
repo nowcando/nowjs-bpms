@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { BpmnProcessInstance } from '../BpmnProcessInstance';
 import ExecutionScope from 'bpmn-elements/dist/src/activity/ExecutionScope';
+import { BpmnDefinitionInstance } from '../BpmnDefinitionInstance';
 function BusinessRuleTaskService(activity: any) {
     const { type: atype, behaviour, environment } = activity;
     const expression = behaviour.implementation || behaviour.expression;
@@ -65,7 +66,9 @@ function BusinessRuleTaskDMNService(activity: any) {
     }
 }
 
-export const BusinessRuleTaskExtension = (processInstance: BpmnProcessInstance) => (activity: any) => {
+export const BusinessRuleTaskExtension = (processInstance: BpmnProcessInstance | BpmnDefinitionInstance) => (
+    activity: any,
+) => {
     if (activity.type.toLowerCase() !== 'bpmn:BusinessRuleTask'.toLowerCase()) {
         return;
     }

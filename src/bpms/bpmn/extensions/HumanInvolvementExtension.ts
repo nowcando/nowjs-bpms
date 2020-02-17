@@ -2,8 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BpmnProcessInstance } from '../BpmnProcessInstance';
 import { BpmnActivity } from '../definitions/bpmn-elements';
+import { BpmnDefinitionInstance } from '../BpmnDefinitionInstance';
 
-export const HumanInvolvementExtension = (processInstance: BpmnProcessInstance) => (activity: BpmnActivity) => {
+export const HumanInvolvementExtension = (processInstance: BpmnProcessInstance | BpmnDefinitionInstance) => (
+    activity: BpmnActivity,
+) => {
     if (!activity.behaviour.resources || !activity.behaviour.resources.length) {
         return;
     }

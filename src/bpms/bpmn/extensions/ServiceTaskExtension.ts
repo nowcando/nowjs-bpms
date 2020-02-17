@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { BpmnProcessInstance } from '../BpmnProcessInstance';
 import ExecutionScope from 'bpmn-elements/dist/src/activity/ExecutionScope';
+import { BpmnDefinitionInstance } from '../BpmnDefinitionInstance';
 function ServiceExpression(activity: any) {
     const { type: atype, behaviour, environment } = activity;
     const expression = behaviour.expression || activity.behaviour.implementation;
@@ -29,7 +30,9 @@ function ServiceExpression(activity: any) {
     }
 }
 
-export const ServiceTaskExtension = (processInstance: BpmnProcessInstance) => (activity: any) => {
+export const ServiceTaskExtension = (processInstance: BpmnProcessInstance | BpmnDefinitionInstance) => (
+    activity: any,
+) => {
     if (activity.type.toLowerCase() !== 'bpmn:ServiceTask'.toLowerCase()) {
         return;
     }

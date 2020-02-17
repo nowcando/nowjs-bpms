@@ -45,6 +45,7 @@ import {
     OnMessageCallback,
     BpmnServices,
 } from './definitions/bpmn-elements';
+import { BpmnDefinitionInstance } from './BpmnDefinitionInstance';
 
 const { Engine } = require('bpmn-engine');
 const httpJsonApi = bent('json');
@@ -87,16 +88,18 @@ export type BpmnProcessRecoverOptions = BpmnProcessInstanceOptions;
 export type BpmnProcessResumeOptions = BpmnProcessInstanceOptions;
 
 export class BpmnProcessInstance {
-    private processEngine: BpmnEngineRuntime;
+    private processRuntime: BpmnEngineRuntime;
     private bpmnEngine: BpmnEngine;
     private eventEmitter: EventEmitter;
     private options?: BpmnProcessInstanceOptions;
 
+    private name: string;
     private id = uuidv1();
     private definitionId?: string;
     private definitionName?: string;
     private definitionVersion?: number;
     constructor(bpmnEngine: BpmnEngine, options?: BpmnProcessInstanceOptions) {
+        const self = this;
         this.bpmnEngine = bpmnEngine;
         this.eventEmitter = new EventEmitter();
         this.options = options || { name: '', source: '' };
@@ -108,14 +111,56 @@ export class BpmnProcessInstance {
         if (typeof this.options.name !== 'string') {
             throw new Error('BpmnProcess name must be string');
         }
-        const self = this;
-        const internalElements = {};
+        this.name = this.options.name;
 
-        const internalServices: BpmnServices = {
+        const internalElements = {};
+        const internalExtentions: BpmnExtentions = BpmnProcessInstance.getDefaultExtensions(this);
+        const internalServices: BpmnServices = BpmnProcessInstance.getDefaultBpmnServices(bpmnEngine);
+        const internalModdles = BpmnProcessInstance.getDefaultModdles(bpmnEngine);
+        this.options.moddleOptions = {
+            ...internalModdles,
+            ...this.options.moddleOptions,
+        };
+        this.options.services = { ...internalServices, ...this.options.services };
+        this.options.elements = { ...internalElements, ...this.options.elements };
+        this.options.extensions = { ...internalExtentions, ...this.options.extensions };
+        this.options = { listener: self.eventEmitter, ...this.options };
+        this.processRuntime = Engine(this.options);
+        this.name = this.processRuntime.name;
+        this.emit('created', this);
+    }
+
+    public static getDefaultExtensions(self: BpmnProcessInstance | BpmnDefinitionInstance): BpmnExtentions {
+        return {
+            // NowJsExtension: NowJsExtension(self),
+            ProcessExtension: ProcessExtension(self),
+            FormDataResolverExtension: FormDataResolverExtension(self),
+            BusinessRuleTaskExtension: BusinessRuleTaskExtension(self),
+            HumanInvolvementExtension: HumanInvolvementExtension(self),
+            SaveToResultVariableExtension: SaveToResultVariableExtension(self),
+            ServiceTaskExtension: ServiceTaskExtension(self),
+            UserTaskExtension: UserTaskExtension(self),
+            SaveToEnvironmentOutputExtension: SaveToEnvironmentOutputExtension(self),
+            InputOutputExtension: InputOutputExtension(self),
+            ExecutionListenerExtension: ExecutionListenerExtension(self),
+            DynamicViewResolverExtension: DynamicViewResolverExtension(self),
+            DynamicRouteResolverExtension: DynamicRouteResolverExtension(self),
+        };
+    }
+
+    public static getDefaultModdles(bpmnEngine: BpmnEngine) {
+        return {
+            nowjs: require('nowjs-bpmn-moddle/resources/nowjs.json'),
+            // camunda: require("camunda-bpmn-moddle/resources/camunda.json"),
+        };
+    }
+
+    public static getDefaultBpmnServices(bpmnEngine: BpmnEngine): BpmnServices {
+        return {
             getGroups() {
                 return function getGroupsService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.IdentityService;
                         ids.getGroups().then(r => {
                             return callback(r);
                         });
@@ -126,8 +171,8 @@ export class BpmnProcessInstance {
             },
             getUserOfEmployee(employeeIdOrName: string) {
                 return function getManagerOfUserService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
                         ids.getOrganizationEmployee(employeeIdOrName).then(r => {
                             return callback(r);
                         });
@@ -138,8 +183,8 @@ export class BpmnProcessInstance {
             },
             getEmployeeOfUser(userIdOrName: string) {
                 return function getEmployeeOfUserService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
                         ids.getOrganizationEmployee(userIdOrName).then(r => {
                             return callback(r);
                         });
@@ -150,8 +195,8 @@ export class BpmnProcessInstance {
             },
             getManagerOfUser(userIdOrName: string) {
                 return function getManagerOfUserService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
                         ids.getOrganizationEmployee(userIdOrName).then(r => {
                             return callback(r);
                         });
@@ -162,8 +207,8 @@ export class BpmnProcessInstance {
             },
             getCoWorkerOfUser(userIdOrName: string) {
                 return function getCoWorkerOfUserService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
                         ids.getOrganizationEmployee(userIdOrName).then(r => {
                             return callback(r);
                         });
@@ -174,8 +219,8 @@ export class BpmnProcessInstance {
             },
             getGroupsOfUser(userIdOrName: string) {
                 return function getGroupsOfUserService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.OrganizationService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
                         ids.getOrganizationEmployee(userIdOrName).then(r => {
                             return callback(r);
                         });
@@ -186,8 +231,8 @@ export class BpmnProcessInstance {
             },
             getUsersOfGroup(groupIdOrName: string) {
                 return function getUsersOfGroupService(executionContext, callback) {
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.IdentityService;
                         ids.getGroupUsers(groupIdOrName).then(r => {
                             return callback(r);
                         });
@@ -199,8 +244,8 @@ export class BpmnProcessInstance {
             getInitiatorUser() {
                 return function getInitiatorUserService(executionContext, callback) {
                     const username = executionContext?.environment?.variables?.initiatorUsername;
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.IdentityService;
                         ids.getUserByUsername(username).then(r => {
                             return callback(r);
                         });
@@ -212,8 +257,8 @@ export class BpmnProcessInstance {
             getUser() {
                 return async function getUserService(executionContext) {
                     const username = executionContext?.environment?.variables?.user?.username;
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const ids = self.BpmnEngine.BpmsEngine.IdentityService;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.IdentityService;
                         return ids.getUserByUsername(username);
                     } else {
                         return null;
@@ -259,8 +304,8 @@ export class BpmnProcessInstance {
                     const { content } = executionContext;
                     const decisionId = options.decisionId || content?.decision?.decisionRef;
                     const dcontext = options.context || content?.decision?.decisionContext || {};
-                    if (self.BpmnEngine && self.BpmnEngine.BpmsEngine) {
-                        const dmn = self.BpmnEngine.BpmsEngine.DmnEngine;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const dmn = bpmnEngine.BpmsEngine.DmnEngine;
                         dmn.evaluateDecision<T>(`${decisionId}`, dcontext)
                             .then(result => {
                                 callback(null, result);
@@ -274,36 +319,6 @@ export class BpmnProcessInstance {
                 };
             },
         };
-
-        const internalExtentions: BpmnExtentions = {
-            // NowJsExtension: NowJsExtension(self),
-            ProcessExtension: ProcessExtension(self),
-            FormDataResolverExtension: FormDataResolverExtension(self),
-            BusinessRuleTaskExtension: BusinessRuleTaskExtension(self),
-            HumanInvolvementExtension: HumanInvolvementExtension(self),
-            SaveToResultVariableExtension: SaveToResultVariableExtension(self),
-            ServiceTaskExtension: ServiceTaskExtension(self),
-            UserTaskExtension: UserTaskExtension(self),
-            SaveToEnvironmentOutputExtension: SaveToEnvironmentOutputExtension(self),
-            InputOutputExtension: InputOutputExtension(self),
-            ExecutionListenerExtension: ExecutionListenerExtension(self),
-            DynamicViewResolverExtension: DynamicViewResolverExtension(self),
-            DynamicRouteResolverExtension: DynamicRouteResolverExtension(self),
-        };
-        const internalModdles = {
-            nowjs: require('nowjs-bpmn-moddle/resources/nowjs.json'),
-            // camunda: require("camunda-bpmn-moddle/resources/camunda.json"),
-        };
-        this.options.moddleOptions = {
-            ...internalModdles,
-            ...this.options.moddleOptions,
-        };
-        this.options.services = { ...internalServices, ...this.options.services };
-        this.options.elements = { ...internalElements, ...this.options.elements };
-        this.options.extensions = { ...internalExtentions, ...this.options.extensions };
-        this.options = { listener: self.eventEmitter, ...this.options };
-        this.processEngine = Engine(self.options);
-        this.emit('created', this);
     }
 
     public get BpmnEngine() {
@@ -312,6 +327,14 @@ export class BpmnProcessInstance {
 
     public get Id() {
         return this.id;
+    }
+
+    public get Options() {
+        return  {...this.options};
+    }
+
+    public get Source() {
+        return this.options?.source;
     }
 
     public get DefinitionId() {
@@ -325,38 +348,42 @@ export class BpmnProcessInstance {
     }
 
     public get Logger(): BpmnLogger {
-        return this.processEngine.logger;
+        return this.processRuntime.logger;
     }
 
     public get Name(): string {
-        return this.processEngine.name;
+        return this.processRuntime.name;
     }
 
     public get Broker(): BpmnBroker {
-        return this.processEngine.broker;
+        return this.processRuntime.broker;
     }
 
     public get State(): BpmnEngineRuntimeStateType {
-        return this.processEngine.state;
+        return this.processRuntime.state;
     }
 
     public get Environment(): BpmnEnvironment {
-        return this.processEngine.environment;
+        return this.processRuntime.environment;
     }
 
     public get Stopped(): boolean {
-        return this.processEngine.stopped;
+        return this.processRuntime.stopped;
     }
 
     public get Execution(): BpmnProcessExecution {
-        return this.processEngine.execution;
+        return this.processRuntime.execution;
     }
 
     public async execute(options?: BpmnProcessExecuteOptions): Promise<BpmnEngineRuntimeApi> {
         const self = this;
         const p = new Promise<BpmnEngineRuntimeApi>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.execute<any>({ listener: self, ...options });
+                const r = await self.processRuntime.execute<any>({
+                    // listener: self.eventEmitter,
+                    ...self.options,
+                    ...options,
+                });
                 resolve(r);
             } catch (error) {
                 reject(error);
@@ -421,11 +448,11 @@ export class BpmnProcessInstance {
     }
 
     public onEnd(callback: (payload?: any) => void) {
-        this.processEngine.once('end', callback);
+        this.processRuntime.once('end', callback);
     }
 
     public onError(callback: (error: Error) => void) {
-        this.processEngine.once('error', callback);
+        this.processRuntime.once('error', callback);
     }
 
     /**
@@ -435,7 +462,7 @@ export class BpmnProcessInstance {
      * @memberof BpmnProcess
      */
     public async stop(): Promise<void> {
-        return this.processEngine.stop();
+        return this.processRuntime.stop();
     }
 
     public destroy(): boolean {
@@ -458,6 +485,7 @@ export class BpmnProcessInstance {
     }
     private removeAllListeners(event?: string): this {
         this.eventEmitter.removeAllListeners(event);
+        this.processRuntime.removeAllListeners(event);
         return this;
     }
 
@@ -476,8 +504,9 @@ export class BpmnProcessInstance {
      */
     public recover(savedState: BpmnProcessModel, recoverOptions?: BpmnProcessRecoverOptions): BpmnProcessInstance {
         const self = this;
-        this.processEngine = this.processEngine.recover(savedState.data, {
-            listener: self,
+        this.processRuntime = this.processRuntime.recover(savedState.data, {
+            // listener: self.eventEmitter,
+            ...self.options,
             ...recoverOptions,
         });
         return this;
@@ -494,16 +523,22 @@ export class BpmnProcessInstance {
         const self = this;
         const p = new Promise<BpmnEngineRuntimeApi>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.resume<any>({
-                    listener: self,
-                    ...options,
-                });
-                if (r && r.definitions) {
-                    for (const pdf of r.definitions) {
-                        pdf.run();
-                    }
+                if(this.State==="idle"){
+                    const r = await self.processRuntime.execute<any>({
+                        // listener: self.eventEmitter,
+                        ...self.options,
+                       ...options,
+                    });
+                    resolve(r);
+                } else {
+                    const r = await self.processRuntime.resume<any>({
+                        // listener: self.eventEmitter,
+                        ...self.options,
+                       ...options,
+                    });
+                    resolve(r);
                 }
-                resolve(r);
+               
             } catch (error) {
                 reject(error);
             }
@@ -519,7 +554,7 @@ export class BpmnProcessInstance {
     public async getDefinitions(): Promise<BpmnDefinition[]> {
         const p = new Promise<BpmnDefinition[]>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.getDefinitions();
+                const r = await this.processRuntime.getDefinitions();
                 resolve(r);
             } catch (error) {
                 reject(error);
@@ -539,7 +574,7 @@ export class BpmnProcessInstance {
     public async getDefinitionById(id: string): Promise<BpmnDefinition> {
         const p = new Promise<BpmnDefinition>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.getDefinitionById(id);
+                const r = await this.processRuntime.getDefinitionById(id);
                 resolve(r);
             } catch (error) {
                 reject(error);
@@ -558,7 +593,7 @@ export class BpmnProcessInstance {
     public async getState(): Promise<BpmnEngineRuntimeState> {
         const p = new Promise<BpmnEngineRuntimeState>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.getState();
+                const r = await this.processRuntime.getState();
                 resolve(r);
             } catch (error) {
                 reject(error);
@@ -578,7 +613,7 @@ export class BpmnProcessInstance {
     public async waitFor<T>(eventName: string, onMessage?: OnMessageCallback): Promise<T> {
         const p = new Promise<T>(async (resolve, reject) => {
             try {
-                const r = await this.processEngine.waitFor<T>(eventName, onMessage);
+                const r = await this.processRuntime.waitFor<T>(eventName, onMessage);
                 resolve(r);
             } catch (error) {
                 reject(error);

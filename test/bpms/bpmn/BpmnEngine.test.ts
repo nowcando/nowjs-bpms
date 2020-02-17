@@ -200,19 +200,56 @@ describe('BpmnEngine', () => {
             });
         });
         describe('recover', () => {
-            it('should be recover all persisted processes', async () => {
-                const bpe = BpmnEngine.createEngine({ name: 'MyEngine1' });
+            it('should be recover persisted process', async () => {
+                const bpe = BpmnEngine.createEngine({ name: 'MyEngine26' });
                 expect(bpe).toBeDefined();
                 const pr1 = await bpe.createProcess({
+                    name: 'Process 4',
+                    source: source2,
+                });
+                pr1.once('wait', task => {
+                    console.log(`${task.name} wait`);
+                });
+                await bpe.stopProcess(pr1.Id, true); // persiste and stop
+                const pr2 = await bpe.recoverProcess(pr1.Id, pr1.Source); // recover process
+                // resume process 2
+                pr2?.once('wait', task => {
+                    console.log(`${task.name} wait`);
+                });
+                const n2 = await pr2?.execute();
+                const pp21 = await n2?.getPostponed();
+                const ut = n2?.definitions[0].getActivityById('userTask');
+                const uapi = ut?.getApi();
+                uapi?.signal({
+                    ioSpecification: {
+                        dataOutputs: [
+                            {
+                                id: 'userInput',
+                                value: 'Saeed Tabrizi',
+                            },
+                        ],
+                    },
+                });
+                const pp22 = await n2?.getPostponed();
+                const s2 = pr2?.Environment.output;
+                expect(n2).toBeDefined();
+                expect(s2).toBeDefined();
+                // resume process 3
+            });
+            it('should be recover all persisted processes', async () => {
+                const bpe = BpmnEngine.createEngine({ name: 'MyEngine16' });
+                expect(bpe).toBeDefined();
+                await bpe.createDefinitions('Process1', source1);
+                await bpe.createDefinitions('Process2', source2);
+                await bpe.createDefinitions('Process3', source3);
+                const pr1 = await bpe.createProcess({
                     name: 'Process1',
-                    source: source1,
                 });
                 expect(pr1).toBeDefined();
                 const prState1 = await pr1.getState();
                 expect(prState1).toBeDefined();
                 const pr2 = await bpe.createProcess({
                     name: 'Process2',
-                    source: source2,
                 });
                 expect(pr2).toBeDefined();
                 const prState2 = await pr2.getState();
@@ -220,7 +257,6 @@ describe('BpmnEngine', () => {
                 // process 3
                 const pr3 = await bpe.createProcess({
                     name: 'Process3',
-                    source: source3,
                 });
                 expect(pr3).toBeDefined();
                 const prState3 = await pr3.getState();
@@ -234,7 +270,7 @@ describe('BpmnEngine', () => {
                 const c = await bpe.persistedProcessCount();
                 expect(c).toBe(3);
                 // recover persisted
-                const r = await bpe.recoverProcesses({ resume: false });
+                const r = await bpe.recoverProcesses();
                 expect(r).toBeDefined();
                 const al1 = await bpe.listLoadedProcess();
                 const ap1 = al1[0];
@@ -245,22 +281,36 @@ describe('BpmnEngine', () => {
                 expect(pr2.Id).toEqual(ap2.Id);
                 const aps1 = ap1.State;
                 expect(aps1).toEqual(pr1.State);
-                const l1 = new EventEmitter();
                 ap2.once('wait', task => {
-                    task.signal({
-                        ioSpecification: {
-                            dataOutputs: [
-                                {
-                                    id: 'userInput',
-                                    value: 'Saeed Tabrizi',
-                                },
-                            ],
-                        },
-                    });
+                    console.log(`${task.name} wait`);
+                    // task.signal({
+                    // ioSpecification: {
+                    //     dataOutputs: [
+                    //         {
+                    //             id: 'userInput',
+                    //             value: 'Saeed Tabrizi',
+                    //         },
+                    //     ],
+                    // },
+                    // });
                 });
                 // resume process 2
                 const n2 = await ap2.resume();
-                const s2 = await ap2.Environment.output;
+                const pp21 = await n2.getPostponed();
+                const ut = n2.definitions[0].getActivityById('userTask');
+                const uapi = ut?.getApi();
+                uapi?.signal({
+                    ioSpecification: {
+                        dataOutputs: [
+                            {
+                                id: 'userInput',
+                                value: 'Saeed Tabrizi',
+                            },
+                        ],
+                    },
+                });
+                const pp22 = await n2.getPostponed();
+                const s2 = ap2.Environment.output;
                 expect(n2).toBeDefined();
                 expect(s2).toBeDefined();
                 // resume process 3
@@ -270,7 +320,7 @@ describe('BpmnEngine', () => {
                     ap3.Logger.warn(`${task.type} : ${task.name}`);
                 });
                 const n3 = await ap3.resume();
-                const s3 = await ap3.Environment.output;
+                const s3 = ap3.Environment.output;
                 expect(n3).toBeDefined();
                 expect(s3).toBeDefined();
                 // await ap2.stop();
@@ -359,7 +409,7 @@ describe('BpmnEngine', () => {
         });
         describe('listeners', () => {
             it('start', async () => {
-                const bpms = BpmsEngine.createEngine({ name: 'MyEngine1' });
+                const bpms = BpmsEngine.createEngine({ name: 'MyEngine15' });
                 const bpe = bpms.BpmnEngine;
                 expect(bpe).toBeDefined();
                 await bpms.DmnEngine.create({ name: 'Decide Team Rules', definitions: TeamChoosingRules });

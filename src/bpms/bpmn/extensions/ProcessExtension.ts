@@ -2,8 +2,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BpmnProcessInstance } from '../BpmnProcessInstance';
 import { BpmsRoute } from '../../router/RouterService';
+import { BpmnDefinitionInstance } from '../BpmnDefinitionInstance';
 
-export const ProcessExtension = (processInstance: BpmnProcessInstance) => activity => {
+export const ProcessExtension = (processInstance: BpmnProcessInstance | BpmnDefinitionInstance) => activity => {
     if (activity.type !== 'bpmn:Process') return;
 
     const bpms = processInstance.BpmnEngine.BpmsEngine;

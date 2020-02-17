@@ -2,8 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BpmnProcessInstance } from '../BpmnProcessInstance';
 import { BpmsDynamicView, BpmsDynamicViewModel } from '../../ui/UIService';
+import { BpmnDefinitionInstance } from '../BpmnDefinitionInstance';
 
-export const DynamicViewResolverExtension = (processInstance: BpmnProcessInstance) => activity => {
+export const DynamicViewResolverExtension = (
+    processInstance: BpmnProcessInstance | BpmnDefinitionInstance,
+) => activity => {
     if (!activity.behaviour.extensionElements || !activity.behaviour.extensionElements.values) return;
 
     const extendValues = activity.behaviour.extensionElements.values;
