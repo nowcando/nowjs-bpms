@@ -2,6 +2,13 @@
 
 ##### Bug Fixes
 
+*  assignee userId ([2a0e0ee3](https://github.com/nowcando/nowjs-bpms/commit/2a0e0ee3e712e2c4b7b798caedc7081857128c34))
+*  UserTask extension create task. ([d1f41b31](https://github.com/nowcando/nowjs-bpms/commit/d1f41b3175d52dbe2faa060128b1d0da1e1ebdb6))
+
+### 0.34.0 (2020-02-17)
+
+##### Bug Fixes
+
 *  UserTask extension create task. ([d1f41b31](https://github.com/nowcando/nowjs-bpms/commit/d1f41b3175d52dbe2faa060128b1d0da1e1ebdb6))
 
 ### 0.33.0 (2020-02-17)
