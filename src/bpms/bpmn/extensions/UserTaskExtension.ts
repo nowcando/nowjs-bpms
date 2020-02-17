@@ -30,7 +30,7 @@ export const UserTaskExtension = (processInstance: BpmnProcessInstance | BpmnDef
                         activityType: api.type,
                         processDefinitionId: processInstance.DefinitionId,
                         processInstanceId: processInstance.Id,
-                        ['assignee.userId']: assignee.userId,
+                        ['assignee.userId']: assignee?.userId,
                         tenantId: bpms.Name,
                         completed: false,
                     });
