@@ -1,3 +1,9 @@
+### 0.35.0 (2020-02-17)
+
+##### Bug Fixes
+
+*  assignee userid ([2b40f7bb](https://github.com/nowcando/nowjs-bpms/commit/2b40f7bb049da90d40024b4130b7dea8122019b0))
+
 ### 0.34.0 (2020-02-17)
 
 ##### Bug Fixes
