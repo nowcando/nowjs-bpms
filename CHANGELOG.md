@@ -1,3 +1,9 @@
+### 0.37.0 (2020-02-17)
+
+##### Bug Fixes
+
+*  assignee null checking ([7bd04027](https://github.com/nowcando/nowjs-bpms/commit/7bd0402727c52473ae2c4b3c16f4c2938c040c09))
+
 ### 0.36.0 (2020-02-17)
 
 ##### Bug Fixes
