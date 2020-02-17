@@ -1,3 +1,9 @@
+### 0.33.0 (2020-02-17)
+
+##### Bug Fixes
+
+*  Process Execution ([719f55fa](https://github.com/nowcando/nowjs-bpms/commit/719f55fac408d177d8b5a947aea94353333eb229))
+
 ### 0.32.0 (2020-02-17)
 
 ##### Bug Fixes
