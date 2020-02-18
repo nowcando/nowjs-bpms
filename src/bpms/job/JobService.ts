@@ -42,24 +42,20 @@ export interface BpmsJob {
     name?: string;
     assignee?: string;
     priority?: string;
-    refTenantId?: string;
-    refProcessInstanceId?: string;
-    refProcessId?: string;
-    refProcessExecutionId?: string;
-    refActivityId?: string;
+    tenantId?: string;
+    processDefinitionId?: string;
+    processDefinitionName?: string;
+    processDefinitionVersion?: number;
+    processInstanceId?: string;
+    processInstanceName?: string;
+    processExecutionId?: string;
     createdAt?: Date;
     seenAt?: Date;
     updatedAt?: Date;
+    completed?: boolean;
     completedAt?: Date;
-    dueDate?: Date;
-    followUpDate?: Date;
     tags?: string;
     categories?: string;
-
-    completed?: boolean;
-    seen?: boolean;
-
-    views?: string;
 }
 export interface JobServiceOptions {
     jobRepository?: JobRepository;
@@ -100,7 +96,8 @@ export class JobService<T extends BpmsJob = BpmsJob> implements BpmsService {
         return this.jobRepository.clear();
     }
     public async create(job: T): Promise<T> {
-        return this.jobRepository.create(job);
+        const r = this.jobRepository.create(job);
+        return r;
     }
     public async remove(jobId: IdExpression): Promise<boolean> {
         return this.jobRepository.delete(jobId);
@@ -123,13 +120,6 @@ export class JobService<T extends BpmsJob = BpmsJob> implements BpmsService {
     public async scalar(options: ScalarOptions): Promise<number> {
         return this.jobRepository.scalar(options);
     }
-
-    public async updateJobDueDate(jobId: string, dueDate: Date | undefined): Promise<T> {
-        return this.jobRepository.update(jobId, { dueDate });
-    }
-    public async updateJobFollowUpDate(jobId: string, followUpDate: Date | undefined): Promise<T> {
-        return this.jobRepository.update(jobId, { followUpDate });
-    }
     public async updateJobTags(jobId: string, tags: string | undefined): Promise<T> {
         return this.jobRepository.update(jobId, { tags });
     }
@@ -138,9 +128,6 @@ export class JobService<T extends BpmsJob = BpmsJob> implements BpmsService {
     }
 
     public async jobCompleted(jobId: string): Promise<T> {
-        return this.jobRepository.update(jobId, { complete: true });
-    }
-    public async jobSeen(jobId: string): Promise<T> {
-        return this.jobRepository.update(jobId, { seen: true });
+        return this.jobRepository.update(jobId, { complete: true, completedAt: new Date() });
     }
 }

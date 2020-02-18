@@ -221,7 +221,7 @@ export class BpmsEngine {
         return this.uiService as any;
     }
 
-    public get JobService(): QueryService {
+    public get JobService(): JobService {
         return this.jobService as any;
     }
     public get QueryService(): QueryService {

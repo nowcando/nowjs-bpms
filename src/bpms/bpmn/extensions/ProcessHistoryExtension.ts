@@ -5,6 +5,13 @@ import { BpmsRoute } from '../../router/RouterService';
 import { BpmnDefinitionInstance } from '../BpmnDefinitionInstance';
 import { BpmnActivity } from '../definitions/bpmn-elements';
 
+function getMessage(message: BpmnActivity) {
+    const { variables, output } = message.environment || {};
+    const { fields, content, properties, ...v } = variables;
+    const { fields: fields1, content: content1, properties: properties1, ...o } = output;
+    const d = { variables: v, output: o };
+    return d;
+}
 export const ProcessHistoryExtension = (processInstance: BpmnProcessInstance | BpmnDefinitionInstance) => (
     activity: BpmnActivity,
 ) => {
@@ -13,6 +20,7 @@ export const ProcessHistoryExtension = (processInstance: BpmnProcessInstance | B
     const bpms = processInstance.BpmnEngine.BpmsEngine;
     if (bpms) {
         activity.on('activity.enter', message => {
+            const d = getMessage(message);
             bpms.HistoryService.create({
                 type: 'info',
                 source: 'ProcessHistoryExtension',
@@ -26,11 +34,12 @@ export const ProcessHistoryExtension = (processInstance: BpmnProcessInstance | B
                     id: activity?.id,
                     name: activity?.name,
                     type: activity?.type,
-                    message,
+                    d,
                 },
             });
         });
         activity.on('activity.leave', message => {
+            const d = getMessage(message);
             bpms.HistoryService.create({
                 type: 'info',
                 source: 'ProcessHistoryExtension',
@@ -44,11 +53,12 @@ export const ProcessHistoryExtension = (processInstance: BpmnProcessInstance | B
                     id: activity?.id,
                     name: activity?.name,
                     type: activity?.type,
-                    message,
+                    d,
                 },
             });
         });
         activity.on('activity.start', message => {
+            const d = getMessage(message);
             bpms.HistoryService.create({
                 type: 'info',
                 source: 'ProcessHistoryExtension',
@@ -62,11 +72,12 @@ export const ProcessHistoryExtension = (processInstance: BpmnProcessInstance | B
                     id: activity?.id,
                     name: activity?.name,
                     type: activity?.type,
-                    message,
+                    d,
                 },
             });
         });
         activity.on('activity.end', message => {
+            const d = getMessage(message);
             bpms.HistoryService.create({
                 type: 'info',
                 source: 'ProcessHistoryExtension',
@@ -80,11 +91,12 @@ export const ProcessHistoryExtension = (processInstance: BpmnProcessInstance | B
                     id: activity?.id,
                     name: activity?.name,
                     type: activity?.type,
-                    message,
+                    d,
                 },
             });
         });
         activity.on('activity.wait', message => {
+            const d = getMessage(message);
             bpms.HistoryService.create({
                 type: 'info',
                 source: 'ProcessHistoryExtension',
@@ -98,11 +110,12 @@ export const ProcessHistoryExtension = (processInstance: BpmnProcessInstance | B
                     id: activity?.id,
                     name: activity?.name,
                     type: activity?.type,
-                    message,
+                    d,
                 },
             });
         });
         activity.on('activity.throw', message => {
+            const d = getMessage(message);
             bpms.HistoryService.create({
                 type: 'info',
                 source: 'ProcessHistoryExtension',
@@ -116,11 +129,12 @@ export const ProcessHistoryExtension = (processInstance: BpmnProcessInstance | B
                     id: activity?.id,
                     name: activity?.name,
                     type: activity?.type,
-                    message,
+                    d,
                 },
             });
         });
         activity.on('activity.error', message => {
+            const d = getMessage(message);
             bpms.HistoryService.create({
                 type: 'info',
                 source: 'ProcessHistoryExtension',
@@ -134,11 +148,12 @@ export const ProcessHistoryExtension = (processInstance: BpmnProcessInstance | B
                     id: activity?.id,
                     name: activity?.name,
                     type: activity?.type,
-                    message,
+                    d,
                 },
             });
         });
         activity.on('flow.take', message => {
+            const d = getMessage(message);
             bpms.HistoryService.create({
                 type: 'info',
                 source: 'ProcessHistoryExtension',
@@ -152,11 +167,12 @@ export const ProcessHistoryExtension = (processInstance: BpmnProcessInstance | B
                     id: activity?.id,
                     name: activity?.name,
                     type: activity?.type,
-                    message,
+                    d,
                 },
             });
         });
         activity.on('flow.discard', message => {
+            const d = getMessage(message);
             bpms.HistoryService.create({
                 type: 'info',
                 source: 'ProcessHistoryExtension',
@@ -170,11 +186,12 @@ export const ProcessHistoryExtension = (processInstance: BpmnProcessInstance | B
                     id: activity?.id,
                     name: activity?.name,
                     type: activity?.type,
-                    message,
+                    d,
                 },
             });
         });
         activity.on('flow.loop', message => {
+            const d = getMessage(message);
             bpms.HistoryService.create({
                 type: 'info',
                 source: 'ProcessHistoryExtension',
@@ -188,7 +205,7 @@ export const ProcessHistoryExtension = (processInstance: BpmnProcessInstance | B
                     id: activity?.id,
                     name: activity?.name,
                     type: activity?.type,
-                    message,
+                    d,
                 },
             });
         });

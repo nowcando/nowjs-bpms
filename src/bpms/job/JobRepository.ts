@@ -9,24 +9,20 @@ export interface JobModel {
     name?: string;
     assignee?: string;
     priority?: string;
-    refTenantId?: string;
-    refProcessInstanceId?: string;
-    refProcessId?: string;
-    refProcessExecutionId?: string;
-    refActivityId?: string;
+    tenantId?: string;
+    processDefinitionId?: string;
+    processDefinitionName?: string;
+    processDefinitionVersion?: number;
+    processInstanceId?: string;
+    processInstanceName?: string;
+    processExecutionId?: string;
     createdAt?: Date;
     seenAt?: Date;
     updatedAt?: Date;
+    completed?: boolean;
     completedAt?: Date;
-    dueDate?: Date;
-    followUpDate?: Date;
     tags?: string;
     categories?: string;
-
-    completed?: boolean;
-    seen?: boolean;
-
-    views?: string;
 }
 
 export interface JobQueryFilter {
