@@ -1,3 +1,13 @@
+### 0.40.0 (2020-02-18)
+
+##### New Features
+
+*  extensions and services in bpm engine ([1d6570c8](https://github.com/nowcando/nowjs-bpms/commit/1d6570c88911b71b7c61a5da3620e0da938152c8))
+
+##### Bug Fixes
+
+*  job and documentation ([2d19c649](https://github.com/nowcando/nowjs-bpms/commit/2d19c64988d9744580ac87b210bc955f1b758704))
+
 ### 0.39.0 (2020-02-18)
 
 ##### Bug Fixes
