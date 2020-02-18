@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmsEngine } from '../BpmsEngine';
-import { QueryOptions, QueryResult, ScalarOptions, FilterExpression } from '../data/Repository';
+import { QueryOptions, QueryResult, ScalarOptions, FilterExpression, IdExpression } from '../data/Repository';
 import { NotificationRepository, NotificationMemoryRepository } from './NotificationRepository';
 import { BpmsService } from '../BpmsService';
 
@@ -13,10 +13,14 @@ export interface NotificationServiceOptions {
 export interface BpmsNotification {
     id: string;
     message: string;
-
+    type: string;
+    route: string;
     to: string;
-    delivered: boolean;
-    seen: boolean;
+    delivered?: boolean;
+    deliveredAt: boolean;
+    seen?: boolean;
+    seenAt?: boolean;
+    userId?: IdExpression;
 }
 
 export class NotificationService<T extends BpmsNotification = BpmsNotification> implements BpmsService {

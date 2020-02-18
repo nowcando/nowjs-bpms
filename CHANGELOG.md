@@ -1,3 +1,9 @@
+### 0.38.0 (2020-02-18)
+
+##### New Features
+
+*  Process History added ([b230c409](https://github.com/nowcando/nowjs-bpms/commit/b230c409260fa69239b936db3bb8f47676160e84))
+
 ### 0.37.0 (2020-02-17)
 
 ##### Bug Fixes

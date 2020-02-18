@@ -22,7 +22,7 @@ export interface BpmsHistoryEntry {
     tenantId?: string;
     userId?: string;
 
-    type: 'info'|'warn'|'error'|'fatal';
+    type: 'info'|'warn'|'error'|'fatal'|'debug';
 }
 export class HistoryService<T extends BpmsHistoryEntry = BpmsHistoryEntry> implements BpmsService {
     private historyRepository: HistoryRepository<T>;
