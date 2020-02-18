@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import * as elements from 'bpmn-elements';
@@ -5,7 +6,7 @@ import * as elements from 'bpmn-elements';
 import BpmnModdle from 'bpmn-moddle';
 
 import { default as serialize, TypeResolver } from 'moddle-context-serializer';
-import { BpmnApiExecutionContext, BpmnDefinition, BpmnServices, BpmnExtentions } from './definitions/bpmn-elements';
+import { BpmnApiExecutionContext, BpmnDefinition, BpmnServices, BpmnExtensions } from './definitions/bpmn-elements';
 import { BpmnEngine } from './BpmnEngine';
 import { uuidv1 } from 'nowjs-core/lib/utils/UuidUtils';
 import { BpmnProcessInstance } from '.';
@@ -22,21 +23,33 @@ export class BpmnDefinitionInstance {
     private definitionVersion?: number;
     private options: any = {};
     constructor(bpmnEngine: BpmnEngine, options: any) {
+        const self = this;
         this.id = options.id;
         this.definitionId = options.definitionId;
         this.definitionName = options.definitionName;
         this.definitionVersion = options.definitionVersion;
         const internalElements = {};
-        const internalServices: BpmnServices = BpmnProcessInstance.getDefaultBpmnServices(bpmnEngine);
-        const internalExtentions: BpmnExtentions = BpmnProcessInstance.getDefaultExtensions(this);
+        const internalServices: BpmnServices = {};
+        const internalExtentions: BpmnExtensions = {};
         const internalModdles = BpmnProcessInstance.getDefaultModdles(bpmnEngine);
         options.moddleOptions = {
             ...internalModdles,
             ...options.moddleOptions,
         };
-        options.services = { ...internalServices, ...options.services };
+        // assign elements
         options.elements = { ...internalElements, ...options.elements };
-        options.extensions = { ...internalExtentions, ...options.extensions };
+        this.options.elements = { ...internalElements, ...this.options.elements };
+        // assign services
+        const services: BpmnServices = { ...internalServices, ...this.options.services };
+        this.options.services = services;
+
+        // assign extension
+        const exts: BpmnExtensions = { ...internalExtentions, ...this.options.extensions };
+        const extenstions = {};
+        Object.entries(exts).forEach(ext => {
+            extenstions[ext[0]] = ext[1](self);
+        });
+        this.options.extensions = extenstions;
         this.options = options;
         this.bpmnEngine = bpmnEngine;
     }

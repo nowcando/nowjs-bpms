@@ -189,7 +189,7 @@ export interface BpmnAssociation extends BpmnElement {}
 export interface BpmnSequenceFlow extends BpmnFlow, BpmnSequenceFlowApi {}
 export interface BpmnMessageFlow extends BpmnFlow, BpmnMessageFlowApi {}
 
-export interface BpmnExtention {
+export interface BpmnExtentionApi {
     activate<M extends BpmnMessage = BpmnApiMessage>(message?: M): void;
     deactivate<M extends BpmnMessage = BpmnApiMessage>(message?: M): void;
 }
@@ -216,7 +216,7 @@ export interface BpmnApiExecutionContext {
     getSequenceFlowById(id: string): BpmnSequenceFlow;
     getSequenceFlows(): BpmnSequenceFlow[];
     getStartActivities(): BpmnActivity[];
-    loadExtensions(activity: BpmnActivity): BpmnExtentions;
+    loadExtensions(activity: BpmnActivity): BpmnExtensions;
 }
 export interface BpmnExpressions {
     resolveExpression: BpmnResolveExpression;
@@ -239,21 +239,21 @@ export interface BpmnService {
     <M = any, C = any, R = void>(...args: any[]): (executionMessage: M, callback: BpmnCallback<C>) => R;
 }
 export interface BpmnSettings extends BpmnRecordAny {}
-export interface BpmnApiExpression {}
+export interface BpmnExpression {}
 export type BpmnResolveExpression = <E = string>(expression: string, apiMessage?: BpmnApiMessage, owner?: any) => E;
 export interface BpmnVariables<E = any> extends Record<string, E> {}
 export interface BpmnApiOutput<E = any> extends Record<string, E> {}
 export interface BpmnApiMessage extends BpmnMessage {}
-export interface BpmnApiExtention {
+export interface BpmnExtension {
     <E extends BpmnElement = BpmnActivity, R = void>(element: E, context: BpmnProcess): R;
     <R = void>(...args: any[]): R;
 }
-export interface BpmnExtentions extends Record<string, BpmnApiExtention> {}
+export interface BpmnExtensions extends Record<string, BpmnExtension> {}
 export interface BpmnEnvironmentOptions extends BpmnRecordAny {}
 export interface BpmnEnvironment {
     options: BpmnEnvironmentOptions;
-    expressions: BpmnApiExpression[];
-    extensions: Record<string, BpmnExtentions>;
+    expressions: BpmnExpression[];
+    extensions: Record<string, BpmnExtensions>;
     output: BpmnApiOutput;
     scripts: Record<string, BpmnScript>;
     services: Record<string, BpmnService>;
@@ -371,7 +371,7 @@ export interface BpmnProcessApi {
     on: BpmnProcessBroker['on'];
     once: BpmnProcessBroker['once'];
     waitFor: BpmnProcessBroker['waitFor'];
-    readonly extensions: BpmnExtentions;
+    readonly extensions: BpmnExtensions;
     readonly id: string;
     readonly type: 'process';
     readonly name: string;
@@ -465,7 +465,7 @@ export interface BpmnActivityApi extends BpmnApi<BpmnActivity> {
     on: BpmnActivityBroker['on'];
     once: BpmnActivityBroker['once'];
     waitFor: BpmnActivityBroker['waitFor'];
-    readonly extensions: BpmnExtentions;
+    readonly extensions: BpmnExtensions;
 
     readonly behaviour: BpmnActivityBehaviour;
     readonly isEnd: boolean;
@@ -615,7 +615,7 @@ export interface BpmnEngineRuntimeOptions {
     typeResolver?: <R>(...elements: any) => R;
     moddleOptions?: any;
 
-    extensions?: BpmnExtentions;
+    extensions?: BpmnExtensions;
 }
 
 export interface BpmnEngineRuntime extends EventEmitter {

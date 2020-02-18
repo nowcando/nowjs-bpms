@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { uuidv1 } from 'nowjs-core/lib/utils';
+import bent from 'bent';
 import { BpmsEngine } from '../BpmsEngine';
 import {
     BpmnDefinitionMemoryRepository,
@@ -18,8 +20,34 @@ import {
     ScalarOptions,
     QueryResult,
 } from '../data/Repository';
-import { BpmnEngineRuntimeState, BpmnEngineRuntimeApi, BpmnDefinition } from './definitions/bpmn-elements';
+import {
+    BpmnEngineRuntimeState,
+    BpmnEngineRuntimeApi,
+    BpmnDefinition,
+    BpmnExtensions,
+    BpmnExtentionApi,
+    BpmnExtension,
+    BpmnServices,
+    BpmnService,
+} from './definitions/bpmn-elements';
 import { BpmnDefinitionInstance } from './BpmnDefinitionInstance';
+import { ProcessExtension } from './extensions/ProcessExtension';
+import { ProcessHistoryExtension } from './extensions/ProcessHistoryExtension';
+import { FormDataResolverExtension } from './extensions/FormDataExtension';
+import { BusinessRuleTaskExtension } from './extensions/BusinessRuleTaskExtension';
+import { HumanInvolvementExtension } from './extensions/HumanInvolvementExtension';
+import { SaveToResultVariableExtension } from './extensions/SaveToResultVariableExtension';
+import { ServiceTaskExtension } from './extensions/ServiceTaskExtension';
+import { UserTaskExtension } from './extensions/UserTaskExtension';
+import { SaveToEnvironmentOutputExtension } from './extensions/SaveToEnvironmentOutputExtension';
+import { InputOutputExtension } from './extensions/InputOutputExtension';
+import { ExecutionListenerExtension } from './extensions/ExecutionListenerExtension';
+import { DynamicViewResolverExtension } from './extensions/DynamicViewResolverExtension';
+import { DynamicRouteResolverExtension } from './extensions/DynamicRouteResolverExtension';
+
+const httpJsonApi = bent('json');
+const httpStreamApi = bent('buffer');
+const httpStringApi = bent('string');
 export type BpmnSource = string;
 
 export interface BpmnEngineOptions {
@@ -94,6 +122,8 @@ export class BpmnEngine {
         });
         this.processRepository = this.options.processRepository || new BpmnProcessMemoryRepository();
         this.bpmnDefinitionRepository = this.options.bpmnDefinitionRepository || new BpmnDefinitionMemoryRepository();
+        this.processExtensions = BpmnEngine.getDefaultExtensions();
+        this.processServices = BpmnEngine.getDefaultBpmnServices(this);
     }
 
     public get Id(): string {
@@ -121,6 +151,33 @@ export class BpmnEngine {
             return new BpmnEngine(arg1, arg2);
         }
         return new BpmnEngine(undefined, arg1);
+    }
+    private processExtensions: BpmnExtensions = {};
+    private processServices: BpmnServices = {};
+    public registerProcessExtension(name: string, extension: BpmnExtension): this {
+        this.processExtensions[name] = extension;
+        return this;
+    }
+    public removeProcessExtension(name: string): this {
+        delete this.processExtensions[name];
+        return this;
+    }
+
+    public registerProcessService(name: string, service: BpmnService): this {
+        this.processServices[name] = service;
+        return this;
+    }
+    public removeProcessService(name: string): this {
+        delete this.processServices[name];
+        return this;
+    }
+
+    public get ProcessExtensions(): BpmnExtensions {
+        return { ...this.processExtensions };
+    }
+
+    public get ProcessServices(): BpmnServices {
+        return { ...this.processServices };
     }
 
     public async createDefinitions(name: string, source: BpmnSource): Promise<BpmsBpmnDefinition> {
@@ -311,6 +368,7 @@ export class BpmnEngine {
         const p = new Promise<BpmnProcessInstance>(async (resolve, reject) => {
             try {
                 // using  registered definition if name already registered .
+                options = options || {};
                 if (options && !options.source) {
                     let d: BpmnDefinitionModel | null;
                     if (options.definitionId) {
@@ -335,6 +393,8 @@ export class BpmnEngine {
                         options.source = d.definitions;
                     }
                 }
+                options.extensions = this.processExtensions;
+                options.services = this.processServices;
                 const proc = new BpmnProcessInstance(self, options);
                 await this.loadedProcessRepository.update(proc.Id, proc, true);
                 await this.persistProcess({ filter: { id: proc.Id } });
@@ -723,5 +783,214 @@ export class BpmnEngine {
     }
     public async scalarProcess(options: ScalarOptions): Promise<number> {
         return this.processRepository.scalar(options);
+    }
+
+    public static getDefaultExtensions(): BpmnExtensions {
+        return {
+            // NowJsExtension: NowJsExtension(self),
+            ProcessExtension: ProcessExtension,
+            ProcessHistoryExtension: ProcessHistoryExtension,
+            FormDataResolverExtension: FormDataResolverExtension,
+            BusinessRuleTaskExtension: BusinessRuleTaskExtension,
+            HumanInvolvementExtension: HumanInvolvementExtension,
+            SaveToResultVariableExtension: SaveToResultVariableExtension,
+            ServiceTaskExtension: ServiceTaskExtension,
+            UserTaskExtension: UserTaskExtension,
+            SaveToEnvironmentOutputExtension: SaveToEnvironmentOutputExtension,
+            InputOutputExtension: InputOutputExtension,
+            ExecutionListenerExtension: ExecutionListenerExtension,
+            DynamicViewResolverExtension: DynamicViewResolverExtension,
+            DynamicRouteResolverExtension: DynamicRouteResolverExtension,
+        };
+    }
+
+    public static getDefaultBpmnServices(bpmnEngine: BpmnEngine): BpmnServices {
+        return {
+            createHistory(entry: any) {
+                return function createHistoryService(executionContext, callback) {
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const svc = bpmnEngine.BpmsEngine.HistoryService;
+                        svc.create({ ...entry, source: 'createHistoryService' }).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            createNotification(notification: any) {
+                return function createNotificationService(executionContext, callback) {
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const svc = bpmnEngine.BpmsEngine.NotificationService;
+                        svc.create({ ...notification }).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            getGroups() {
+                return function getGroupsService(executionContext, callback) {
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.IdentityService;
+                        ids.getGroups().then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            getUserOfEmployee(employeeIdOrName: string) {
+                return function getManagerOfUserService(executionContext, callback) {
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(employeeIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            getEmployeeOfUser(userIdOrName: string) {
+                return function getEmployeeOfUserService(executionContext, callback) {
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(userIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            getManagerOfUser(userIdOrName: string) {
+                return function getManagerOfUserService(executionContext, callback) {
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(userIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            getCoWorkerOfUser(userIdOrName: string) {
+                return function getCoWorkerOfUserService(executionContext, callback) {
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(userIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            getGroupsOfUser(userIdOrName: string) {
+                return function getGroupsOfUserService(executionContext, callback) {
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.OrganizationService;
+                        ids.getOrganizationEmployee(userIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            getUsersOfGroup(groupIdOrName: string) {
+                return function getUsersOfGroupService(executionContext, callback) {
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.IdentityService;
+                        ids.getGroupUsers(groupIdOrName).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            getInitiatorUser() {
+                return function getInitiatorUserService(executionContext, callback) {
+                    const username = executionContext?.environment?.variables?.initiatorUsername;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.IdentityService;
+                        ids.getUserByUsername(username).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            getUser() {
+                return async function getUserService(executionContext) {
+                    const username = executionContext?.environment?.variables?.user?.username;
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const ids = bpmnEngine.BpmsEngine.IdentityService;
+                        return ids.getUserByUsername(username);
+                    } else {
+                        return null;
+                    }
+                };
+            },
+            httpJsonApi: () => httpJsonApi,
+            httpStreamApi: () => httpStreamApi,
+            httpStringApi: () => httpStringApi,
+            httpRequestApi: (options: any = {}) => async (scope, callback) => {
+                let result: any = null;
+                const vs = scope?.environment?.variables;
+                const apiBasePath = options?.basePath || vs?.api?.basePath;
+                const apiPath = options?.path || vs?.api?.path;
+                const apiMethod = options?.method || vs?.api?.method || 'GET';
+                const apiHeaders = options?.headers || vs?.api?.headers || {};
+                const apiVars = options?.variables || vs?.api?.variables;
+                const apiResponseType = options?.apiResponseType || vs?.api?.responseType || 'json';
+                try {
+                    let s = '';
+                    let apiPaths = '';
+                    if (apiMethod === 'GET' && apiVars) {
+                        for (const key in apiVars) {
+                            if (apiVars.hasOwnProperty(key)) {
+                                s = s + '&' + key + '=' + apiVars[key];
+                            }
+                        }
+                        apiPaths = apiPath + '?' + s;
+                    } else {
+                        apiPaths = apiPath;
+                    }
+                    const hapi = bent(apiBasePath, apiMethod, apiResponseType, 200);
+                    result = await hapi(apiPaths, apiVars, apiHeaders);
+                } catch (err) {
+                    return callback(null, err);
+                }
+
+                return callback(null, result);
+            },
+            // tslint:disable-next-line:no-shadowed-variable
+            evaluateDecision<T>(options: { decisionId?: string; context?: any } = {}) {
+                return function getEvaludateDecisionService(executionContext, callback) {
+                    const { content } = executionContext;
+                    const decisionId = options.decisionId || content?.decision?.decisionRef;
+                    const dcontext = options.context || content?.decision?.decisionContext || {};
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const dmn = bpmnEngine.BpmsEngine.DmnEngine;
+                        dmn.evaluateDecision<T>(`${decisionId}`, dcontext)
+                            .then(result => {
+                                callback(null, result);
+                            })
+                            .catch(err => {
+                                callback(err);
+                            });
+                    } else {
+                        return callback(new Error(`BpmsEngine not defined`));
+                    }
+                };
+            },
+        };
     }
 }
