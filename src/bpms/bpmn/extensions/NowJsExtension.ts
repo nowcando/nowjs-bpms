@@ -109,7 +109,7 @@ export const NowJsExtension = (processInstance: BpmnProcessInstance) => (activit
                     const t = await bpms.TaskService.create({
                         name: api.name,
                         activityId: api.id,
-                        processDefinitionId: processInstance.DefinitionId,
+                        definitionId: processInstance.DefinitionId,
                         processInstanceName: processInstance.Name,
                         processInstanceId: processInstance.Id,
                         processExecutionId: api.environment.variables.content.executionId,

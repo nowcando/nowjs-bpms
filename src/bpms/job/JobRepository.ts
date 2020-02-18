@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
+import { BpmsRepository, BpmsBaseMemoryRepository, IdExpression } from '../data/Repository';
 
 export interface JobModel {
     id?: string;
     title?: string;
-    descriptipns?: string;
+    descriptions?: string;
     name?: string;
-    assignee?: string;
-    priority?: string;
+    assignee?: { userId: IdExpression; username: string; fullname?: string; avatar?: string };
+    priority?: number;
     tenantId?: string;
-    processDefinitionId?: string;
-    processDefinitionName?: string;
-    processDefinitionVersion?: number;
+    definitionId?: string;
+    definitionName?: string;
+    definitionVersion?: number;
     processInstanceId?: string;
     processInstanceName?: string;
     processExecutionId?: string;

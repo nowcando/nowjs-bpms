@@ -16,9 +16,9 @@ export const DynamicRouteResolverExtension = (
             if (extn.$type === 'camunda:DynamicRoute' || extn.$type === 'nowjs:DynamicRoute') {
                 if (extn.route) {
                     const route: BpmsRoute = {
-                        processDefinitionId: processInstance.DefinitionId,
-                        processDefinitionName: processInstance.DefinitionName,
-                        processDefinitionVersion: processInstance.DefinitionVersion,
+                        definitionId: processInstance.DefinitionId,
+                        definitionName: processInstance.DefinitionName,
+                        definitionVersion: processInstance.DefinitionVersion,
                         processId: activity?.parent?.id,
                         processName: activity?.parent?.name,
                         name: extn.name,

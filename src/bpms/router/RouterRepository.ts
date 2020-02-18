@@ -3,9 +3,9 @@
 import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
 
 export interface BpmsRouteModel {
-    processDefinitionId: string;
-    processDefinitionName: string;
-    processDefinitionVersion: number;
+    definitionId: string;
+    definitionName: string;
+    definitionVersion: number;
     processId: string;
     processName: string;
     activityName: string;

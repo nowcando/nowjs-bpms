@@ -17,9 +17,9 @@ export interface UIServiceOptions {
 }
 
 export interface BpmsDynamicViewModel {
-    processDefinitionId?: string;
-    processDefinitionName?: string;
-    processDefinitionVersion?: number;
+    definitionId?: string;
+    definitionName?: string;
+    definitionVersion?: number;
     processId: string;
     processName: string;
     activityName: string;
@@ -28,6 +28,8 @@ export interface BpmsDynamicViewModel {
     id?: string;
     name: string;
     title: string;
+
+    descriptions?: string;
     type: string;
     target: string;
     renderEngine: string;
@@ -47,9 +49,11 @@ export interface BpmsDynamicViewModel {
     createdAt?: Date;
 }
 export interface BpmsDynamicView {
-    processDefinitionId?: string;
-    processDefinitionName?: string;
-    processDefinitionVersion?: number;
+    definitionId?: string;
+    definitionName?: string;
+    definitionVersion?: number;
+
+    descriptions?: string;
     processId: string;
     processName: string;
     activityName: string;
@@ -118,7 +122,7 @@ export class UIService<T extends BpmsDynamicView = BpmsDynamicView> implements B
     }
 
     public async create(view: BpmsDynamicView): Promise<T> {
-        const v = await this.viewRepository.find({ name: view.name, definitionId: view.processDefinitionId });
+        const v = await this.viewRepository.find({ name: view.name, definitionId: view.definitionId });
         if (v) {
             throw new Error(`The view '${view.name}' already exists`);
         }
@@ -131,8 +135,8 @@ export class UIService<T extends BpmsDynamicView = BpmsDynamicView> implements B
                 viewId: r.id,
                 viewName: r.name,
                 activityId: r.activityId,
-                processDefinitionId: r.processDefinitionId,
-                processDefinitionVersion: r.processDefinitionVersion,
+                definitionId: r.definitionId,
+                definitionVersion: r.definitionVersion,
                 processId: r.processId,
             },
             eventId: 100143,

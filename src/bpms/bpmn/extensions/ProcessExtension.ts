@@ -11,9 +11,9 @@ export const ProcessExtension = (processInstance: BpmnProcessInstance | BpmnDefi
     if (bpms) {
         const x = activity.behaviour;
         const route: BpmsRoute = {
-            processDefinitionId: processInstance.DefinitionId,
-            processDefinitionName: processInstance.DefinitionName,
-            processDefinitionVersion: processInstance.DefinitionVersion,
+            definitionId: processInstance.DefinitionId,
+            definitionName: processInstance.DefinitionName,
+            definitionVersion: processInstance.DefinitionVersion,
             processId: activity?.id,
             processName: activity?.name,
             name: activity?.name,

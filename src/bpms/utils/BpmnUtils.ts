@@ -3,13 +3,13 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 // tslint:disable: no-var-requires
-import bpe from 'bpmn-elements';
-const types = bpe;
+// @ts-nocheck
+import { Context, Environment } from 'bpmn-elements';
 import BpmnModdle from 'bpmn-moddle';
 import Debug from 'debug';
 import mcs from 'moddle-context-serializer';
+import { BpmnActivity } from '../bpmn/definitions/bpmn-elements';
 const { default: Serializer, TypeResolver } = mcs;
-const { Context, Environment } = types;
 // import {Scripts} from "bpmn-elements/JavaScripts";
 const Scripts = () => {
     // tslint:disable-next-line: no-console
@@ -125,4 +125,10 @@ function getOptionsAndCallback(optionsOrCallback?: any, callback?: any, defaultO
     }
 
     return [options, callback];
+}
+
+export function getBpmnDocumentation(activity: BpmnActivity) {
+    const bh = activity?.behaviour;
+    const s = (bh?.documentation?.length > 0 && bh?.documentation[0]?.text) || '';
+    return s;
 }

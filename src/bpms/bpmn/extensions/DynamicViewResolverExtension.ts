@@ -3,6 +3,7 @@
 import { BpmnProcessInstance } from '../BpmnProcessInstance';
 import { BpmsDynamicView, BpmsDynamicViewModel } from '../../ui/UIService';
 import { BpmnDefinitionInstance } from '../BpmnDefinitionInstance';
+import { getBpmnDocumentation } from '../../utils/BpmnUtils';
 
 export const DynamicViewResolverExtension = (
     processInstance: BpmnProcessInstance | BpmnDefinitionInstance,
@@ -13,13 +14,14 @@ export const DynamicViewResolverExtension = (
     const bpms = processInstance.BpmnEngine.BpmsEngine;
     if (bpms) {
         const actions = [];
+        const doc = getBpmnDocumentation(activity);
         const io = extendValues.forEach((extn, ix) => {
             if (extn.$type === 'camunda:DynamicView' || extn.$type === 'nowjs:DynamicView') {
                 // result.input = extension.inputParameters;
                 const view: BpmsDynamicView = {
-                    processDefinitionId: processInstance.DefinitionId,
-                    processDefinitionName: processInstance.DefinitionName,
-                    processDefinitionVersion: processInstance.DefinitionVersion,
+                    definitionId: processInstance.DefinitionId,
+                    definitionName: processInstance.DefinitionName,
+                    definitionVersion: processInstance.DefinitionVersion,
                     processId: activity?.parent?.id,
                     processName: activity?.parent?.name,
                     activityName: activity.name,
@@ -27,6 +29,7 @@ export const DynamicViewResolverExtension = (
                     activityType: activity.type,
                     name: extn.name,
                     title: extn.title,
+                    descriptions: doc,
                     type: extn.type,
                     target: extn.target,
                     renderEngine: extn.renderEngine,

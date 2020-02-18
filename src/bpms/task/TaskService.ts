@@ -44,11 +44,11 @@ export interface BpmsTask {
     activityType?: string;
     name?: string;
     assignee?: { userId: IdExpression; username: string; fullname?: string; avatar?: string };
-    priority?: string;
+    priority?: number;
     tenantId?: string;
-    processDefinitionId?: string;
-    processDefinitionName?: string;
-    processDefinitionVersion?: number;
+    definitionId?: string;
+    definitionName?: string;
+    definitionVersion?: number;
     processInstanceId?: string;
     processInstanceName?: string;
     processExecutionId?: string;
@@ -111,10 +111,10 @@ export class TaskService<T extends BpmsTask = BpmsTask> implements BpmsService {
             source: this.Name,
             message: `The task has been created`,
             data: {
-                processDefinitionId: r.processDefinitionId,
+                definitionId: r.definitionId,
                 processExecutionId: r.processExecutionId,
                 processInstanceId: r.processInstanceId,
-                processDefinitionVersion: r.processDefinitionVersion,
+                definitionVersion: r.definitionVersion,
                 activityId: r.activityId,
                 activityType: r.activityType,
                 tenantId: r.tenantId,

@@ -10,11 +10,11 @@ export interface TaskModel {
     activityType?: string;
     name?: string;
     assignee?: { userId: IdExpression; username: string; fullname?: string; avatar?: string };
-    priority?: string;
+    priority?: number;
     tenantId?: string;
-    processDefinitionId?: string;
-    processDefinitionName?: string;
-    processDefinitionVersion?: number;
+    definitionId?: string;
+    definitionName?: string;
+    definitionVersion?: number;
     processInstanceId?: string;
     processInstanceName?: string;
     processExecutionId?: string;

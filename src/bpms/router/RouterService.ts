@@ -18,9 +18,9 @@ export interface RouterServiceOptions {
 }
 
 export interface BpmsRoute {
-    processDefinitionId?: string;
-    processDefinitionName?: string;
-    processDefinitionVersion?: number;
+    definitionId?: string;
+    definitionName?: string;
+    definitionVersion?: number;
     processName: string;
     processId?: string;
     id?: string;
