@@ -105,10 +105,40 @@ export class TaskService<T extends BpmsTask = BpmsTask> implements BpmsService {
         return this.taskRepository.clear();
     }
     public async create(task: T): Promise<T> {
-        return this.taskRepository.create(task);
+        const r = await this.taskRepository.create(task);
+        this.bpmsEngine?.HistoryService.create({
+            type: 'info',
+            source: this.Name,
+            message: `The task has been created`,
+            data: {
+                processDefinitionId: r.processDefinitionId,
+                processExecutionId: r.processExecutionId,
+                processInstanceId: r.processInstanceId,
+                processDefinitionVersion: r.processDefinitionVersion,
+                activityId: r.activityId,
+                activityType: r.activityType,
+                tenantId: r.tenantId,
+                type: r.type,
+                taskId: r.id,
+                taskName: r.name,
+                assignee: r.assignee,
+            },
+            eventId: 100149,
+        });
+        return r;
     }
     public async remove(taskId: IdExpression): Promise<boolean> {
-        return this.taskRepository.delete(taskId);
+        const r = await this.taskRepository.delete(taskId);
+        this.bpmsEngine?.HistoryService.create({
+            type: 'info',
+            source: this.Name,
+            message: `The task has been removed`,
+            data: {
+                taskId: taskId,
+            },
+            eventId: 100146,
+        });
+        return r;
     }
 
     public async find(taskId: IdExpression): Promise<T | null>;
@@ -131,26 +161,100 @@ export class TaskService<T extends BpmsTask = BpmsTask> implements BpmsService {
 
     public async updateTaskDueDate(taskId: string, dueDate: Date | undefined): Promise<T> {
         const d = { dueDate };
-        return this.taskRepository.update(taskId, d);
+        const r = await this.taskRepository.update(taskId, d);
+        this.bpmsEngine?.HistoryService.create({
+            type: 'info',
+            source: this.Name,
+            message: `The task due date has been updated`,
+            data: {
+                taskId: r.id,
+                taskName: r.name,
+                dueDate: r.dueDate,
+            },
+            eventId: 100143,
+        });
+        return r;
     }
     public async updateTaskFollowUpDate(taskId: string, followUpDate: Date | undefined): Promise<T> {
         const d = { followUpDate };
-        return this.taskRepository.update(taskId, d);
+        const r = await this.taskRepository.update(taskId, d);
+        this.bpmsEngine?.HistoryService.create({
+            type: 'info',
+            source: this.Name,
+            message: `The task followup date has been updated`,
+            data: {
+                taskId: r.id,
+                taskName: r.name,
+                followUpDate: r.followUpDate,
+            },
+            eventId: 100141,
+        });
+        return r;
     }
     public async updateTaskTags(taskId: string, tags: string | undefined): Promise<T> {
         const d = { tags };
-        return this.taskRepository.update(taskId, d);
+        const r = await this.taskRepository.update(taskId, d);
+        this.bpmsEngine?.HistoryService.create({
+            type: 'info',
+            source: this.Name,
+            message: `The task tags has been updated`,
+            data: {
+                taskId: r.id,
+                taskName: r.name,
+                tags: r.tags,
+            },
+            eventId: 100138,
+        });
+        return r;
     }
     public async updateTaskCategories(taskId: string, categories: string | undefined): Promise<T> {
         const d = { categories };
-        return this.taskRepository.update(taskId, d);
+        const r = await this.taskRepository.update(taskId, d);
+        this.bpmsEngine?.HistoryService.create({
+            type: 'info',
+            source: this.Name,
+            message: `The task categories has been updated`,
+            data: {
+                taskId: r.id,
+                taskName: r.name,
+                categories: r.categories,
+            },
+            eventId: 100136,
+        });
+        return r;
     }
     public async taskCompleted(taskId: string): Promise<T> {
         const d = { completed: true, completedAt: new Date() };
-        return this.taskRepository.update(taskId, d);
+        const r = await this.taskRepository.update(taskId, d);
+        this.bpmsEngine?.HistoryService.create({
+            type: 'info',
+            source: this.Name,
+            message: `The task has been completed`,
+            data: {
+                taskId: r.id,
+                taskName: r.name,
+                completed: r.completed,
+                completedAt: r.completedAt,
+            },
+            eventId: 100132,
+        });
+        return r;
     }
     public async taskSeen(taskId: string): Promise<T> {
         const d = { seen: true, seenAt: new Date() };
-        return this.taskRepository.update(taskId, d);
+        const r = await this.taskRepository.update(taskId, d);
+        this.bpmsEngine?.HistoryService.create({
+            type: 'info',
+            source: this.Name,
+            message: `The task has been seen`,
+            data: {
+                taskId: r.id,
+                taskName: r.name,
+                seen: r.seen,
+                seenAt: r.seenAt,
+            },
+            eventId: 100128,
+        });
+        return r;
     }
 }

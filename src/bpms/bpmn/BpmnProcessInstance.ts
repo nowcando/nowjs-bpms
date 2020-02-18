@@ -48,6 +48,7 @@ import {
     BpmnEngineRuntimeExecution,
 } from './definitions/bpmn-elements';
 import { BpmnDefinitionInstance } from './BpmnDefinitionInstance';
+import { ProcessHistoryExtension } from './extensions/ProcessHistoryExtension';
 
 const { Engine } = require('bpmn-engine');
 const httpJsonApi = bent('json');
@@ -136,6 +137,7 @@ export class BpmnProcessInstance {
         return {
             // NowJsExtension: NowJsExtension(self),
             ProcessExtension: ProcessExtension(self),
+            ProcessHistoryExtension: ProcessHistoryExtension(self),
             FormDataResolverExtension: FormDataResolverExtension(self),
             BusinessRuleTaskExtension: BusinessRuleTaskExtension(self),
             HumanInvolvementExtension: HumanInvolvementExtension(self),
@@ -159,6 +161,30 @@ export class BpmnProcessInstance {
 
     public static getDefaultBpmnServices(bpmnEngine: BpmnEngine): BpmnServices {
         return {
+            createHistory(entry: any){
+                return function createHistoryService(executionContext, callback) {
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const svc = bpmnEngine.BpmsEngine.HistoryService;
+                        svc.create({...entry,source:'createHistoryService'}).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
+            createNotification(notification: any){
+                return function createNotificationService(executionContext, callback) {
+                    if (bpmnEngine && bpmnEngine.BpmsEngine) {
+                        const svc = bpmnEngine.BpmsEngine.NotificationService;
+                        svc.create({...notification}).then(r => {
+                            return callback(r);
+                        });
+                    } else {
+                        return callback(undefined);
+                    }
+                };
+            },
             getGroups() {
                 return function getGroupsService(executionContext, callback) {
                     if (bpmnEngine && bpmnEngine.BpmsEngine) {

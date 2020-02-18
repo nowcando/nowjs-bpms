@@ -12,7 +12,7 @@ export interface BpmsHistoryModel {
     tenantId?: string;
     userId?: string;
 
-    type: 'info' | 'warn' | 'error' | 'fatal';
+    type: 'info' | 'warn' | 'error' | 'fatal' | 'debug';
 }
 
 export interface HistoryRepository<T extends BpmsHistoryModel = BpmsHistoryModel> extends BpmsRepository<T> {

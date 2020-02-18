@@ -133,7 +133,7 @@ export class BpmnEngine {
         }
         const f = await this.bpmnDefinitionRepository.find({ name });
         if (!f) {
-            const r = await this.bpmnDefinitionRepository.create({ definitions: source, name });
+            const r = await this.bpmnDefinitionRepository.create({ definitions: source, name, version: 1 });
             const p = {
                 source: r.definitions,
                 definitionId: r.id,
@@ -146,9 +146,13 @@ export class BpmnEngine {
                 source: this.name,
                 message: `The process definition has been created`,
                 data: {
+                    definitionId: r.id,
+                    definitionName: r.name,
+                    definitionVersion: r.version,
+                    definitions: r.definitions,
                     method: 'createDefinitions',
                 },
-                eventId: 10031,
+                eventId: 10081,
             });
             return r;
         }
@@ -165,7 +169,12 @@ export class BpmnEngine {
         }
         const f = await this.bpmnDefinitionRepository.find({ id });
         if (f) {
-            const r = await this.bpmnDefinitionRepository.update(id, { ...f, definitions: source, id });
+            const r = await this.bpmnDefinitionRepository.update(id, {
+                ...f,
+                definitions: source,
+                id,
+                version: f.version ? f.version + 1 : 1,
+            });
             const p = {
                 source: r.definitions,
                 definitionId: r.id,
@@ -173,6 +182,19 @@ export class BpmnEngine {
                 definitionVersion: r.version,
             };
             //  await this.loadDefinition(p); // load definition
+            this.bpmsEngine?.HistoryService.create({
+                type: 'info',
+                source: this.name,
+                message: `The process definition has been updated`,
+                data: {
+                    definitionId: r.id,
+                    definitionName: r.name,
+                    definitionVersion: r.version,
+                    definitions: r.definitions,
+                    method: 'updateDefinition',
+                },
+                eventId: 10079,
+            });
             return r;
         }
         throw new Error(`The BPMN definition id ${id} not exists`);
@@ -226,11 +248,35 @@ export class BpmnEngine {
         definitionVersion: number;
     }): Promise<BpmnDefinition> {
         const d = new BpmnDefinitionInstance(this, definition);
-        return d.run();
+        const r = await d.run();
+        this.bpmsEngine?.HistoryService.create({
+            type: 'info',
+            source: this.name,
+            message: `The process definition has been loaded`,
+            data: {
+                definitionId: d.DefinitionId,
+                definitionName: d.DefinitionName,
+                definitionVersion: d.DefinitionVersion,
+                method: 'loadDefinition',
+            },
+            eventId: 10076,
+        });
+        return r;
     }
 
     public async removeDefinition(id: IdExpression): Promise<boolean> {
-        return this.bpmnDefinitionRepository.delete(id);
+        const r = this.bpmnDefinitionRepository.delete(id);
+        this.bpmsEngine?.HistoryService.create({
+            type: 'info',
+            source: this.name,
+            message: `The process definition has been removed`,
+            data: {
+                definitionId: id,
+                method: 'removeDefinition',
+            },
+            eventId: 10073,
+        });
+        return r;
     }
 
     public async listDefinitions<R extends BpmsBpmnDefinition>(filter?: FilterExpression): Promise<R[]> {
@@ -239,6 +285,15 @@ export class BpmnEngine {
 
     public async clearDefinitions(): Promise<void> {
         await this.bpmnDefinitionRepository.deleteAll();
+        this.bpmsEngine?.HistoryService.create({
+            type: 'info',
+            source: this.name,
+            message: `The all process definition has been cleared`,
+            data: {
+                method: 'clearDefinitions',
+            },
+            eventId: 10071,
+        });
         return;
     }
 
@@ -296,14 +351,17 @@ export class BpmnEngine {
                 });
                 proc.onEnd(async () => {
                     await this.loadedProcessRepository.delete(proc.Id);
+                    const d = { terminatedAt: new Date(), terminated: true, terminateId: 1 };
+                    await this.processRepository.update(proc.Id, d, true);
                     this.bpmsEngine?.HistoryService.create({
                         type: 'info',
                         source: this.name,
                         message: `The process has been terminated`,
                         data: {
+                            definitionId: proc?.DefinitionId,
                             processId: proc.Id,
                         },
-                        eventId: 10033,
+                        eventId: 10034,
                     });
                 });
                 resolve(proc);
@@ -402,12 +460,36 @@ export class BpmnEngine {
                     if (options?.resume === true) {
                         await p.resume();
                     }
+                    this.bpmsEngine?.HistoryService.create({
+                        type: 'info',
+                        source: this.name,
+                        message: `The process has been recovered`,
+                        data: {
+                            definitionId: p?.DefinitionId,
+                            processId: p.Id,
+                            method: 'recoverProcesses',
+                            from: 'persisted',
+                        },
+                        eventId: 10038,
+                    });
                     r.push(p);
                 } else {
                     lp.recover(pitem);
                     if (options?.resume === true) {
                         await lp.resume();
                     }
+                    this.bpmsEngine?.HistoryService.create({
+                        type: 'info',
+                        source: this.name,
+                        message: `The process has been recovered`,
+                        data: {
+                            definitionId: lp?.DefinitionId,
+                            processId: lp.Id,
+                            method: 'recoverProcesses',
+                            from: 'loaded',
+                        },
+                        eventId: 10039,
+                    });
                     r.push(lp);
                 }
             }
@@ -447,6 +529,17 @@ export class BpmnEngine {
                         },
                         true,
                     );
+                    this.bpmsEngine?.HistoryService.create({
+                        type: 'info',
+                        source: this.name,
+                        message: `The process has been persisted`,
+                        data: {
+                            definitionId: p?.DefinitionId,
+                            processId: p.Id,
+                            method: 'persistProcess',
+                        },
+                        eventId: 10040,
+                    });
                     return Promise.resolve(r !== null);
                 }
                 return Promise.resolve(false);
@@ -473,6 +566,17 @@ export class BpmnEngine {
                             },
                             true,
                         );
+                        this.bpmsEngine?.HistoryService.create({
+                            type: 'info',
+                            source: this.name,
+                            message: `The process has been persisted`,
+                            data: {
+                                definitionId: p?.DefinitionId,
+                                processId: p.Id,
+                                method: 'persistProcess',
+                            },
+                            eventId: 10040,
+                        });
                         pr.push(m);
                     }
                     const rs = await Promise.all(pr);
@@ -499,6 +603,18 @@ export class BpmnEngine {
         const processes = await this.listLoadedProcess(filter);
         for (const process of processes) {
             process.stop();
+            process.destroy();
+            this.bpmsEngine?.HistoryService.create({
+                type: 'info',
+                source: this.name,
+                message: `The process has been stopped`,
+                data: {
+                    definitionId: process?.DefinitionId,
+                    processId: process.Id,
+                    method: 'stopProcesses',
+                },
+                eventId: 10041,
+            });
         }
         await this.loadedProcessRepository.deleteAll();
         return Promise.resolve();
@@ -514,6 +630,17 @@ export class BpmnEngine {
             await proc.stop();
             proc.destroy();
             await this.loadedProcessRepository.delete(proc.Id);
+            this.bpmsEngine?.HistoryService.create({
+                type: 'info',
+                source: this.name,
+                message: `The process has been stopped`,
+                data: {
+                    definitionId: proc?.DefinitionId,
+                    processId: proc.Id,
+                    method: 'stopProcess',
+                },
+                eventId: 10041,
+            });
         }
 
         return Promise.resolve();
@@ -522,7 +649,19 @@ export class BpmnEngine {
     public async getProcessState(id: IdExpression): Promise<BpmnEngineRuntimeState | null> {
         const proc = await this.loadedProcessRepository.find(id);
         if (proc) {
-            return proc.getState();
+            const r = await proc.getState();
+            this.bpmsEngine?.HistoryService.create({
+                type: 'debug',
+                source: this.name,
+                message: `The process has been getState`,
+                data: {
+                    definitionId: proc?.DefinitionId,
+                    processId: proc.Id,
+                    method: 'getState',
+                },
+                eventId: 10048,
+            });
+            return r;
         }
         return Promise.resolve(null);
     }
@@ -533,7 +672,19 @@ export class BpmnEngine {
     ): Promise<BpmnEngineRuntimeApi | null> {
         const proc = await this.loadedProcessRepository.find(id);
         if (proc) {
-            return proc.execute(options);
+            const r = await proc.execute(options);
+            this.bpmsEngine?.HistoryService.create({
+                type: 'info',
+                source: this.name,
+                message: `The process has been execute`,
+                data: {
+                    definitionId: proc?.DefinitionId,
+                    processId: proc.Id,
+                    method: 'executeProcess',
+                },
+                eventId: 10044,
+            });
+            return r;
         }
         return Promise.resolve(null);
     }
@@ -544,7 +695,19 @@ export class BpmnEngine {
     ): Promise<BpmnEngineRuntimeApi | null> {
         const proc = await this.loadedProcessRepository.find(id);
         if (proc) {
-            return proc.resume(options);
+            const r = await proc.resume(options);
+            this.bpmsEngine?.HistoryService.create({
+                type: 'info',
+                source: this.name,
+                message: `The process has been resumed`,
+                data: {
+                    definitionId: proc?.DefinitionId,
+                    processId: proc.Id,
+                    method: 'resumeProcess',
+                },
+                eventId: 10046,
+            });
+            return r;
         }
         return Promise.resolve(null);
     }

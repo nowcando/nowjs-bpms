@@ -3,8 +3,11 @@
 import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
 
 export interface DmnDefinitionModel {
+    id?: string;
     name: string;
     definitions: any;
+
+    version: number;
 
     persistedAt: Date;
 }

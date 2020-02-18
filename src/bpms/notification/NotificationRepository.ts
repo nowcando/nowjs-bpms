@@ -1,14 +1,18 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
+import { BpmsRepository, BpmsBaseMemoryRepository, IdExpression } from '../data/Repository';
 
 export interface NotificationModel {
     id: string;
     message: string;
-
+    type: string;
+    route: string;
     to: string;
-    delivered: boolean;
-    seen: boolean;
+    delivered?: boolean;
+    deliveredAt: boolean;
+    seen?: boolean;
+    seenAt?: boolean;
+    userId?: IdExpression;
 }
 
 export interface NotificationRepository<T extends NotificationModel = NotificationModel> extends BpmsRepository<T> {

@@ -122,7 +122,22 @@ export class UIService<T extends BpmsDynamicView = BpmsDynamicView> implements B
         if (v) {
             throw new Error(`The view '${view.name}' already exists`);
         }
-        return this.viewRepository.create(view);
+        const r = await this.viewRepository.create(view);
+        this.bpmsEngine?.HistoryService.create({
+            type: 'info',
+            source: this.Name,
+            message: `The view has been created`,
+            data: {
+                viewId: r.id,
+                viewName: r.name,
+                activityId: r.activityId,
+                processDefinitionId: r.processDefinitionId,
+                processDefinitionVersion: r.processDefinitionVersion,
+                processId: r.processId,
+            },
+            eventId: 100143,
+        });
+        return r;
     }
     public async findView(processName: string, viewName: string): Promise<T | null> {
         return this.viewRepository.find({ processName, viewName });

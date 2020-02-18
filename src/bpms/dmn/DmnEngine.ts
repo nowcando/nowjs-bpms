@@ -97,8 +97,21 @@ export class DmnEngine {
         const s = await this.dmnDefinitionRepository.find({ name: entity.name });
         // d =  await this.parseDmnXml(df);
         if (!s) {
-            const r = await this.dmnDefinitionRepository.create(entity);
+            const r = await this.dmnDefinitionRepository.create({ ...entity, version: 1 });
             // this.definitionCache[entity.name] = d;
+            this.bpmsEngine?.HistoryService.create({
+                type: 'info',
+                source: this.name,
+                message: `The dmn definition has been created`,
+                data: {
+                    definitionId: r.id,
+                    definitionName: r.name,
+                    definitionVersion: r.version,
+                    definitions: r.definitions,
+                    method: 'create',
+                },
+                eventId: 10021,
+            });
             return r;
         }
         throw new Error('The DMN definition already exists');
@@ -113,8 +126,26 @@ export class DmnEngine {
         const s = await this.dmnDefinitionRepository.find({ id: entity.id });
         // d = await this.parseDmnXml(df);
         if (s && id) {
-            const r = await this.dmnDefinitionRepository.update(id, { ...s, ...entity, id });
+            const r = await this.dmnDefinitionRepository.update(id, {
+                ...s,
+                ...entity,
+                id,
+                version: s.version ? s.version + 1 : 1,
+            });
             // this.definitionCache[entity.name] = d;
+            this.bpmsEngine?.HistoryService.create({
+                type: 'info',
+                source: this.name,
+                message: `The dmn definition has been updated`,
+                data: {
+                    definitionId: r.id,
+                    definitionName: r.name,
+                    definitionVersion: r.version,
+                    definitions: r.definitions,
+                    method: 'update',
+                },
+                eventId: 10023,
+            });
             return r;
         }
         throw new Error(`The DMN definition id '${id}' not exists`);
@@ -191,6 +222,17 @@ export class DmnEngine {
                 }
 
                 const data = decisionTable.evaluateDecision(decisionId, ds, context);
+                this.bpmsEngine?.HistoryService.create({
+                    type: 'info',
+                    source: this.name,
+                    message: `The decision has been evaluated`,
+                    data: {
+                        decisionId: decisionId,
+                        method: 'evaluateDecision',
+                        context,
+                    },
+                    eventId: 10026,
+                });
                 resolve(data);
                 return;
             } catch (error) {
