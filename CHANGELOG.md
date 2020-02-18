@@ -1,3 +1,9 @@
+### 0.39.0 (2020-02-18)
+
+##### Bug Fixes
+
+*  BpmsHistory variable issue fixed ([7055e430](https://github.com/nowcando/nowjs-bpms/commit/7055e43007935e88da0dea2946ef68ea0d1a7434))
+
 ### 0.38.0 (2020-02-18)
 
 ##### New Features
