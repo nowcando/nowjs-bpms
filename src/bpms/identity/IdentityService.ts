@@ -73,6 +73,14 @@ export class IdentityService implements BpmsService {
             this.options.identityUserRepository || (new IdentityUserClaimMemoryRepository() as any);
     }
 
+    public get Id(): string {
+        return this.id;
+    }
+
+    public get Name(): string {
+        return this.options.name;
+    }
+
     public static createService(options?: IdentityServiceOptions): IdentityService;
     public static createService(bpmsEngine?: BpmsEngine, options?: IdentityServiceOptions): IdentityService;
     public static createService(

@@ -11,9 +11,11 @@ import {
     FilterExpression,
 } from '../data/Repository';
 import { BpmsService } from '../BpmsService';
+import { UIMemoryRepository, UIRepository } from './UIRepository';
 
 export interface UIServiceOptions {
     name: string;
+    uiRepository?: UIRepository;
 }
 
 export interface BpmsDynamicViewModel {
@@ -48,11 +50,12 @@ export interface BpmsDynamicViewModel {
     author: string;
     createdAt?: Date;
 }
-export interface BpmsDynamicView {
+export interface BpmsUI {
     definitionId?: string;
     definitionName?: string;
     definitionVersion?: number;
-
+    systemId?: string;
+    systemName?: string;
     descriptions?: string;
     processId: string;
     processName: string;
@@ -82,19 +85,13 @@ export interface BpmsDynamicView {
     actions: { name: string; description: string; value: any }[];
 }
 
-export class UIService<T extends BpmsDynamicView = BpmsDynamicView> implements BpmsService {
-    private viewRepository: BpmsBaseMemoryRepository<T>;
+export class UIService<T extends BpmsUI = BpmsUI> implements BpmsService {
+    private uiRepository: UIRepository;
     private id: string = uuidv1();
     private options: UIServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: UIServiceOptions) {
         this.options = options || { name: 'UIService' + this.id };
-        this.viewRepository = new BpmsBaseMemoryRepository({
-            storageName: 'BpmsView',
-            keyPropertyname: 'id',
-            properties: {
-                id: { type: 'string', default: () => uuidv1() },
-            },
-        });
+        this.uiRepository = this.options.uiRepository || new UIMemoryRepository();
     }
 
     public static createService(options?: UIServiceOptions): UIService;
@@ -118,15 +115,15 @@ export class UIService<T extends BpmsDynamicView = BpmsDynamicView> implements B
     }
 
     public async clear(): Promise<void> {
-        return this.viewRepository.clear();
+        return this.uiRepository.clear();
     }
 
-    public async create(view: BpmsDynamicView): Promise<T> {
-        const v = await this.viewRepository.find({ name: view.name, definitionId: view.definitionId });
+    public async create(view: BpmsUI): Promise<T> {
+        const v = await this.uiRepository.find({ name: view.name, definitionId: view.definitionId });
         if (v) {
             throw new Error(`The view '${view.name}' already exists`);
         }
-        const r = await this.viewRepository.create(view);
+        const r = await this.uiRepository.create(view);
         this.bpmsEngine?.HistoryService.create({
             type: 'info',
             source: this.Name,
@@ -141,30 +138,30 @@ export class UIService<T extends BpmsDynamicView = BpmsDynamicView> implements B
             },
             eventId: 100143,
         });
-        return r;
+        return r as any;
     }
     public async findView(processName: string, viewName: string): Promise<T | null> {
-        return this.viewRepository.find({ processName, viewName });
+        return this.uiRepository.find({ processName, viewName });
     }
     public async remove(entityId: string): Promise<boolean> {
-        return this.viewRepository.delete(entityId);
+        return this.uiRepository.delete(entityId);
     }
 
     public async find(filter: FilterExpression): Promise<T | null>;
     public async find(entityId: string): Promise<T | null>;
     public async find(expression: FilterExpression | string): Promise<T | null> {
-        return this.viewRepository.find(expression);
+        return this.uiRepository.find(expression);
     }
     public async list<R = T>(filter?: FilterExpression): Promise<R[]> {
-        return this.viewRepository.findAll(filter);
+        return this.uiRepository.findAll(filter);
     }
     public async count(filter?: FilterExpression): Promise<number> {
-        return this.viewRepository.count('id', filter);
+        return this.uiRepository.count('id', filter);
     }
     public async query<R>(options: QueryOptions): Promise<QueryResult<R>> {
-        return this.viewRepository.query(options);
+        return this.uiRepository.query(options);
     }
     public async scalar(options: ScalarOptions): Promise<number> {
-        return this.viewRepository.scalar(options);
+        return this.uiRepository.scalar(options);
     }
 }

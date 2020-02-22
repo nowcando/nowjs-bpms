@@ -36,9 +36,9 @@ describe('Query Service', () => {
         const actual = BpmsEngine.createEngine({ name: 'MyEngineQueryService3' });
         expect(actual).toBeDefined();
         const bpe = actual.BpmnEngine;
-        const pr1 = await bpe.createDefinitions('Process1', source1);
+        const pr1 = await bpe.createDefinitions({ name: 'Process1', definitions: source1 });
         expect(pr1).toBeDefined();
-        const pr2 = await bpe.createDefinitions('Process2', source2);
+        const pr2 = await bpe.createDefinitions({ name: 'Process2', definitions: source2 });
         expect(pr2).toBeDefined();
         // actual.BpmnEngine.registerDefinitions()
         expect(actual.QueryService.count).toBeDefined();
@@ -50,11 +50,11 @@ describe('Query Service', () => {
         const actual = BpmsEngine.createEngine({ name: 'MyEngineQueryService4' });
         expect(actual).toBeDefined();
         const bpe = actual.BpmnEngine;
-        const pr1 = await bpe.createDefinitions('Process1', source1);
+        const pr1 = await bpe.createDefinitions({ name: 'Process1', definitions: source1 });
         expect(pr1).toBeDefined();
-        const pr2 = await bpe.createDefinitions('Process2', source2);
+        const pr2 = await bpe.createDefinitions({ name: 'Process2', definitions: source2 });
         expect(pr2).toBeDefined();
-        const pr3 = await bpe.createDefinitions('Process3', source3);
+        const pr3 = await bpe.createDefinitions({ name: 'Process3', definitions: source3 });
         expect(pr3).toBeDefined();
         for (let i = 0; i < 5; i++) {
             await bpe.createProcess({ name: 'Process1' });
@@ -72,11 +72,11 @@ describe('Query Service', () => {
         const actual = BpmsEngine.createEngine({ name: 'MyEngineQueryService5' });
         expect(actual).toBeDefined();
         const bpe = actual.BpmnEngine;
-        const pr1 = await bpe.createDefinitions('Process1', source1);
+        const pr1 = await bpe.createDefinitions({ name: 'Process1', definitions: source1 });
         expect(pr1).toBeDefined();
-        const pr2 = await bpe.createDefinitions('Process2', source2);
+        const pr2 = await bpe.createDefinitions({ name: 'Process2', definitions: source2 });
         expect(pr2).toBeDefined();
-        const pr3 = await bpe.createDefinitions('Process3', source3);
+        const pr3 = await bpe.createDefinitions({ name: 'Process3', definitions: source3 });
         expect(pr3).toBeDefined();
         for (let i = 0; i < 5; i++) {
             await bpe.createProcess({ name: 'Process1' });

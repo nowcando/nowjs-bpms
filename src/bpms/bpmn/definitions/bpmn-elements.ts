@@ -1,5 +1,26 @@
 import { EventEmitter } from 'events';
 
+export type BpmnActivityEventType =
+    | 'wait'
+    | 'enter'
+    | 'leave'
+    | 'start'
+    | 'end'
+    | 'stop'
+    | 'throw'
+    | 'error'
+    | 'activity.enter'
+    | 'activity.start'
+    | 'activity.wait'
+    | 'activity.end'
+    | 'activity.leave'
+    | 'activity.stop'
+    | 'activity.throw'
+    | 'activity.error';
+export type BpmnErrorEventType = 'error' | 'end';
+export type BpmnProcessExecutionEventType = 'created' | 'destroyed';
+export type BpmnFlowEventType = 'flow.take' | 'flow.discard' | 'flow.looped';
+
 /* eslint-disable @typescript-eslint/no-empty-interface */
 export interface BpmnLogger {
     debug(message: string, ...args: any[]): void;

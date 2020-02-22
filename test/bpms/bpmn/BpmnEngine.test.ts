@@ -79,8 +79,8 @@ describe('BpmnEngine', () => {
             it('should be createDefinitions method return BpmsBmnDefinition', async () => {
                 const bpe = BpmnEngine.createEngine({ name: 'MyEngine1' });
                 expect(bpe).toBeDefined();
-                const actual1 = await bpe.createDefinitions('sample1', source1);
-                const actual2 = await bpe.createDefinitions('sample2', source2);
+                const actual1 = await bpe.createDefinitions({ name: 'sample1', definitions: source1 });
+                const actual2 = await bpe.createDefinitions({ name: 'sample2', definitions: source2 });
                 expect(actual1).toBeDefined();
                 expect(actual2).toBeDefined();
             });
@@ -99,7 +99,7 @@ describe('BpmnEngine', () => {
                 const bpms = BpmsEngine.createEngine({ name: 'MyEngine2' });
                 const bpmn = bpms.BpmnEngine;
                 expect(bpmn).toBeDefined();
-                await bpmn.createDefinitions('Team', source4);
+                await bpmn.createDefinitions({ name: 'Team', definitions: source4 });
                 const v = await bpms.UIService.list();
                 expect(v).toBeDefined();
                 const n = await bpms.RouterService.list();
@@ -157,7 +157,7 @@ describe('BpmnEngine', () => {
                 expect(bpe).toBeDefined();
                 const randNum = Math.floor(Math.random() * 10000);
                 await bpe.DmnEngine.create({ name: 'SmsOperatorRules', definitions: SmsOperatorRules });
-                await bpe.BpmnEngine.createDefinitions('sampleProcess1', source7);
+                await bpe.BpmnEngine.createDefinitions({ name: 'sampleProcess1', definitions: source7 });
                 const currentUser = { userId: 121, username: 'admin', avatar: '' };
                 const prOpts: BpmnProcessInstanceOptions = {
                     name: 'sampleProcess1',
@@ -239,9 +239,9 @@ describe('BpmnEngine', () => {
             it('should be recover all persisted processes', async () => {
                 const bpe = BpmnEngine.createEngine({ name: 'MyEngine16' });
                 expect(bpe).toBeDefined();
-                await bpe.createDefinitions('Process1', source1);
-                await bpe.createDefinitions('Process2', source2);
-                await bpe.createDefinitions('Process3', source3);
+                await bpe.createDefinitions({ name: 'Process1', definitions: source1 });
+                await bpe.createDefinitions({ name: 'Process2', definitions: source2 });
+                await bpe.createDefinitions({ name: 'Process3', definitions: source3 });
                 const pr1 = await bpe.createProcess({
                     name: 'Process1',
                 });

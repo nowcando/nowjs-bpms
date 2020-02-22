@@ -70,9 +70,15 @@ export interface BpmnEnginePersistOptions {
 export interface BpmsBpmnDefinition {
     id?: string;
     name: string;
-    definitions: any;
+    definitions: BpmnSource;
 
-    version: number;
+    systemId?: string;
+    systemName?: string;
+
+    category?: string;
+    tags?: string[];
+
+    version?: number;
 
     createdAt?: Date;
 }
@@ -136,14 +142,6 @@ export class BpmnEngine {
     public get BpmsEngine(): BpmsEngine | undefined {
         return this.bpmsEngine;
     }
-
-    // public get ProcessRepository(): BpmnProcessRepository {
-    //   return this.processRepository;
-    // }
-
-    // public get DefinitionPersistency(): BpmnDefinitionRepository {
-    //   return this.definitionRepository;
-    // }
     public static createEngine(options?: BpmnEngineOptions): BpmnEngine;
     public static createEngine(bpmsEngine?: BpmsEngine, options?: BpmnEngineOptions): BpmnEngine;
     public static createEngine(arg1?: BpmsEngine | BpmnEngineOptions, arg2?: BpmnEngineOptions): BpmnEngine {
@@ -180,23 +178,25 @@ export class BpmnEngine {
         return { ...this.processServices };
     }
 
-    public async createDefinitions(name: string, source: BpmnSource): Promise<BpmsBpmnDefinition> {
+    public async createDefinitions(entity: BpmsBpmnDefinition): Promise<BpmsBpmnDefinition> {
         const self = this;
-        if (!name) {
-            throw new Error(`The BPMN definition name ${name} required`);
+        if (!entity.name) {
+            throw new Error(`The BPMN definition name ${entity.name} required`);
         }
-        if (!source) {
-            throw new Error(`The BPMN definition source ${source} required`);
+        if (!entity.definitions) {
+            throw new Error(`The BPMN definition source ${entity.definitions} required`);
         }
-        const f = await this.bpmnDefinitionRepository.find({ name });
+        const f = await this.bpmnDefinitionRepository.find({ name: entity.name });
         if (!f) {
-            const r = await this.bpmnDefinitionRepository.create({ definitions: source, name, version: 1 });
-            const p = {
-                source: r.definitions,
-                definitionId: r.id,
-                definitionName: r.name,
-                definitionVersion: r.version,
-            };
+            const r = await this.bpmnDefinitionRepository.create({
+                definitions: entity.definitions,
+                name: entity.name,
+                tags: entity.tags,
+                category: entity.category,
+                systemId: entity.systemId,
+                systemName: entity.systemName,
+                version: 1,
+            });
             // await this.loadDefinition(p); // load definition
             this.bpmsEngine?.HistoryService.create({
                 type: 'info',
@@ -216,28 +216,22 @@ export class BpmnEngine {
         throw new Error('The bpmn definition already exists');
     }
 
-    public async updateDefinitions(id: string, source: BpmnSource): Promise<BpmsBpmnDefinition> {
+    public async updateDefinitions(entity: BpmsBpmnDefinition): Promise<BpmsBpmnDefinition> {
         const self = this;
-        if (!id) {
-            throw new Error(`The BPMN definition id ${id} required`);
+        if (!entity.id) {
+            throw new Error(`The BPMN definition id ${entity.id} required`);
         }
-        if (!source) {
-            throw new Error(`The BPMN definition source ${source} required`);
+        if (!entity.definitions) {
+            throw new Error(`The BPMN definition source ${entity.definitions} required`);
         }
-        const f = await this.bpmnDefinitionRepository.find({ id });
+        const f = await this.bpmnDefinitionRepository.find({ id: entity.id });
         if (f) {
-            const r = await this.bpmnDefinitionRepository.update(id, {
+            const r = await this.bpmnDefinitionRepository.update(entity.id, {
                 ...f,
-                definitions: source,
-                id,
+                ...entity,
+                id: f.id,
                 version: f.version ? f.version + 1 : 1,
             });
-            const p = {
-                source: r.definitions,
-                definitionId: r.id,
-                definitionName: r.name,
-                definitionVersion: r.version,
-            };
             //  await this.loadDefinition(p); // load definition
             this.bpmsEngine?.HistoryService.create({
                 type: 'info',
@@ -254,7 +248,7 @@ export class BpmnEngine {
             });
             return r;
         }
-        throw new Error(`The BPMN definition id ${id} not exists`);
+        throw new Error(`The BPMN definition id ${entity.id} not exists`);
     }
 
     public async countDefinitions(): Promise<number> {

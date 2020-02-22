@@ -6,6 +6,12 @@ export interface BpmnDefinitionModel {
     name: string;
     definitions: any;
 
+    systemId?: string;
+    systemName?: string;
+
+    category?: string;
+    tags: string[];
+
     version: number;
 
     createdAt?: Date;

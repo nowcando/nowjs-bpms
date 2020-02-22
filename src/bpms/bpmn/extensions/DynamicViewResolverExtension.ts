@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BpmnProcessInstance } from '../BpmnProcessInstance';
-import { BpmsDynamicView, BpmsDynamicViewModel } from '../../ui/UIService';
+import { BpmsUI, BpmsDynamicViewModel } from '../../ui/UIService';
 import { BpmnDefinitionInstance } from '../BpmnDefinitionInstance';
 import { getBpmnDocumentation } from '../../utils/BpmnUtils';
 
@@ -18,7 +18,7 @@ export const DynamicViewResolverExtension = (
         const io = extendValues.forEach((extn, ix) => {
             if (extn.$type === 'camunda:DynamicView' || extn.$type === 'nowjs:DynamicView') {
                 // result.input = extension.inputParameters;
-                const view: BpmsDynamicView = {
+                const view: BpmsUI = {
                     definitionId: processInstance.DefinitionId,
                     definitionName: processInstance.DefinitionName,
                     definitionVersion: processInstance.DefinitionVersion,

@@ -66,7 +66,7 @@
     "bpmn-moddle": "^6.0.2",
     "camunda-bpmn-moddle": "^4.3.0",
     "dmn-moddle": "^6.0.0",
-    "nowjs-bpmn-moddle": "^1.15.0",
+    "nowjs-bpmn-moddle": "^1.16.0",
     "nowjs-core": "^0.39.0",
     "reflect-metadata": "^0.1.13"
   },

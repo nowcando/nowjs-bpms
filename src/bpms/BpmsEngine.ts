@@ -15,6 +15,7 @@ import { UIService, UIServiceOptions } from './ui/UIService';
 import { DataModelServiceOptions, DataModelService } from './data/DataModelService';
 import { DataSourceServiceOptions, DataSourceService } from './data/DataSourceService';
 import { OrganizationService, OrganizationServiceOptions } from './organization/OrganizationService';
+import { SystemService, SystemServiceOptions } from './system/SystemService';
 export interface BpmsEngineOptions {
     name: string;
     cache?: boolean;
@@ -27,6 +28,7 @@ export interface BpmsEngineOptions {
     organizationService?: OrganizationServiceOptions;
     historyService?: HistoryServiceOptions;
     taskService?: TaskServiceOptions;
+    systemService?: SystemServiceOptions;
     tenantService?: TenantServiceOptions;
     routerService?: RouterServiceOptions;
     uiService?: UIServiceOptions;
@@ -55,6 +57,7 @@ export class BpmsEngine {
     private organizationService!: OrganizationService;
     private taskService!: TaskService;
     private tenantService!: TenantService;
+    private systemService!: SystemService;
     private uiService!: UIService;
     private queryService!: QueryService;
     private jobService!: JobService;
@@ -124,6 +127,10 @@ export class BpmsEngine {
         this.uiService = UIService.createService(this, {
             name: this.name,
             ...this.options.uiService,
+        });
+        this.systemService = SystemService.createService(this, {
+            name: this.name,
+            ...this.options.systemService,
         });
         this.jobService = JobService.createService(this, {
             name: this.name,
@@ -221,6 +228,10 @@ export class BpmsEngine {
         return this.uiService as any;
     }
 
+    public get SystemService(): SystemService {
+        return this.systemService as any;
+    }
+
     public get JobService(): JobService {
         return this.jobService as any;
     }
@@ -241,7 +252,7 @@ export class BpmsEngine {
         return this.identityService as any;
     }
     public get OrganizationService(): OrganizationService {
-        return this.identityService as any;
+        return this.organizationService as any;
     }
     public get HistoryService(): HistoryService {
         return this.historyService as any;

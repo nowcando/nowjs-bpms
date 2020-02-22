@@ -18,29 +18,29 @@ export interface RouterServiceOptions {
 }
 
 export interface BpmsRoute {
+    systemId?: string;
+    systemName?: string;
     definitionId?: string;
     definitionName?: string;
     definitionVersion?: number;
-    processName: string;
+    processName?: string;
     processId?: string;
     id?: string;
     type?: 'static' | 'dynamic';
     key?: string;
-    icon: string;
-    class: string;
-    target: string;
-    title: string;
-    canStartByUser?: boolean;
+    icon?: string;
+    class?: string;
+    target?: string;
+    title?: string;
     enabled?: boolean;
     name: string;
     displayOrder?: string;
     category?: string;
-    tags?: string;
-    defaultView?: string;
-    allowedViews?: string;
+    tags?: string[];
     authorization?: string;
     author?: string;
     route: string;
+    variables?: Record<string, any>;
 }
 
 export class RouterService<T extends BpmsRoute = BpmsRoute> implements BpmsService {
@@ -110,28 +110,4 @@ export class RouterService<T extends BpmsRoute = BpmsRoute> implements BpmsServi
     public async scalar(options: ScalarOptions): Promise<number> {
         return this.routerRepository.scalar(options);
     }
-    // public async listViewNavigations() {
-    //     if (this.BpmsEngine) {
-    //         const views = await this.BpmsEngine.UIService.list();
-    //         const navs = await this.navigatonRepository.findAll();
-    //         const navViews = navs
-    //             .linq()
-    //             .groupBy(xx => xx.category)
-    //             .toArray()
-    //             .map(xx => {
-    //                 return {
-    //                     title: xx.key,
-    //                     items: xx.values.toArray().map(nn => {
-    //                         return {
-    //                             ...nn,
-    //                             views: views.filter(vv => vv.view.key.startsWith(nn.key || '')),
-    //                         };
-    //                     }),
-    //                 };
-    //             });
-
-    //         return navViews;
-    //     }
-    //     return [];
-    // }
 }

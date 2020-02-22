@@ -23,6 +23,7 @@ export const DynamicRouteResolverExtension = (
                         processName: activity?.parent?.name,
                         name: extn.name,
                         route: extn.route,
+                        variables: extn.variables || {},
                         title: extn.title,
                         type: extn.type || 'static',
                         target: extn.target,
@@ -34,7 +35,6 @@ export const DynamicRouteResolverExtension = (
                         class: extn.class,
                         authorization: extn.authorization,
                         author: extn.author,
-                        canStartByUser: true,
                     };
                     bpms.RouterService.create(route)
                         .then(xx => xx)

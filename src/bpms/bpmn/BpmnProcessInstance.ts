@@ -5,24 +5,12 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import bm from 'bpmn-moddle';
 
 import { EventEmitter } from 'events';
 import { uuidv1 } from 'nowjs-core/lib/utils';
 import { BpmnEngine } from './BpmnEngine';
-import { BusinessRuleTaskExtension } from './extensions/BusinessRuleTaskExtension';
-import { HumanInvolvementExtension } from './extensions/HumanInvolvementExtension';
-import { ServiceTaskExtension } from './extensions/ServiceTaskExtension';
 import { BpmnProcessModel } from './BpmnProcessRepository';
-import { SaveToEnvironmentOutputExtension } from './extensions/SaveToEnvironmentOutputExtension';
-import { InputOutputExtension } from './extensions/InputOutputExtension';
-import { ExecutionListenerExtension } from './extensions/ExecutionListenerExtension';
-import { UserTaskExtension } from './extensions/UserTaskExtension';
-import { DynamicViewResolverExtension } from './extensions/DynamicViewResolverExtension';
-import { DynamicRouteResolverExtension } from './extensions/DynamicRouteResolverExtension';
-import { ProcessExtension } from './extensions/ProcessExtension';
-import { SaveToResultVariableExtension } from './extensions/SaveToResultVariableExtension';
-import { FormDataResolverExtension } from './extensions/FormDataExtension';
+
 import {
     BpmnVariables,
     BpmnLogger,
@@ -46,12 +34,12 @@ import {
     BpmnServices,
     BpmnApiExecutionContext,
     BpmnEngineRuntimeExecution,
+    BpmnErrorEventType,
+    BpmnFlowEventType,
+    BpmnActivityEventType,
 } from './definitions/bpmn-elements';
-import { BpmnDefinitionInstance } from './BpmnDefinitionInstance';
-import { ProcessHistoryExtension } from './extensions/ProcessHistoryExtension';
 
 const { Engine } = require('bpmn-engine');
-
 
 export interface BpmnProcessInstanceOptions extends BpmnEngineRuntimeOptions {
     name?: string;
@@ -62,26 +50,6 @@ export interface BpmnProcessInstanceOptions extends BpmnEngineRuntimeOptions {
     source?: string;
 }
 
-export type BpmnActivityEventType =
-    | 'wait'
-    | 'enter'
-    | 'leave'
-    | 'start'
-    | 'end'
-    | 'stop'
-    | 'throw'
-    | 'error'
-    | 'activity.enter'
-    | 'activity.start'
-    | 'activity.wait'
-    | 'activity.end'
-    | 'activity.leave'
-    | 'activity.stop'
-    | 'activity.throw'
-    | 'activity.error';
-export type BpmnErrorEventType = 'error' | 'end';
-export type BpmnProcessExecutionEventType = 'created' | 'destroyed';
-export type BpmnFlowEventType = 'flow.take' | 'flow.discard' | 'flow.looped';
 export type BpmnProcessExecuteOptions = BpmnProcessInstanceOptions;
 
 export type BpmnProcessRecoverOptions = BpmnProcessInstanceOptions;
@@ -117,7 +85,7 @@ export class BpmnProcessInstance {
         const internalElements = {};
         const internalExtentions: BpmnExtensions = {};
         const internalServices: BpmnServices = {};
-        
+
         const internalModdles = BpmnProcessInstance.getDefaultModdles(bpmnEngine);
         this.options.moddleOptions = {
             ...internalModdles,
@@ -131,8 +99,8 @@ export class BpmnProcessInstance {
         // assign extension
         const exts: BpmnExtensions = { ...internalExtentions, ...this.options.extensions };
         const extenstions = {};
-        Object.entries(exts).forEach(ext=> {
-            extenstions[ext[0]] = ext[1](self); 
+        Object.entries(exts).forEach(ext => {
+            extenstions[ext[0]] = ext[1](self);
         });
         this.options.extensions = extenstions;
         this.options = { listener: self.eventEmitter, ...this.options };
@@ -141,15 +109,12 @@ export class BpmnProcessInstance {
         this.emit('created', this);
     }
 
-
     public static getDefaultModdles(bpmnEngine: BpmnEngine) {
         return {
             nowjs: require('nowjs-bpmn-moddle/resources/nowjs.json'),
             // camunda: require("camunda-bpmn-moddle/resources/camunda.json"),
         };
     }
-
-   
 
     public get BpmnEngine() {
         return this.bpmnEngine;
@@ -160,7 +125,7 @@ export class BpmnProcessInstance {
     }
 
     public get Options() {
-        return  {...this.options};
+        return { ...this.options };
     }
 
     public get Source() {
@@ -209,10 +174,10 @@ export class BpmnProcessInstance {
         const self = this;
         const p = new Promise<BpmnEngineRuntimeApi>(async (resolve, reject) => {
             try {
-                if(self.execution) {
+                if (self.execution) {
                     resolve(self.execution);
                     return;
-                } 
+                }
                 const r = await self.processRuntime.execute<any>({
                     // listener: self.eventEmitter,
                     ...self.options,
@@ -358,16 +323,15 @@ export class BpmnProcessInstance {
         const self = this;
         const p = new Promise<BpmnEngineRuntimeApi>(async (resolve, reject) => {
             try {
-                if(self.execution) {
-                     resolve(self.execution);
-                     return;
-                } 
-                if(this.State==="idle"){
-                   
+                if (self.execution) {
+                    resolve(self.execution);
+                    return;
+                }
+                if (this.State === 'idle') {
                     const r = await self.processRuntime.execute<any>({
                         // listener: self.eventEmitter,
                         ...self.options,
-                       ...options,
+                        ...options,
                     });
                     this.execution = r;
                     resolve(r);
@@ -375,12 +339,11 @@ export class BpmnProcessInstance {
                     const r = await self.processRuntime.resume<any>({
                         // listener: self.eventEmitter,
                         ...self.options,
-                       ...options,
+                        ...options,
                     });
                     this.execution = r;
                     resolve(r);
                 }
-               
             } catch (error) {
                 reject(error);
             }
@@ -396,7 +359,7 @@ export class BpmnProcessInstance {
     public async getDefinitions(): Promise<BpmnDefinition[]> {
         const p = new Promise<BpmnDefinition[]>(async (resolve, reject) => {
             try {
-                const r = this.execution ? this.execution.definitions :  await this.processRuntime.getDefinitions();
+                const r = this.execution ? this.execution.definitions : await this.processRuntime.getDefinitions();
                 resolve(r);
             } catch (error) {
                 reject(error);
@@ -416,8 +379,10 @@ export class BpmnProcessInstance {
     public async getDefinitionById(id: string): Promise<BpmnDefinition | null> {
         const p = new Promise<BpmnDefinition | null>(async (resolve, reject) => {
             try {
-                const r = this.execution ? this.execution.definitions.filter(xx=>xx.id === id) : [await this.processRuntime.getDefinitionById(id)];
-                if(r.length>0) return resolve(null);
+                const r = this.execution
+                    ? this.execution.definitions.filter(xx => xx.id === id)
+                    : [await this.processRuntime.getDefinitionById(id)];
+                if (r.length > 0) return resolve(null);
                 resolve(r[0]);
             } catch (error) {
                 reject(error);

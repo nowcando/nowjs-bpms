@@ -1,4 +1,8 @@
+import { BpmsEngine } from './BpmsEngine';
+
 /* eslint-disable @typescript-eslint/no-empty-interface */
 export interface BpmsService {
-    // Bpms Service
+    BpmsEngine: BpmsEngine | undefined;
+    Id: string;
+    Name: string;
 }

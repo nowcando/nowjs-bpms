@@ -3,31 +3,41 @@
 import { BpmsRepository, BpmsBaseMemoryRepository } from '../data/Repository';
 
 export interface BpmsRouteModel {
-    definitionId: string;
-    definitionName: string;
-    definitionVersion: number;
-    processId: string;
-    processName: string;
-    activityName: string;
-    activityId: string;
+    systemId?: string;
+    systemName?: string;
+    definitionId?: string;
+    definitionName?: string;
+    definitionVersion?: number;
+    processName?: string;
+    processId?: string;
     id?: string;
-    route: string;
-    title: string;
+    type?: 'static' | 'dynamic';
+    key?: string;
+    icon?: string;
+    class?: string;
+    target?: string;
+    title?: string;
+    enabled?: boolean;
     name: string;
-    displayOrder?: number;
-    shortKey?: string;
+    displayOrder?: string;
+    category?: string;
+    tags?: string[];
+    authorization?: string;
+    author?: string;
+    route: string;
+    variables?: Record<string, any>;
     createdAt?: string;
 }
 
-export interface NavigationRepository<T extends BpmsRouteModel = BpmsRouteModel> extends BpmsRepository<T> {
+export interface RouterRepository<T extends BpmsRouteModel = BpmsRouteModel> extends BpmsRepository<T> {
     // implement
 }
 
-export class RoutingMemoryRepository extends BpmsBaseMemoryRepository<BpmsRouteModel>
-    implements NavigationRepository<BpmsRouteModel> {
+export class RouerMemoryRepository extends BpmsBaseMemoryRepository<BpmsRouteModel>
+    implements RouterRepository<BpmsRouteModel> {
     constructor() {
         super({
-            storageName: 'Router',
+            storageName: 'BpmsRouter',
             properties: {
                 id: { type: 'string' },
                 name: { type: 'string' },

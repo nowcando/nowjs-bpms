@@ -29,7 +29,7 @@ export const ProcessExtension = (processInstance: BpmnProcessInstance | BpmnDefi
             class: x.routeClass,
             authorization: x.authorization,
             author: x.author,
-            canStartByUser: x.isStartableInTasklist,
+            // canStartByUser: x.isStartableInTasklist,
         };
         bpms.RouterService.create(route)
             .then(xx => xx)
