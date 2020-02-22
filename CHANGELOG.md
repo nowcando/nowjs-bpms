@@ -1,3 +1,9 @@
+### 0.41.0 (2020-02-22)
+
+##### New Features
+
+*  add system service ([7b0326a5](https://github.com/nowcando/nowjs-bpms/commit/7b0326a517d68dcb746274a2fa4b55e2884267a1))
+
 ### 0.40.0 (2020-02-18)
 
 ##### New Features
