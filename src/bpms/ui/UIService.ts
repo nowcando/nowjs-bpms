@@ -121,7 +121,7 @@ export class UIService<T extends BpmsUI = BpmsUI> implements BpmsService {
     public async create(view: BpmsUI): Promise<T> {
         const v = await this.uiRepository.find({ name: view.name, definitionId: view.definitionId });
         if (v) {
-            throw new Error(`The view '${view.name}' already exists`);
+            return v as any;
         }
         const r = await this.uiRepository.create(view);
         this.bpmsEngine?.HistoryService.create({

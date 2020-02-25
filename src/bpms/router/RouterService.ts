@@ -12,8 +12,10 @@ import {
     IdExpression,
 } from '../data/Repository';
 import { BpmsService } from '../BpmsService';
+import { RouterRepository } from './RouterRepository';
 
 export interface RouterServiceOptions {
+    routerRepository?: RouterRepository;
     name: string;
 }
 
@@ -44,18 +46,20 @@ export interface BpmsRoute {
 }
 
 export class RouterService<T extends BpmsRoute = BpmsRoute> implements BpmsService {
-    private routerRepository!: BpmsBaseMemoryRepository<T>;
+    private routerRepository!: RouterRepository;
     private id: string = uuidv1();
     private options: RouterServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: RouterServiceOptions) {
         this.options = options || { name: 'RouterService' + this.id };
-        this.routerRepository = new BpmsBaseMemoryRepository({
-            storageName: 'BpmsRouter',
-            keyPropertyname: 'id',
-            properties: {
-                id: { type: 'string', default: () => uuidv1() },
-            },
-        });
+        this.routerRepository =
+            this.options.routerRepository ||
+            new BpmsBaseMemoryRepository({
+                storageName: 'BpmsRouter',
+                keyPropertyname: 'id',
+                properties: {
+                    id: { type: 'string', default: () => uuidv1() },
+                },
+            });
     }
 
     public static createService(options?: RouterServiceOptions): RouterService;

@@ -12,9 +12,10 @@ import {
     IdExpression,
 } from '../data/Repository';
 import { BpmsService } from '../BpmsService';
-import { SystemMemoryRepository } from './SystemRepository';
+import { SystemMemoryRepository, SystemRepository } from './SystemRepository';
 
 export interface SystemServiceOptions {
+    systemRepository?: SystemRepository;
     name: string;
 }
 
@@ -33,18 +34,20 @@ export interface BpmsSystem {
 }
 
 export class SystemService<T extends BpmsSystem = BpmsSystem> implements BpmsService {
-    private systemRepository!: SystemMemoryRepository;
+    private systemRepository!: SystemRepository;
     private id: string = uuidv1();
     private options: SystemServiceOptions;
     constructor(private bpmsEngine?: BpmsEngine, options?: SystemServiceOptions) {
         this.options = options || { name: 'SystemService' + this.id };
-        this.systemRepository = new BpmsBaseMemoryRepository({
-            storageName: 'BpmsSystem',
-            keyPropertyname: 'id',
-            properties: {
-                id: { type: 'string', default: () => uuidv1() },
-            },
-        });
+        this.systemRepository =
+            this.options.systemRepository ||
+            new BpmsBaseMemoryRepository({
+                storageName: 'BpmsSystem',
+                keyPropertyname: 'id',
+                properties: {
+                    id: { type: 'string', default: () => uuidv1() },
+                },
+            });
     }
 
     public static createService(options?: SystemServiceOptions): SystemService;
