@@ -1,3 +1,9 @@
+### 0.42.0 (2020-02-25)
+
+##### Bug Fixes
+
+*  ui system repository ([9f447cf6](https://github.com/nowcando/nowjs-bpms/commit/9f447cf69b3bf1d02bb351632f0cfb461e20c9ba))
+
 ### 0.41.0 (2020-02-22)
 
 ##### New Features
